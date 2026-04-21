@@ -4,11 +4,9 @@ import bcrypt from "bcryptjs";
 
 export async function GET() {
   try {
-    const adminPassword = await bcrypt.hash("Admin12345!", 12);
-    const baskanPassword = await bcrypt.hash("Baskan12345!", 12);
-    const yonetimPassword = await bcrypt.hash("Yonetim12345!", 12);
-    const uyePassword = await bcrypt.hash("Uye12345!", 12);
-
+    const results = [];
+    
+    // 1. Rollere emin ol
     const roles = [
       { code: "super_admin", name: "Super Admin" },
       { code: "president", name: "Topluluk Başkanı" },
@@ -16,7 +14,6 @@ export async function GET() {
       { code: "member", name: "Üye" },
     ];
 
-    // 1. Rollere emin ol
     for (const r of roles) {
       await prisma.role.upsert({
         where: { code: r.code },
@@ -25,52 +22,57 @@ export async function GET() {
       });
     }
 
+    const testEmails = ["admin@t3.org.tr", "baskan@t3.org.tr", "yonetim@t3.org.tr", "uye@t3.org.tr"];
+    
+    // 2. Mevcut hatalı kayıtları temizle (Zorunlu temizlik)
+    for (const email of testEmails) {
+      try {
+        await prisma.user.delete({ where: { email } });
+      } catch (e) {
+        // Kullanıcı yoksa hata vermesin
+      }
+    }
+
     const accounts = [
-      { email: "admin@t3.org.tr", name: "T3 Süper Admin", password: adminPassword, role: "super_admin" },
-      { email: "baskan@t3.org.tr", name: "Topluluk Başkanı", password: baskanPassword, role: "president" },
-      { email: "yonetim@t3.org.tr", name: "Yönetim Ekibi Üyesi", password: yonetimPassword, role: "management_team" },
-      { email: "uye@t3.org.tr", name: "Kayıtlı Topluluk Üyesi", password: uyePassword, role: "member" },
+      { email: "admin@t3.org.tr", name: "T3 Süper Admin", password: "Admin12345!", role: "super_admin" },
+      { email: "baskan@t3.org.tr", name: "Topluluk Başkanı", password: "Baskan12345!", role: "president" },
+      { email: "yonetim@t3.org.tr", name: "Yönetim Ekibi Üyesi", password: "Yonetim12345!", role: "management_team" },
+      { email: "uye@t3.org.tr", name: "Kayıtlı Topluluk Üyesi", password: "Uye12345!", role: "member" },
     ];
 
-    const results = [];
-
     for (const acc of accounts) {
-      // 2. Kullanıcıyı güncelle/oluştur
-      const user = await prisma.user.upsert({
-        where: { email: acc.email },
-        update: {
-          passwordHash: acc.password,
-          isActive: true,
-          name: acc.name,
-        },
-        create: {
+      const hashedPassword = await bcrypt.hash(acc.password, 10); // Daha hızlı ve uyumlu salt rounds
+      
+      // 3. Kullanıcıyı SIFIRDAN oluştur
+      const user = await prisma.user.create({
+        data: {
           email: acc.email,
           name: acc.name,
-          passwordHash: acc.password,
+          passwordHash: hashedPassword,
           isActive: true,
         },
       });
 
-      // 3. Rolü ata
+      // 4. Rolü ata
       const role = await prisma.role.findUnique({ where: { code: acc.role } });
       if (role) {
-        await prisma.userRole.upsert({
-          where: { id: `${user.id}-${role.id}` },
-          update: {},
-          create: {
-             id: `${user.id}-${role.id}`,
+        await prisma.userRole.create({
+          data: {
              userId: user.id,
              roleId: role.id
           }
         });
       }
       
-      results.push(`${acc.email} (${acc.role}) başarıyla güncellendi.`);
+      results.push(`${acc.email} tertemiz oluşturuldu.`);
     }
+
+    const totalUsers = await prisma.user.count();
 
     return NextResponse.json({
       success: true,
-      message: "Sistem rolleri ve test hesapları tam yetki ile senkronize edildi.",
+      message: "SİSTEM DERİN TEMİZLİK VE ONARIM TAMAMLANDI.",
+      totalUsersInDb: totalUsers,
       details: results,
     });
   } catch (error: any) {
