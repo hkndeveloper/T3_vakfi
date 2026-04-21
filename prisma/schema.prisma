@@ -1,0 +1,329 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model University {
+  id          String      @id @default(cuid())
+  name        String
+  city        String
+  status      Status      @default(ACTIVE)
+  communities Community[]
+  users       User[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model Community {
+  id              String            @id @default(cuid())
+  universityId    String
+  university      University        @relation(fields: [universityId], references: [id], onDelete: Restrict)
+  name            String
+  shortName       String
+  description     String?
+  advisorName     String?
+  logo            String?
+  coverImage      String?
+  status          Status            @default(ACTIVE)
+  members         CommunityMember[]
+  userRoles       UserRole[]
+  createdEvents   Event[]           @relation("EventCommunity")
+  reports         Report[]
+  mediaFiles      MediaFile[]
+  documents       Document[]
+  announcements   Announcement[]
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  @@unique([universityId, shortName])
+}
+
+model User {
+  id             String            @id @default(cuid())
+  name           String
+  email          String            @unique
+  phone          String?
+  passwordHash   String
+  profilePhoto   String?
+  universityId   String?
+  university     University?       @relation(fields: [universityId], references: [id], onDelete: SetNull)
+  department     String?
+  grade          Int?
+  studentNumber  String?
+  isActive       Boolean           @default(true)
+  userRoles      UserRole[]
+  memberships    CommunityMember[]
+  createdEvents  Event[]           @relation("EventCreator")
+  approvedEvents Event[]           @relation("EventApprover")
+  eventParticipants EventParticipant[]
+  createdReports Report[]          @relation("ReportCreator")
+  approvedReport Report[]          @relation("ReportApprover")
+  logs           ActivityLog[]
+  notifications  Notification[]
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+}
+
+model Role {
+  id          String           @id @default(cuid())
+  name        String
+  code        String           @unique
+  users       UserRole[]
+  permission  RolePermission[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+}
+
+model Permission {
+  id          String           @id @default(cuid())
+  name        String
+  code        String           @unique
+  roleLinks   RolePermission[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+}
+
+model RolePermission {
+  id            String      @id @default(cuid())
+  roleId        String
+  permissionId  String
+  role          Role        @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission    Permission  @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, permissionId])
+}
+
+model UserRole {
+  id          String      @id @default(cuid())
+  userId      String
+  roleId      String
+  communityId String?
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role        Role        @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  community   Community?  @relation(fields: [communityId], references: [id], onDelete: Cascade)
+
+  @@index([userId, roleId])
+}
+
+model CommunityMember {
+  id             String            @id @default(cuid())
+  communityId    String
+  userId         String
+  membershipType CommunityRoleType @default(MEMBER)
+  status         Status            @default(ACTIVE)
+  joinedAt       DateTime          @default(now())
+  community      Community         @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  user           User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([communityId, userId])
+}
+
+model Event {
+  id                String      @id @default(cuid())
+  communityId       String
+  title             String
+  type              EventType
+  description       String?
+  eventDate         DateTime
+  startTime         String?
+  endTime           String?
+  location          String?
+  responsibleUserId String?
+  status            EventStatus @default(DRAFT)
+  createdBy         String
+  approvedBy        String?
+  approvedAt        DateTime?
+  reviewNote        String?
+  community         Community   @relation("EventCommunity", fields: [communityId], references: [id], onDelete: Cascade)
+  creator           User        @relation("EventCreator", fields: [createdBy], references: [id], onDelete: Restrict)
+  approver          User?       @relation("EventApprover", fields: [approvedBy], references: [id], onDelete: SetNull)
+  reports           Report[]
+  participants      EventParticipant[]
+  mediaFiles        MediaFile[]
+  documents         Document[]
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+}
+
+model EventParticipant {
+  id               String           @id @default(cuid())
+  eventId          String
+  userId           String
+  inviteStatus     AttendanceStatus @default(INVITED)
+  attendanceStatus AttendanceStatus @default(PENDING)
+  excuseNote       String?
+  markedBy         String?
+  markedAt         DateTime?
+  event            Event            @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user             User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, userId])
+}
+
+model Report {
+  id               String       @id @default(cuid())
+  communityId      String
+  eventId          String?
+  title            String
+  reportType       ReportType
+  summary          String
+  content          String
+  participantCount Int?
+  status           ReportStatus @default(DRAFT)
+  createdBy        String
+  approvedBy       String?
+  approvedAt       DateTime?
+  adminNote        String?
+  community        Community    @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  event            Event?       @relation(fields: [eventId], references: [id], onDelete: SetNull)
+  creator          User         @relation("ReportCreator", fields: [createdBy], references: [id], onDelete: Restrict)
+  approver         User?        @relation("ReportApprover", fields: [approvedBy], references: [id], onDelete: SetNull)
+  mediaFiles       MediaFile[]
+  documents        Document[]
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+}
+
+model MediaFile {
+  id          String   @id @default(cuid())
+  communityId String
+  eventId     String?
+  reportId    String?
+  fileName    String
+  filePath    String
+  fileType    String
+  uploadedBy  String
+  createdAt   DateTime @default(now())
+  community   Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  event       Event?    @relation(fields: [eventId], references: [id], onDelete: SetNull)
+  report      Report?   @relation(fields: [reportId], references: [id], onDelete: SetNull)
+}
+
+model Document {
+  id          String   @id @default(cuid())
+  communityId String
+  eventId     String?
+  reportId    String?
+  category    String
+  title       String
+  description String?
+  filePath    String
+  version     String?
+  uploadedBy  String
+  createdAt   DateTime @default(now())
+  community   Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  event       Event?    @relation(fields: [eventId], references: [id], onDelete: SetNull)
+  report      Report?   @relation(fields: [reportId], references: [id], onDelete: SetNull)
+}
+
+model ActivityLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  action    String
+  modelType String?
+  modelId   String?
+  ipAddress String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  createdAt DateTime @default(now())
+}
+
+model Announcement {
+  id          String             @id @default(cuid())
+  title       String
+  content     String
+  targetType  AnnouncementTarget
+  communityId String?
+  community   Community?         @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  publishedBy String
+  startDate   DateTime
+  endDate     DateTime?
+  isImportant Boolean            @default(false)
+  createdAt   DateTime           @default(now())
+}
+
+model Notification {
+  id        String            @id @default(cuid())
+  userId    String
+  title     String
+  content   String
+  type      NotificationType
+  isRead    Boolean           @default(false)
+  createdAt DateTime          @default(now())
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum Status {
+  ACTIVE
+  PASSIVE
+}
+
+enum CommunityRoleType {
+  PRESIDENT
+  MANAGEMENT
+  MEMBER
+}
+
+enum EventType {
+  EDUCATION
+  SEMINAR
+  WORKSHOP
+  MEETING
+  COMPETITION
+  SOCIAL
+  BOOTH
+  TECHNICAL_TRIP
+}
+
+enum EventStatus {
+  DRAFT
+  PENDING_APPROVAL
+  APPROVED
+  REJECTED
+  COMPLETED
+  CANCELED
+}
+
+enum ReportType {
+  EVENT
+  MONTHLY
+  TERM
+}
+
+enum ReportStatus {
+  DRAFT
+  SUBMITTED
+  IN_REVIEW
+  REVISION_REQUESTED
+  APPROVED
+  REJECTED
+}
+
+enum AttendanceStatus {
+  INVITED
+  ATTENDED
+  ABSENT
+  EXCUSED
+  PENDING
+}
+
+enum AnnouncementTarget {
+  ALL_USERS
+  PRESIDENTS
+  COMMUNITY_MEMBERS
+  MANAGEMENT_TEAM
+}
+
+enum NotificationType {
+  EVENT
+  REPORT
+  ANNOUNCEMENT
+  SYSTEM
+}

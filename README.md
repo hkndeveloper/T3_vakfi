@@ -1,36 +1,98 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# T3 Topluluk Yonetim Sistemi
 
-## Getting Started
+Bu repo, T3 Vakfi universite topluluklari icin gelistirilen merkezi yonetim platformunun Faz 0 temel kurulumudur.
 
-First, run the development server:
+## Faz 0 Kapsami
+
+- Next.js App Router tabanli fullstack kurulum
+- Prisma + PostgreSQL veri katmani
+- NextAuth credentials tabanli giris
+- RBAC ve permission omurgasi (roller, yetkiler, rol-yetki eslesmesi)
+- Seed ile ornek super admin hesabi
+- Admin ve Baskan paneli icin ilk korumali route iskeleti
+
+## Gereksinimler
+
+- Node.js 20+
+- Docker Desktop (PostgreSQL icin)
+
+## Kurulum
+
+1. Projeye gir:
+
+```bash
+cd t3-topluluk-yonetim
+```
+
+Alternatif: Kok klasorden komut calistirmak istersen `C:\T3_Yonetim\package.json` icindeki
+proxy scriptleri kullanilabilir.
+
+2. Ortam degiskenlerini ayarla:
+
+```bash
+cp .env.example .env
+```
+
+Windows PowerShell icin:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+Not: Yerel PostgreSQL sifren farkliysa `.env` icindeki `DATABASE_URL` satirini kendi
+bilgine gore guncelle.
+
+3. Veritabani container'ini baslat:
+
+```bash
+docker compose up -d
+```
+
+Eger komutu `C:\T3_Yonetim` klasorunden calistiriyorsaniz, kokteki `docker-compose.yml`
+dosyasi uzerinden de baslatabilirsiniz.
+
+4. Prisma migration ve client olustur:
+
+```bash
+npm run prisma:migrate -- --name init
+npm run prisma:generate
+```
+
+Kok klasorden calisiyorsan:
+
+```bash
+npm run prisma:migrate -- --name init
+npm run prisma:generate
+```
+
+5. Seed calistir:
+
+```bash
+npm run prisma:seed
+```
+
+6. Uygulamayi baslat:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Giris Bilgisi (Seed)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- URL: `http://localhost:3000/giris`
+- E-posta: `admin@t3.org.tr`
+- Sifre: `Admin12345!`
+- E-posta: `baskan@t3.org.tr`
+- Sifre: `Baskan12345!`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Sonraki Fazlar
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Faz 1: Rol/yetki UI ve kapsamli access policy (tamamlandi)
+- Faz 2: Universite/topluluk yonetimi (ilk bolum tamamlandi)
+- Faz 3: Etkinlik olusturma ve admin onay akisi
+- Faz 4: Katilim/yoklama modulu
+- Faz 5: Rapor + medya + belge + rapor onay
+- Faz 6: Duyuru + bildirim + istatistik (tamamlandi)
+- Faz 4: Katilim/yoklama
+- Faz 5: Rapor + medya + belge
+- Faz 6: Duyuru, bildirim, dashboard, istatistik

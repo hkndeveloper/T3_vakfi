@@ -1,26 +1,155 @@
 @import "tailwindcss";
 
+@theme {
+  --font-lexend: var(--font-lexend);
+  --font-source-sans: var(--font-source-sans);
+  
+  /* Corporate Chic: Premium Palette */
+  --color-corporate-blue: #2563eb;
+  --color-corporate-navy: #0f172a;
+  --color-corporate-orange: #f97316;
+  --color-corporate-cream: #fff7ed;
+  
+  /* T3 Heritage Colors */
+  --color-t3-navy: #003663;
+  --color-t3-red: #C1272D;
+  --color-t3-cyan: #00A5D2;
+  
+  /* System Tokens - Adaptive */
+  --color-primary: var(--color-corporate-blue);
+  --color-accent: var(--color-corporate-orange);
+  
+  /* Premium Geometry */
+  --radius-t3: 6px; 
+  --radius-t3-lg: 12px;
+  --radius-t3-xl: 20px;
+  
+  /* Swiss Shadows */
+  --shadow-chic: 0 1px 2px 0 rgba(15, 23, 42, 0.06);
+  --shadow-chic-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.08);
+  --shadow-chic-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #020617;
+  --muted-foreground: #475569;
+  --border: #e2e8f0;
+  --surface: #f8fafc;
+  --surface-elevated: #f1f5f9;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+.dark {
+  --background: #020617;
+  --foreground: #f8fafc;
+  --muted-foreground: #94a3b8;
+  --border: #1e293b;
+  --surface: #0f172a;
+  --surface-elevated: #1e293b;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  border-color: var(--border);
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-source-sans), sans-serif;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
 }
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-lexend), sans-serif;
+  letter-spacing: -0.04em;
+  color: var(--foreground);
+}
+
+/* Premium Corporate Layout Utilities - Hardcoded Light Theme for Soft Look */
+.t3-panel {
+  @apply bg-slate-50 border border-slate-200 rounded-t3-lg shadow-[0_2px_10px_-3px_rgba(15,23,42,0.05)] ring-1 ring-slate-950/[0.02];
+}
+
+.t3-panel-elevated {
+  @apply bg-slate-100/50 border border-slate-100 rounded-t3-xl shadow-xl shadow-slate-200/50;
+}
+
+.t3-card {
+  @apply bg-slate-50/60 border border-slate-200/60 rounded-t3 shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 cursor-pointer hover:border-corporate-blue/30 hover:bg-white;
+}
+
+.t3-heading {
+  @apply text-slate-950 font-black tracking-tighter uppercase leading-none;
+}
+
+.t3-label {
+  @apply text-[10px] font-bold text-slate-500 uppercase tracking-widest;
+}
+
+.t3-button {
+  @apply rounded-t3 font-black text-[11px] uppercase tracking-widest transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer active:scale-95 px-6 py-3.5;
+}
+
+.t3-button-primary {
+  @apply bg-corporate-blue text-white hover:bg-blue-600 shadow-lg shadow-blue-500/10 border border-blue-400/10;
+}
+
+.t3-button-accent {
+  @apply bg-corporate-orange text-white hover:bg-orange-600 shadow-lg shadow-orange-500/10 border border-orange-400/10;
+}
+
+.t3-button-secondary {
+  @apply bg-slate-100/80 border border-slate-200 text-slate-950 hover:bg-slate-200;
+}
+
+.t3-input {
+  @apply rounded-t3 border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 px-4 py-3.5 text-sm font-medium text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-4 focus:ring-corporate-blue/5 focus:border-corporate-blue outline-none transition-all;
+}
+
+.t3-badge {
+  @apply inline-flex items-center px-3 py-1 rounded-t3 text-[9px] font-black uppercase tracking-[0.2em] border transition-all;
+}
+
+/* Premium Scrollbar Utility */
+.t3-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+  transition: scrollbar-color 0.3s ease;
+}
+
+.t3-scrollbar:hover {
+  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+}
+
+.t3-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.t3-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.t3-scrollbar::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 10px;
+  transition: background 0.3s ease;
+}
+
+.t3-scrollbar:hover::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse-subtle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
