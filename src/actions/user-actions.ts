@@ -87,10 +87,56 @@ export async function downloadUserAccessLogsAction(userId: string) {
       take: 50,
     });
 
-    // In a real server action, we might return a JSON or a structured object 
-    // that the frontend converts to CSV. 
     return { success: true, data: logs };
   } catch (error) {
     return { success: false, error: "Loglar alınırken hata oluştu." };
+  }
+}
+
+export async function toggleUserStatusAction(userId: string) {
+  try {
+    await requireSuperAdmin();
+
+    const user = await prisma.user.findUnique({ where: { id: userId }, select: { isActive: true } });
+    if (!user) return { success: false, error: "Kullanıcı bulunamadı." };
+
+    const updated = await prisma.user.update({
+      where: { id: userId },
+      data: { isActive: !user.isActive },
+    });
+
+    await prisma.activityLog.create({
+      data: {
+        action: updated.isActive ? "user.activate" : "user.deactivate",
+        modelType: "User",
+        modelId: userId,
+      },
+    });
+
+    revalidatePath("/admin/kullanicilar");
+    revalidatePath(`/admin/kullanicilar/${userId}`);
+    return { success: true, isActive: updated.isActive };
+  } catch (error) {
+    console.error("Toggle user status error:", error);
+    return { success: false, error: "İşlem sırasında hata oluştu." };
+  }
+}
+
+export async function deleteUserAction(userId: string) {
+  try {
+    await requireSuperAdmin();
+
+    // Delete related records first to avoid FK constraint issues
+    await prisma.userRole.deleteMany({ where: { userId } });
+    await prisma.activityLog.deleteMany({ where: { userId } });
+    await prisma.eventParticipant.deleteMany({ where: { userId } });
+    await prisma.communityMember.deleteMany({ where: { userId } });
+    await prisma.user.delete({ where: { id: userId } });
+
+    revalidatePath("/admin/kullanicilar");
+    return { success: true };
+  } catch (error) {
+    console.error("Delete user error:", error);
+    return { success: false, error: "Kullanıcı silinirken hata oluştu." };
   }
 }

@@ -19,14 +19,32 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export default async function AdminAuditLogsPage() {
+export default async function AdminAuditLogsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string; action?: string }>;
+}) {
   await requireSuperAdmin();
+  const { q: search, action: actionFilter } = await searchParams;
 
   const logs = await prisma.activityLog.findMany({
     orderBy: { createdAt: "desc" },
+    where: {
+      AND: [
+        search ? {
+          OR: [
+            { action: { contains: search, mode: "insensitive" } },
+            { user: { name: { contains: search, mode: "insensitive" } } },
+          ],
+        } : {},
+        actionFilter ? { action: { contains: actionFilter, mode: "insensitive" } } : {},
+      ],
+    },
     include: { user: true },
-    take: 50
+    take: 100,
   });
+
+  const totalLogs = await prisma.activityLog.count();
 
   return (
     <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-1000 font-outfit pb-20 bg-white min-h-screen">
@@ -48,8 +66,8 @@ export default async function AdminAuditLogsPage() {
 
           <div className="flex gap-8">
             <div className="group/stat rounded-2xl bg-white px-12 py-10 border border-slate-200 transition-all hover:-translate-y-2 text-center shadow-sm">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">GÜNLÜK AKIŞ</p>
-              <p className="text-6xl font-black tracking-tighter text-slate-950 leading-none">50+</p>
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">TOPLAM KAYIT</p>
+              <p className="text-6xl font-black tracking-tighter text-slate-950 leading-none">{totalLogs}</p>
             </div>
           </div>
         </div>
@@ -72,19 +90,27 @@ export default async function AdminAuditLogsPage() {
               <p className="t3-label">SİSTEM ÜZERİNDEKİ SON HAREKETLER</p>
             </div>
           </div>
-          <div className="flex items-center gap-4">
+          <form className="flex items-center gap-4">
              <div className="relative group/search">
                 <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within/search:text-corporate-blue transition-colors" />
                 <input 
-                  type="text" 
+                  type="text"
+                  name="q"
+                  defaultValue={search ?? ""}
                   placeholder="İşlem veya kullanıcı ara..." 
                   className="pl-14 pr-8 py-5 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-bold outline-none focus:ring-8 focus:ring-corporate-blue/5 focus:border-corporate-blue/30 transition-all w-80 shadow-sm" 
                 />
              </div>
-             <button className="h-16 w-16 rounded-2xl bg-slate-100 text-slate-950 hover:bg-white transition-all flex items-center justify-center shadow-sm border border-slate-200">
-                <Filter className="h-6 w-6" />
+             <button type="submit" className="h-16 w-16 rounded-2xl bg-corporate-blue text-white hover:bg-blue-700 transition-all flex items-center justify-center shadow-sm">
+                <Search className="h-6 w-6" />
              </button>
-          </div>
+             {search && (
+               <a href="/admin/sistem-loglari" className="h-16 w-16 rounded-2xl bg-slate-100 text-slate-950 hover:bg-white transition-all flex items-center justify-center shadow-sm border border-slate-200 text-xs font-black">
+                 ✕
+               </a>
+             )}
+          </form>
+          <p className="t3-label">{logs.length} KAYIT GÖSTERILIYOR{search ? ` — "${search}" filtresi` : ""}</p>
         </div>
 
         <div className="t3-panel overflow-hidden bg-slate-50/30">

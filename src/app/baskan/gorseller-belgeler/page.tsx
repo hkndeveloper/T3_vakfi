@@ -17,7 +17,9 @@ import {
   FileSearch,
   Filter,
   ChevronRight,
-  Plus
+  Plus,
+  History,
+  Target
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -115,214 +117,207 @@ export default async function PresidentMediaDocumentsPage() {
   ]);
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="t3-panel-elevated p-6">
-        <div>
-          <h1 className="text-2xl font-semibold text-t3-navy font-montserrat">Görsel ve Belge Yönetimi</h1>
-          <p className="text-sm text-slate-500 mt-1">{community?.name} topluluğunun tüm faaliyet görsellerini ve resmi belgelerini yönetin</p>
+    <div className="space-y-12 animate-in fade-in slide-in-from-bottom-8 duration-1000 font-outfit pb-20">
+      {/* T3 Premium Hero Section */}
+      <div className="relative overflow-hidden rounded-[3.5rem] bg-indigo-950 p-12 md:p-16 text-white shadow-2xl group border border-white/5">
+        <div className="relative z-10">
+          <div className="inline-flex items-center gap-2 rounded-full bg-indigo-500/20 border border-indigo-500/30 px-5 py-2.5 text-[10px] font-black text-indigo-300 uppercase tracking-[0.3em] mb-10">
+            <FolderOpen className="h-4 w-4" /> KURUMSAL ARŞİV SİSTEMİ
+          </div>
+          <h1 className="text-6xl font-black tracking-tighter sm:text-7xl font-montserrat leading-[0.9] uppercase italic">
+            GÖRSEL & <br />
+            <span className="text-indigo-400 border-b-8 border-indigo-500/30">DOKÜMANTASYON</span>
+          </h1>
+          <p className="mt-10 text-xl text-slate-300/80 font-medium max-w-2xl leading-relaxed">
+            {community?.name} topluluğunun tüm operasyonel kanıtlarını ve resmi yazılarını <span className="text-white font-bold decoration-amber-500 decoration-4 underline underline-offset-8">merkezi dijital arşivde</span> yedekleyin ve yönetin.
+          </p>
+        </div>
+        
+        {/* Background Patterns */}
+        <div className="absolute -right-20 -top-20 h-[600px] w-[600px] rounded-full bg-indigo-500/10 opacity-30 blur-[130px] pointer-events-none group-hover:bg-indigo-500/20 transition-all duration-1000" />
+        <div className="absolute bottom-10 right-10 flex items-center gap-2 opacity-5 scale-150 transform group-hover:rotate-12 transition-transform duration-1000">
+           <ImageIcon className="h-40 w-40" />
         </div>
       </div>
 
-      {/* Statistics */}
-      <div className="grid gap-4 md:grid-cols-3">
-        <div className="t3-card p-5 flex flex-col justify-center">
-           <div className="h-10 w-10 rounded-t3 bg-t3-cyan/10 flex items-center justify-center text-t3-cyan mb-4">
-              <ImageIcon className="h-5 w-5" />
+      {/* Statistics Analytics Row */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div className="rounded-[2.5rem] bg-white dark:bg-slate-900 p-8 border border-slate-100 dark:border-white/5 shadow-xl shadow-slate-200/50 dark:shadow-black/20 hover:scale-[1.02] transition-transform">
+           <div className="h-14 w-14 rounded-2xl bg-indigo-50 dark:bg-indigo-950/50 flex items-center justify-center text-indigo-600 mb-6 font-black italic">
+             <ImageIcon className="h-7 w-7" />
            </div>
-           <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Toplam Medya</p>
-           <h3 className="text-2xl font-semibold text-t3-navy">{mediaFiles.length}</h3>
+           <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">GÖRSEL KANIT</p>
+           <p className="text-4xl font-black text-slate-950 dark:text-white leading-none italic">{mediaFiles.length}</p>
         </div>
 
-        <div className="t3-card p-5 flex flex-col justify-center">
-           <div className="h-10 w-10 rounded-t3 bg-t3-orange/10 flex items-center justify-center text-t3-orange mb-4">
-              <FileText className="h-5 w-5" />
+        <div className="rounded-[2.5rem] bg-white dark:bg-slate-900 p-8 border border-slate-100 dark:border-white/5 shadow-xl shadow-slate-200/50 dark:shadow-black/20 hover:scale-[1.02] transition-transform">
+           <div className="h-14 w-14 rounded-2xl bg-amber-50 dark:bg-amber-950/50 flex items-center justify-center text-amber-600 mb-6 font-black italic">
+             <FileText className="h-7 w-7" />
            </div>
-           <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Toplam Belge</p>
-           <h3 className="text-2xl font-semibold text-t3-navy">{documents.length}</h3>
+           <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">RESMİ BELGE</p>
+           <p className="text-4xl font-black text-slate-950 dark:text-white leading-none italic">{documents.length}</p>
         </div>
 
-        <div className="t3-card p-5 flex flex-col justify-center bg-t3-navy text-white">
-           <div className="h-10 w-10 rounded-t3 bg-white/10 flex items-center justify-center text-t3-cyan mb-4">
-              <FolderOpen className="h-5 w-5" />
+        <div className="rounded-[2.5rem] bg-indigo-950 p-8 border border-white/10 shadow-2xl shadow-indigo-600/10 hover:scale-[1.02] transition-transform col-span-2">
+           <div className="h-14 w-14 rounded-2xl bg-indigo-500 flex items-center justify-center text-white mb-6 font-black italic">
+             <History className="h-7 w-7" />
            </div>
-           <p className="text-[10px] font-semibold text-white/60 uppercase tracking-wider mb-1">Toplam Dosya</p>
-           <h3 className="text-2xl font-semibold text-white">{mediaFiles.length + documents.length}</h3>
+           <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-1">ARŞİV HACMİ</p>
+           <div className="flex items-center gap-4">
+              <p className="text-4xl font-black text-white leading-none italic">{mediaFiles.length + documents.length}</p>
+              <span className="text-[10px] font-black text-indigo-300 uppercase tracking-widest bg-indigo-800 px-3 py-1 rounded-lg">AKTİF DOSYA</span>
+           </div>
         </div>
       </div>
 
       {/* Media Files Section */}
-      <div className="t3-panel">
-        <div className="flex items-center justify-between px-6 py-4 mb-4">
-          <div>
-            <h2 className="text-lg font-semibold text-t3-navy font-montserrat">Faaliyet Görselleri</h2>
-            <p className="text-xs text-slate-500 mt-1">{mediaFiles.length} dosya</p>
+      <div className="space-y-10">
+        <div className="flex flex-wrap items-center justify-between gap-6 px-4">
+          <div className="flex items-center gap-6">
+            <div className="h-16 w-16 rounded-3xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/5 flex items-center justify-center text-slate-950 dark:text-white shadow-sm">
+               <ImageIcon className="h-8 w-8" />
+            </div>
+            <div>
+              <h2 className="text-3xl font-black text-slate-950 dark:text-white font-montserrat uppercase tracking-tight italic underline decoration-indigo-500 decoration-8 underline-offset-8">Faaliyet Galerisi</h2>
+              <p className="text-[11px] text-slate-400 font-black uppercase tracking-[0.25em] mt-3">Sahadan gelen tüm görsel veriler</p>
+            </div>
           </div>
-          <button className="t3-button t3-button-secondary flex items-center gap-2 px-4 py-2">
-             <Filter className="h-4 w-4" /> Filtrele
-          </button>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-4 px-6 pb-6">
-          {mediaFiles.map((media) => (
-            <div key={media.id} className="group t3-card p-4">
-              <div className="aspect-square rounded-t3 bg-slate-50 overflow-hidden mb-3 relative">
-                {media.fileType.startsWith("image") ? (
-                  <img 
-                    src={media.filePath} 
-                    alt={media.fileName} 
-                    className="h-full w-full object-cover" 
-                  />
-                ) : (
-                  <div className="h-full w-full flex items-center justify-center bg-slate-100">
-                    <ImageIcon className="h-8 w-8 text-slate-300" />
+        {mediaFiles.length === 0 ? (
+          <div className="rounded-[3.5rem] border-4 border-dashed border-slate-100 dark:border-white/5 p-24 text-center bg-slate-50/20">
+             <ImageIcon className="h-16 w-16 text-slate-200 mx-auto mb-8" />
+             <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Henüz galeriye bir görsel eklenmemiş.</p>
+          </div>
+        ) : (
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+            {mediaFiles.map((media) => (
+              <div key={media.id} className="group relative rounded-[2.5rem] bg-white dark:bg-slate-950 p-5 border border-slate-100 dark:border-white/5 shadow-xl shadow-slate-200/40 dark:shadow-black/60 transition-all hover:-translate-y-2 overflow-hidden">
+                <div className="aspect-square rounded-[2rem] bg-slate-50 dark:bg-slate-900 overflow-hidden mb-5 relative border border-slate-100 dark:border-white/5">
+                  {media.fileType.startsWith("image") ? (
+                    <img 
+                      src={media.filePath} 
+                      alt={media.fileName} 
+                      className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-1000" 
+                    />
+                  ) : (
+                    <div className="h-full w-full flex items-center justify-center bg-slate-100 dark:bg-slate-800">
+                      <ImageIcon className="h-12 w-12 text-slate-300 dark:text-slate-700" />
+                    </div>
+                  )}
+                  
+                  {/* Action Overlay */}
+                  <div className="absolute inset-0 bg-indigo-950/60 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center gap-3 backdrop-blur-sm">
+                    <a href={media.filePath} target="_blank" className="h-12 w-12 rounded-xl bg-white flex items-center justify-center text-slate-950 hover:bg-white/90 transition-all shadow-xl">
+                      <Eye className="h-5 w-5" />
+                    </a>
+                    <a href={media.filePath} download className="h-12 w-12 rounded-xl bg-indigo-600 flex items-center justify-center text-white hover:bg-indigo-700 transition-all shadow-xl">
+                      <Download className="h-5 w-5" />
+                    </a>
+                    <form action={deleteMediaFileAction}>
+                      <input type="hidden" name="fileId" value={media.id} />
+                      <button type="submit" className="h-12 w-12 rounded-xl bg-rose-600 flex items-center justify-center text-white hover:bg-rose-700 transition-all shadow-xl">
+                        <Trash2 className="h-5 w-5" />
+                      </button>
+                    </form>
                   </div>
-                )}
-                <div className="absolute inset-0 bg-t3-navy/70 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center gap-2">
-                  <a 
-                    href={media.filePath} 
-                    target="_blank"
-                    className="h-8 w-8 rounded-full bg-white flex items-center justify-center text-t3-navy hover:scale-110 transition-transform"
-                  >
-                    <Eye className="h-4 w-4" />
-                  </a>
-                  <a 
-                    href={media.filePath} 
-                    download
-                    className="h-8 w-8 rounded-full bg-white flex items-center justify-center text-t3-navy hover:scale-110 transition-transform"
-                  >
-                    <Download className="h-4 w-4" />
-                  </a>
-                  <form action={deleteMediaFileAction}>
-                    <input type="hidden" name="fileId" value={media.id} />
-                    <button 
-                      type="submit"
-                      className="h-8 w-8 rounded-full bg-t3-red flex items-center justify-center text-white hover:scale-110 transition-transform"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  </form>
+                </div>
+                
+                <div className="space-y-3">
+                  <p className="text-[10px] font-black text-slate-950 dark:text-white uppercase tracking-widest truncate italic border-b border-slate-50 dark:border-white/5 pb-2">{media.fileName}</p>
+                  <div className="flex items-center justify-between">
+                     <span className="text-[9px] text-indigo-600 dark:text-indigo-400 font-black uppercase tracking-tight">@{community?.shortName}</span>
+                     <div className="flex items-center gap-2 text-[9px] text-slate-400 font-bold uppercase tracking-tighter">
+                        <Calendar className="h-3 w-3" /> {new Date(media.createdAt).toLocaleDateString("tr-TR")}
+                     </div>
+                  </div>
+                  {media.report && (
+                    <p className="text-[9px] text-slate-300 dark:text-slate-600 font-bold uppercase tracking-wider truncate mt-2">{media.report.title}</p>
+                  )}
                 </div>
               </div>
-              <div className="space-y-1">
-                <p className="text-[10px] font-semibold text-t3-navy uppercase tracking-wider truncate">{media.fileName}</p>
-                <div className="flex items-center justify-between">
-                   <span className="text-[9px] text-slate-400 font-semibold uppercase">{media.fileType}</span>
-                   <div className="flex items-center gap-1.5 text-[9px] text-slate-300 font-semibold uppercase">
-                      <Calendar className="h-3 w-3" /> {new Date(media.createdAt).toLocaleDateString("tr-TR")}
-                   </div>
-                </div>
-                {media.report && (
-                   <p className="text-[9px] text-t3-cyan font-semibold uppercase tracking-wider truncate">@{media.report.title}</p>
-                )}
-              </div>
-            </div>
-          ))}
-          
-          {mediaFiles.length === 0 && (
-            <div className="col-span-4 t3-card p-12 text-center">
-               <div className="flex flex-col items-center gap-4">
-                  <div className="h-16 w-16 rounded-t3 bg-slate-50 flex items-center justify-center">
-                     <ImageIcon className="h-8 w-8 text-slate-200" />
-                  </div>
-                  <p className="text-slate-400 font-semibold uppercase tracking-wider text-sm">Henüz medya dosyası yüklenmedi</p>
-                  <p className="text-[10px] text-slate-300 font-semibold uppercase tracking-wider mt-1">Rapor oluştururken medya yükleyebilirsiniz</p>
-               </div>
-            </div>
-          )}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Documents Section */}
-      <div className="t3-panel">
-        <div className="flex items-center justify-between px-6 py-4 mb-4">
-          <div>
-            <h2 className="text-lg font-semibold text-t3-navy font-montserrat">Resmi Belgeler</h2>
-            <p className="text-xs text-slate-500 mt-1">{documents.length} dosya</p>
+      <div className="space-y-10">
+        <div className="flex flex-wrap items-center justify-between gap-6 px-4">
+          <div className="flex items-center gap-6">
+            <div className="h-16 w-16 rounded-3xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/5 flex items-center justify-center text-slate-950 dark:text-white shadow-sm">
+               <FileSearch className="h-8 w-8 text-amber-500" />
+            </div>
+            <div>
+              <h2 className="text-3xl font-black text-slate-950 dark:text-white font-montserrat uppercase tracking-tight italic underline decoration-amber-500 decoration-8 underline-offset-8">Resmi Dokümanlar</h2>
+              <p className="text-[11px] text-slate-400 font-black uppercase tracking-[0.25em] mt-3">İdari yazışmalar ve kurumsal rapor belgeleri</p>
+            </div>
           </div>
         </div>
 
-        <div className="overflow-hidden">
-          <table className="min-w-full">
-            <thead className="bg-slate-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-[11px] font-semibold text-t3-navy uppercase tracking-wider">Belge Detayı</th>
-                <th className="px-6 py-3 text-left text-[11px] font-semibold text-t3-navy uppercase tracking-wider">Kategori</th>
-                <th className="px-6 py-3 text-left text-[11px] font-semibold text-t3-navy uppercase tracking-wider">İlgili Rapor</th>
-                <th className="px-6 py-3 text-right text-[11px] font-semibold text-t3-navy uppercase tracking-wider">İşlemler</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-200/60">
-              {documents.map((doc) => (
-                <tr key={doc.id} className="t3-table-row">
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="h-10 w-10 rounded-t3 bg-t3-orange/5 text-t3-orange flex items-center justify-center">
-                         <FileText className="h-5 w-5" />
-                      </div>
-                      <div>
-                        <p className="font-semibold text-t3-navy text-sm uppercase tracking-wider">{doc.title}</p>
-                        <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider mt-0.5">{doc.category}</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="t3-badge bg-t3-orange/10 text-t3-orange">
-                      {doc.category}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    {doc.report && (
-                      <div className="flex items-center gap-2">
-                         <FileText className="h-4 w-4 text-t3-cyan" />
-                         <span className="text-[10px] font-semibold text-t3-navy uppercase truncate max-w-[150px]">{doc.report.title}</span>
-                      </div>
-                    )}
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center justify-end gap-2">
-                      <a 
-                        href={doc.filePath} 
-                        target="_blank"
-                        className="h-8 w-8 rounded-t3 bg-white border border-slate-200/60 flex items-center justify-center text-t3-navy hover:bg-t3-navy hover:text-white transition-all"
-                      >
-                        <Eye className="h-4 w-4" />
-                      </a>
-                      <a 
-                        href={doc.filePath} 
-                        download
-                        className="h-8 w-8 rounded-t3 bg-white border border-slate-200/60 flex items-center justify-center text-t3-navy hover:bg-t3-navy hover:text-white transition-all"
-                      >
-                        <Download className="h-4 w-4" />
-                      </a>
-                      <form action={deleteDocumentAction}>
-                        <input type="hidden" name="docId" value={doc.id} />
-                        <button 
-                          type="submit"
-                          className="h-8 w-8 rounded-t3 bg-t3-red flex items-center justify-center text-white hover:scale-110 transition-all"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </form>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-              {documents.length === 0 && (
+        <div className="rounded-[3.5rem] border border-slate-100 dark:border-white/5 bg-white dark:bg-slate-900 shadow-2xl dark:shadow-black/60 overflow-hidden relative">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-slate-50 dark:divide-white/5">
+              <thead className="bg-slate-50/50 dark:bg-slate-800/30">
                 <tr>
-                  <td colSpan={4} className="px-6 py-16 text-center">
-                     <div className="flex flex-col items-center gap-4">
-                        <div className="h-16 w-16 rounded-t3 bg-slate-50 flex items-center justify-center">
-                           <FileText className="h-8 w-8 text-slate-200" />
-                        </div>
-                        <p className="text-slate-400 font-semibold uppercase tracking-wider text-sm">Henüz belge yüklenmedi</p>
-                        <p className="text-[10px] text-slate-300 font-semibold uppercase tracking-wider mt-1">Rapor oluştururken belge yükleyebilirsiniz</p>
-                     </div>
-                  </td>
+                  <th className="px-10 py-8 text-left text-[11px] font-black text-indigo-950 dark:text-white uppercase tracking-[0.3em] font-montserrat">BELGE KİMLİĞİ</th>
+                  <th className="px-10 py-8 text-left text-[11px] font-black text-indigo-950 dark:text-white uppercase tracking-[0.3em] font-montserrat">KATEGORİ</th>
+                  <th className="px-10 py-8 text-right text-[11px] font-black text-indigo-950 dark:text-white uppercase tracking-[0.3em] font-montserrat">AKSİYON</th>
                 </tr>
-              )}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-slate-50 dark:divide-white/5 bg-white dark:bg-slate-900">
+                {documents.map((doc) => (
+                  <tr key={doc.id} className="hover:bg-indigo-500/[0.02] dark:hover:bg-white/[0.02] transition-all group">
+                    <td className="px-10 py-8">
+                       <div className="flex items-center gap-6">
+                          <div className="h-14 w-14 rounded-2xl bg-amber-50 dark:bg-amber-950/40 flex items-center justify-center text-amber-600 border border-amber-100 dark:border-amber-900/40 group-hover:scale-110 transition-transform">
+                             <FileText className="h-6 w-6" />
+                          </div>
+                          <div>
+                            <p className="font-black text-indigo-950 dark:text-white text-base tracking-tight font-montserrat uppercase group-hover:text-amber-500 transition-colors leading-none italic">{doc.title}</p>
+                            <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-widest mt-2">{new Date(doc.createdAt).toLocaleString("tr-TR")}</p>
+                          </div>
+                       </div>
+                    </td>
+                    <td className="px-10 py-8">
+                       <span className="px-5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-white/5 text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest group-hover:bg-amber-500 group-hover:text-white group-hover:border-amber-500 transition-all shadow-sm">
+                          {doc.category}
+                       </span>
+                    </td>
+                    <td className="px-10 py-8">
+                       <div className="flex items-center justify-end gap-3">
+                          <a href={doc.filePath} target="_blank" className="h-12 w-12 rounded-xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-white/5 flex items-center justify-center text-indigo-950 dark:text-white hover:bg-slate-950 hover:text-white transition-all shadow-sm">
+                             <Eye className="h-5 w-5" />
+                          </a>
+                          <a href={doc.filePath} download className="h-12 w-12 rounded-xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-white/5 flex items-center justify-center text-indigo-950 dark:text-white hover:bg-amber-500 hover:text-white transition-all shadow-sm">
+                             <Download className="h-5 w-5" />
+                          </a>
+                          <form action={deleteDocumentAction}>
+                             <input type="hidden" name="docId" value={doc.id} />
+                             <button type="submit" className="h-12 w-12 rounded-xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-white/5 flex items-center justify-center text-rose-600 hover:bg-rose-600 hover:text-white transition-all shadow-sm">
+                                <Trash2 className="h-5 w-5" />
+                             </button>
+                          </form>
+                       </div>
+                    </td>
+                  </tr>
+                ))}
+                
+                {documents.length === 0 && (
+                  <tr>
+                    <td colSpan={3} className="px-10 py-24 text-center">
+                       <div className="flex flex-col items-center gap-8">
+                          <div className="h-24 w-24 rounded-[3rem] bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-200 dark:text-slate-700 shadow-inner">
+                             <FileSearch className="h-12 w-12" />
+                          </div>
+                          <p className="text-slate-400 dark:text-slate-500 font-black uppercase tracking-[0.25em] text-sm">ARŞİVE KAYITLI RESMİ BELGE BULUNAMADI.</p>
+                       </div>
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>

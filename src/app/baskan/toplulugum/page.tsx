@@ -14,32 +14,38 @@ import {
   LayoutDashboard,
   ShieldCheck,
   Star,
-  Globe,
-  Mail,
   Phone,
   MapPin,
   Clock,
-  ArrowRight
+  ArrowRight,
+  Globe,
+  Mail
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { PresidentProfileEditModal } from "@/components/forms/PresidentProfileEditModal";
+import { Instagram, Twitter, Mail as MailIcon } from "lucide-react";
 
 export default async function MyCommunityPage() {
   const session = await requireCommunityManager();
   const communityId = session.user.communityIds[0];
 
-  const community = await prisma.community.findUnique({
-    where: { id: communityId },
-    include: {
-      university: true,
-      _count: {
-        select: {
-          members: true,
-          createdEvents: true,
-          reports: true,
+    if (!communityId) return null;
+
+    const community = await prisma.community.findUnique({
+      where: { id: communityId },
+      include: {
+        university: true,
+        _count: {
+          select: {
+            members: true,
+            createdEvents: true,
+            reports: true,
+          },
         },
       },
-    },
-  });
+    });
+
+    if (!community) return null;
 
   return (
     <div className="space-y-12 animate-in fade-in slide-in-from-bottom-6 duration-1000 font-outfit pb-20">
@@ -49,13 +55,21 @@ export default async function MyCommunityPage() {
           <div className="inline-flex items-center gap-2 rounded-full bg-amber-500/20 border border-amber-500/30 px-5 py-2 text-[10px] font-black text-amber-500 uppercase tracking-[0.3em] mb-10 animate-pulse-subtle">
             <Building2 className="h-4 w-4 fill-amber-500" /> KURUMSAL KİMLİK
           </div>
-          <h1 className="text-6xl font-black tracking-tighter sm:text-7xl font-montserrat leading-[0.9] uppercase">
-            {community?.shortName || "TOPLULUĞUM"} <br />
-            <span className="text-indigo-400 italic border-b-8 border-amber-500/30">ÜSSÜ</span>
-          </h1>
-          <p className="mt-10 text-xl text-slate-300/80 font-medium max-w-2xl leading-relaxed">
-            {community?.name} ekosisteminin kurumsal verilerini, akademik entegrasyonlarını ve performans metriklerini profesyonel standartlarda denetleyin.
-          </p>
+          <div className="flex flex-wrap items-end justify-between gap-10">
+            <div className="max-w-2xl">
+              <h1 className="text-6xl font-black tracking-tighter sm:text-7xl font-montserrat leading-[0.9] uppercase">
+                {community.shortName} <br />
+                <span className="text-indigo-400 italic border-b-8 border-amber-500/30">ÜSSÜ</span>
+              </h1>
+              <p className="mt-10 text-xl text-slate-300/80 font-medium leading-relaxed">
+                {community.name} ekosisteminin kurumsal verilerini, akademik entegrasyonlarını ve performans metriklerini profesyonel standartlarda denetleyin.
+              </p>
+            </div>
+            
+            <div className="pb-4">
+               <PresidentProfileEditModal community={community as any} />
+            </div>
+          </div>
         </div>
         
         {/* Background Patterns */}
@@ -75,9 +89,17 @@ export default async function MyCommunityPage() {
 
         {/* Dynamic Metric Cards */}
         <div className="grid gap-8 md:grid-cols-3 pt-6">
-          <StatCard icon={Users} label="AKTİF EKOSİSTEM KAYNAĞI" value={String(community?._count.members ?? 0)} color="indigo" trend="+12%" />
-          <StatCard icon={Trophy} label="OPERASYONEL HACİM" value={String(community?._count.createdEvents ?? 0)} color="amber" trend="BU DÖNEM" />
-          <StatCard icon={FileText} label="BELGELENMİŞ ÇIKTILAR" value={String(community?._count.reports ?? 0)} color="indigo" trend="ONAYLI" />
+          <StatCard icon={Users} label="AKTİF EKOSİSTEM KAYNAĞI" value={String(community._count.members ?? 0)} color="indigo" trend="+12%" />
+          <StatCard icon={Trophy} label="OPERASYONEL HACİM" value={String(community._count.createdEvents ?? 0)} color="amber" trend="BU DÖNEM" />
+          <StatCard icon={FileText} label="BELGELENMİŞ ÇIKTILAR" value={String(community._count.reports ?? 0)} color="indigo" trend="ONAYLI" />
+        </div>
+
+        {/* Social & Contact Grid */}
+        <div className="grid gap-8 md:grid-cols-4 pt-4">
+           <LinkCard icon={MailIcon} label="KURUMSAL İLETİŞİM" value={(community as any).contactEmail || "TANIMLANMADI"} href={(community as any).contactEmail ? `mailto:${(community as any).contactEmail}` : undefined} />
+           <LinkCard icon={Instagram} label="INSTAGRAM" value={(community as any).instagram || "TANIMLANMADI"} href={(community as any).instagram ? `https://instagram.com/${(community as any).instagram.replace('@', '')}` : undefined} />
+           <LinkCard icon={Twitter} label="X (TWITTER)" value={(community as any).twitter || "TANIMLANMADI"} href={(community as any).twitter ? `https://twitter.com/${(community as any).twitter.replace('@', '')}` : undefined} />
+           <LinkCard icon={Globe} label="WEB PORTALI" value={(community as any).website || "TANIMLANMADI"} href={(community as any).website} />
         </div>
       </div>
       
@@ -103,6 +125,28 @@ export default async function MyCommunityPage() {
       </div>
     </div>
   );
+}
+
+function LinkCard({ icon: Icon, label, value, href }: { icon: any; label: string; value: string; href?: string }) {
+  const content = (
+    <div className="rounded-3xl border border-slate-100 dark:border-white/5 bg-white dark:bg-slate-900/50 p-8 transition-all hover:scale-[1.05] hover:shadow-xl group">
+      <div className="flex flex-col items-center text-center gap-4">
+        <div className="h-12 w-12 rounded-2xl bg-indigo-50 dark:bg-slate-800 flex items-center justify-center text-indigo-600 dark:text-indigo-400 group-hover:bg-indigo-600 group-hover:text-white transition-all">
+          <Icon className="h-6 w-6" />
+        </div>
+        <div>
+          <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">{label}</p>
+          <p className="text-xs font-bold text-indigo-950 dark:text-white truncate max-w-[150px]">{value}</p>
+        </div>
+      </div>
+    </div>
+  );
+
+  if (href) {
+    return <a href={href} target="_blank" rel="noopener noreferrer">{content}</a>;
+  }
+
+  return content;
 }
 
 function InfoCard({ icon: Icon, label, value, color }: { icon: any; label: string; value: string; color: "indigo" | "amber" }) {

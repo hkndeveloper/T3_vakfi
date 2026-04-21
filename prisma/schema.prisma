@@ -32,6 +32,10 @@ model Community {
   advisorName     String?
   logo            String?
   coverImage      String?
+  contactEmail    String?
+  instagram       String?
+  twitter         String?
+  website         String?
   status          Status            @default(ACTIVE)
   members         CommunityMember[]
   userRoles       UserRole[]

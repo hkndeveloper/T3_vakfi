@@ -26,6 +26,7 @@ import {
   Star
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { MemberActionButtons } from "@/components/baskan/MemberActionButtons";
 
 async function createMemberAction(formData: FormData) {
   "use server";
@@ -104,6 +105,41 @@ async function createMemberAction(formData: FormData) {
       modelType: "CommunityMember",
       modelId: `${communityId}:${user.id}`,
     },
+  });
+
+  revalidatePath("/baskan/uyeler");
+}
+
+async function updateMemberAction(formData: FormData) {
+  "use server";
+  const session = await requireCommunityManager();
+  const communityId = session.user.communityIds[0];
+
+  const userId = String(formData.get("userId") ?? "").trim();
+  const name = String(formData.get("name") ?? "").trim();
+  const department = String(formData.get("department") ?? "").trim();
+  const gradeRaw = String(formData.get("grade") ?? "").trim();
+  const studentNumber = String(formData.get("studentNumber") ?? "").trim();
+  const phone = String(formData.get("phone") ?? "").trim();
+
+  if (!userId || !name) return;
+
+  const member = await prisma.communityMember.findFirst({ where: { userId, communityId } });
+  if (!member) return;
+
+  await prisma.user.update({
+    where: { id: userId },
+    data: {
+      name,
+      department: department || null,
+      grade: gradeRaw ? Number(gradeRaw) : null,
+      studentNumber: studentNumber || null,
+      phone: phone || null,
+    },
+  });
+
+  await prisma.activityLog.create({
+    data: { userId: session.user.id, action: "member.update", modelType: "User", modelId: userId },
   });
 
   revalidatePath("/baskan/uyeler");
@@ -193,7 +229,7 @@ export default async function PresidentMembersPage() {
   const session = await requireCommunityManager();
   const communityId = session.user.communityIds[0];
 
-  const [community, members] = await Promise.all([
+  const [community, members, events] = await Promise.all([
     prisma.community.findUnique({
       where: { id: communityId },
       select: { id: true, name: true, shortName: true },
@@ -205,6 +241,15 @@ export default async function PresidentMembersPage() {
         user: true,
       },
     }),
+    prisma.event.findMany({
+      where: { 
+        communityId,
+        status: { in: ["DRAFT", "APPROVED", "PENDING_APPROVAL"] },
+        eventDate: { gte: new Date() }
+      },
+      orderBy: { eventDate: "asc" },
+      select: { id: true, title: true, eventDate: true, type: true }
+    })
   ]);
 
   return (
@@ -314,67 +359,93 @@ export default async function PresidentMembersPage() {
               </thead>
               <tbody className="divide-y divide-slate-50 dark:divide-white/5 bg-white dark:bg-slate-900">
                 {members.map((member) => (
-                  <tr key={member.id} className="hover:bg-indigo-500/[0.02] dark:hover:bg-white/[0.02] transition-all group">
-                    <td className="px-12 py-10">
-                      <div className="flex items-center gap-6">
-                        <div className="h-16 w-16 rounded-2xl bg-indigo-50 dark:bg-indigo-950/50 flex items-center justify-center text-indigo-600 font-black text-xl border border-indigo-100 dark:border-indigo-900/40 group-hover:scale-110 transition-transform">
-                          {member.user.name.charAt(0).toUpperCase()}
+                  <>
+                    <tr key={member.id} className="hover:bg-indigo-500/[0.02] dark:hover:bg-white/[0.02] transition-all group">
+                      <td className="px-12 py-10">
+                        <div className="flex items-center gap-6">
+                          <div className="h-16 w-16 rounded-2xl bg-indigo-50 dark:bg-indigo-950/50 flex items-center justify-center text-indigo-600 font-black text-xl border border-indigo-100 dark:border-indigo-900/40 group-hover:scale-110 transition-transform">
+                            {member.user.name.charAt(0).toUpperCase()}
+                          </div>
+                          <div className="flex flex-col gap-2">
+                            <span className="font-black text-indigo-950 dark:text-white text-xl tracking-tight font-montserrat uppercase group-hover:text-indigo-600 transition-colors leading-none">{member.user.name}</span>
+                            <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">{member.user.email}</span>
+                            {(member.user.department || member.user.grade) && (
+                              <span className="text-[10px] font-bold text-slate-300 uppercase tracking-wider">
+                                {member.user.department}{member.user.department && member.user.grade ? " · " : ""}{member.user.grade ? `${member.user.grade}. Sınıf` : ""}
+                              </span>
+                            )}
+                          </div>
                         </div>
-                        <div className="flex flex-col gap-2">
-                          <span className="font-black text-indigo-950 dark:text-white text-xl tracking-tight font-montserrat uppercase group-hover:text-indigo-600 transition-colors leading-none">{member.user.name}</span>
-                          <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">{member.user.email}</span>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-12 py-10 text-center">
-                       <span className={cn(
-                         "inline-flex items-center gap-3 px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] border shadow-sm transition-all",
-                         member.membershipType === "MANAGEMENT" 
-                           ? "bg-amber-500/10 text-amber-600 border-amber-500/20" 
-                           : "bg-indigo-50 dark:bg-indigo-950/30 text-indigo-950 dark:text-indigo-200 border-indigo-100 dark:border-indigo-900/40"
-                       )}>
-                         {member.membershipType === "MANAGEMENT" && <Star className="h-4 w-4 fill-amber-500" />}
-                         {member.membershipType === "MANAGEMENT" ? "YÖNETİM KURULU" : "OPERASYONEL ÜYE"}
-                       </span>
-                    </td>
-                    <td className="px-12 py-10 text-center">
-                       <div className="flex justify-center">
+                      </td>
+                      <td className="px-12 py-10 text-center">
                          <span className={cn(
-                           "flex items-center gap-3 px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.25em] border transition-all shadow-sm",
-                           member.status === "ACTIVE" 
-                             ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" 
-                             : "bg-slate-50 dark:bg-slate-800 text-slate-400 border-slate-200 dark:border-white/5"
+                           "inline-flex items-center gap-3 px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] border shadow-sm transition-all",
+                           member.membershipType === "MANAGEMENT" 
+                             ? "bg-amber-500/10 text-amber-600 border-amber-500/20" 
+                             : "bg-indigo-50 dark:bg-indigo-950/30 text-indigo-950 dark:text-indigo-200 border-indigo-100 dark:border-indigo-900/40"
                          )}>
-                           <span className={cn("h-2 w-2 rounded-full", member.status === "ACTIVE" ? "bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.6)]" : "bg-slate-300 dark:bg-slate-700")} />
-                           {member.status === "ACTIVE" ? "AKTİF" : "PASİF"}
+                           {member.membershipType === "MANAGEMENT" && <Star className="h-4 w-4 fill-amber-500" />}
+                           {member.membershipType === "MANAGEMENT" ? "YÖNETİM KURULU" : "OPERASYONEL ÜYE"}
                          </span>
-                       </div>
-                    </td>
-                    <td className="px-12 py-10">
-                      <div className="flex items-center justify-end gap-6">
-                        <form action={updateMemberStatusAction}>
-                          <input type="hidden" name="memberId" value={member.id} />
-                          <input type="hidden" name="nextStatus" value={member.status === "ACTIVE" ? "PASSIVE" : "ACTIVE"} />
-                          <button className={cn(
-                            "flex items-center gap-3 px-6 py-4 rounded-2xl border text-[10px] font-black uppercase tracking-[0.15em] transition-all duration-300 hover:shadow-xl active:scale-95",
-                            member.status === "ACTIVE" 
-                              ? "bg-white dark:bg-slate-800 text-red-600 border-red-100 dark:border-red-900/40 hover:bg-red-600 hover:text-white" 
-                              : "bg-emerald-600 text-white border-emerald-500 hover:bg-emerald-700"
-                          )}>
-                             {member.status === "ACTIVE" ? <><UserX className="h-4.5 w-4.5" /> PASİFLEŞTİR</> : <><UserPlus className="h-4.5 w-4.5" /> AKTİVASYON</>}
+                      </td>
+                      <td className="px-12 py-10 text-center">
+                         <div className="flex justify-center">
+                           <span className={cn(
+                             "flex items-center gap-3 px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.25em] border transition-all shadow-sm",
+                             member.status === "ACTIVE" 
+                               ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" 
+                               : "bg-slate-50 dark:bg-slate-800 text-slate-400 border-slate-200 dark:border-white/5"
+                           )}>
+                             <span className={cn("h-2 w-2 rounded-full", member.status === "ACTIVE" ? "bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.6)]" : "bg-slate-300 dark:bg-slate-700")} />
+                             {member.status === "ACTIVE" ? "AKTİF" : "PASİF"}
+                           </span>
+                         </div>
+                      </td>
+                      <td className="px-12 py-10">
+                        <MemberActionButtons 
+                          memberId={member.id}
+                          userId={member.userId}
+                          memberName={member.user.name}
+                          status={member.status}
+                          membershipType={member.membershipType}
+                          updateMemberStatusAction={updateMemberStatusAction}
+                          promoteToManagementAction={promoteToManagementAction}
+                          events={events}
+                        />
+                      </td>
+                    </tr>
+                    {/* Satır İçi Düzenleme Formu */}
+                    <tr key={`edit-${member.id}`} className="bg-slate-50/50 dark:bg-slate-800/20 border-b border-slate-100">
+                      <td colSpan={4} className="px-12 py-6">
+                        <form action={updateMemberAction} className="flex flex-wrap items-end gap-6">
+                          <input type="hidden" name="userId" value={member.userId} />
+                          <div className="flex flex-col gap-2 min-w-[180px]">
+                            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Ad Soyad</label>
+                            <input name="name" defaultValue={member.user.name} className="rounded-xl border border-slate-200 bg-white px-5 py-3 text-[11px] font-bold text-slate-950 outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-400 transition-all shadow-sm" required />
+                          </div>
+                          <div className="flex flex-col gap-2 min-w-[160px]">
+                            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Telefon</label>
+                            <input name="phone" defaultValue={member.user.phone ?? ""} placeholder="+90..." className="rounded-xl border border-slate-200 bg-white px-5 py-3 text-[11px] font-bold text-slate-950 outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-400 transition-all shadow-sm" />
+                          </div>
+                          <div className="flex flex-col gap-2 min-w-[160px]">
+                            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Bölüm</label>
+                            <input name="department" defaultValue={member.user.department ?? ""} placeholder="Bilg. Müh." className="rounded-xl border border-slate-200 bg-white px-5 py-3 text-[11px] font-bold text-slate-950 outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-400 transition-all shadow-sm" />
+                          </div>
+                          <div className="flex flex-col gap-2 w-24">
+                            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Sınıf</label>
+                            <input name="grade" type="number" defaultValue={member.user.grade ?? ""} min={1} max={8} className="rounded-xl border border-slate-200 bg-white px-5 py-3 text-[11px] font-bold text-slate-950 outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-400 transition-all shadow-sm" />
+                          </div>
+                          <div className="flex flex-col gap-2 min-w-[130px]">
+                            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Öğrenci No</label>
+                            <input name="studentNumber" defaultValue={member.user.studentNumber ?? ""} placeholder="2024..." className="rounded-xl border border-slate-200 bg-white px-5 py-3 text-[11px] font-bold text-slate-950 outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-400 transition-all shadow-sm" />
+                          </div>
+                          <button className="flex items-center gap-3 px-8 py-4 rounded-xl bg-indigo-600 text-white text-[10px] font-black uppercase tracking-widest hover:bg-indigo-700 active:scale-95 transition-all shadow-lg shadow-indigo-500/20 whitespace-nowrap">
+                            <UserCog className="h-4 w-4" /> Güncelle
                           </button>
                         </form>
-                        {member.membershipType !== "MANAGEMENT" && (
-                          <form action={promoteToManagementAction}>
-                            <input type="hidden" name="userId" value={member.userId} />
-                            <button className="flex items-center gap-3 px-8 py-4 rounded-2xl bg-indigo-950 dark:bg-indigo-600 text-white text-[10px] font-black uppercase tracking-[0.2em] hover:bg-indigo-800 dark:hover:bg-indigo-700 hover:scale-105 active:scale-95 transition-all shadow-2xl shadow-indigo-500/20 border border-white/5">
-                               <UserCog className="h-4.5 w-4.5" /> YÖNETİME ATA
-                            </button>
-                          </form>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
+                      </td>
+                    </tr>
+                  </>
                 ))}
               </tbody>
             </table>

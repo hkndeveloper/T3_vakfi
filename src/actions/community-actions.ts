@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
-import { requireSuperAdmin } from "@/lib/permissions";
+import { requireSuperAdmin, requireCommunityManager } from "@/lib/permissions";
 
 export async function createCommunityAction(formData: FormData) {
   try {
@@ -13,6 +13,10 @@ export async function createCommunityAction(formData: FormData) {
     const shortName = String(formData.get("shortName") ?? "").trim().toUpperCase();
     const advisorName = String(formData.get("advisorName") ?? "").trim();
     const description = String(formData.get("description") ?? "").trim();
+    const contactEmail = String(formData.get("contactEmail") ?? "").trim();
+    const instagram = String(formData.get("instagram") ?? "").trim();
+    const twitter = String(formData.get("twitter") ?? "").trim();
+    const website = String(formData.get("website") ?? "").trim();
 
     if (!universityId || !name || !shortName) {
       return { success: false, error: "Lütfen zorunlu alanları doldurun." };
@@ -25,6 +29,10 @@ export async function createCommunityAction(formData: FormData) {
         shortName,
         advisorName: advisorName || null,
         description: description || null,
+        contactEmail: contactEmail || null,
+        instagram: instagram || null,
+        twitter: twitter || null,
+        website: website || null,
         status: "ACTIVE",
       },
     });
@@ -79,6 +87,10 @@ export async function updateCommunityAction(id: string, formData: FormData) {
     const advisorName = String(formData.get("advisorName") ?? "").trim();
     const description = String(formData.get("description") ?? "").trim();
     const status = String(formData.get("status") ?? "") as any;
+    const contactEmail = String(formData.get("contactEmail") ?? "").trim();
+    const instagram = String(formData.get("instagram") ?? "").trim();
+    const twitter = String(formData.get("twitter") ?? "").trim();
+    const website = String(formData.get("website") ?? "").trim();
 
     if (!name || !shortName || !status) {
       return { success: false, error: "Lütfen zorunlu alanları doldurun." };
@@ -91,6 +103,10 @@ export async function updateCommunityAction(id: string, formData: FormData) {
         shortName,
         advisorName: advisorName || null,
         description: description || null,
+        contactEmail: contactEmail || null,
+        instagram: instagram || null,
+        twitter: twitter || null,
+        website: website || null,
         status,
       },
     });
@@ -128,6 +144,17 @@ export async function assignCommunityPresidentAction(communityId: string, userId
       where: {
         communityId,
         roleId: presidentRole.id,
+      },
+    });
+
+    // Demote existing president in CommunityMember table
+    await prisma.communityMember.updateMany({
+      where: {
+        communityId,
+        membershipType: "PRESIDENT",
+      },
+      data: {
+        membershipType: "MANAGEMENT", // Demote to management by default
       },
     });
 
@@ -179,6 +206,52 @@ export async function assignCommunityPresidentAction(communityId: string, userId
   } catch (error) {
     console.error("Assign president error:", error);
     return { success: false, error: "İşlem sırasında bir hata oluştu." };
+  }
+}
+
+export async function updateCommunityProfileAction(formData: FormData) {
+  try {
+    const session = await requireCommunityManager();
+    const communityId = session.user.communityIds[0];
+
+    if (!communityId) {
+      return { success: false, error: "Yetkisiz işlem." };
+    }
+
+    const advisorName = String(formData.get("advisorName") ?? "").trim();
+    const description = String(formData.get("description") ?? "").trim();
+    const contactEmail = String(formData.get("contactEmail") ?? "").trim();
+    const instagram = String(formData.get("instagram") ?? "").trim();
+    const twitter = String(formData.get("twitter") ?? "").trim();
+    const website = String(formData.get("website") ?? "").trim();
+
+    await prisma.community.update({
+      where: { id: communityId },
+      data: {
+        advisorName: advisorName || null,
+        description: description || null,
+        contactEmail: contactEmail || null,
+        instagram: instagram || null,
+        twitter: twitter || null,
+        website: website || null,
+      },
+    });
+
+    await prisma.activityLog.create({
+      data: {
+        userId: session.user.id,
+        action: "community.profile.update",
+        modelType: "Community",
+        modelId: communityId,
+      },
+    });
+
+    revalidatePath("/baskan/toplulugum");
+    revalidatePath("/baskan");
+    return { success: true, message: "Topluluk profili başarıyla güncellendi." };
+  } catch (error) {
+    console.error("Profile update error:", error);
+    return { success: false, error: "Güncelleme sırasında bir hata oluştu." };
   }
 }
 

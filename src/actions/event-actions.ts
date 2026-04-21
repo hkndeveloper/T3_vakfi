@@ -88,3 +88,46 @@ export async function submitEventAction(formData: FormData) {
     return { success: false, error: "İşlem sırasında bir hata oluştu." };
   }
 }
+
+export async function assignMemberToEventAction(eventId: string, userId: string) {
+  try {
+    const session = await requireCommunityManager();
+    const communityId = session.user.communityIds[0];
+
+    // Verify event belongs to community
+    const event = await prisma.event.findFirst({ where: { id: eventId, communityId } });
+    if (!event) return { success: false, error: "Etkinlik bulunamadı." };
+
+    // Create participant entry
+    await prisma.eventParticipant.upsert({
+      where: {
+        eventId_userId: { eventId, userId }
+      },
+      update: {
+        inviteStatus: "INVITED",
+        attendanceStatus: "PENDING"
+      },
+      create: {
+        eventId,
+        userId,
+        inviteStatus: "INVITED",
+        attendanceStatus: "PENDING"
+      }
+    });
+
+    await prisma.activityLog.create({
+      data: {
+        userId: session.user.id,
+        action: "event.member.assign",
+        modelType: "EventParticipant",
+        modelId: `${eventId}:${userId}`,
+      },
+    });
+
+    revalidatePath("/baskan/uyeler");
+    return { success: true, message: "Üye etkinliğe başarıyla eklendi." };
+  } catch (error) {
+    console.error("Event assignment error:", error);
+    return { success: false, error: "İşlem sırasında bir hata oluştu." };
+  }
+}

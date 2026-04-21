@@ -4,7 +4,7 @@ import { useRef } from "react";
 import { toast } from "sonner";
 import { createCommunityAction } from "@/actions/community-actions";
 import { SubmitButton } from "@/components/ui/SubmitButton";
-import { Building2, School, User, Type, AlignLeft, Zap, Sparkles } from "lucide-react";
+import { Building2, School, User, Type, AlignLeft, Zap, Sparkles, Mail, Globe } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 
@@ -96,7 +96,7 @@ export function CommunityForm({ universities }: CommunityFormProps) {
           </div>
         </div>
 
-        <div className="md:col-span-2 space-y-2.5">
+        <div className="md:col-span-1 space-y-2.5">
           <label className="text-[10px] font-black text-indigo-950 dark:text-slate-400 uppercase tracking-[0.2em] px-1 ml-1 flex items-center gap-2">
             <span className="h-1.5 w-1.5 rounded-full bg-indigo-500" />
             Danışman (Akademik)
@@ -109,6 +109,70 @@ export function CommunityForm({ universities }: CommunityFormProps) {
               className="w-full rounded-2xl border border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-slate-800/50 pl-14 pr-6 py-5 text-sm font-bold text-indigo-950 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:ring-8 focus:ring-indigo-500/5 focus:border-indigo-500 transition-all outline-none"
             />
           </div>
+        </div>
+
+        <div className="md:col-span-1 space-y-2.5">
+          <label className="text-[10px] font-black text-indigo-950 dark:text-slate-400 uppercase tracking-[0.2em] px-1 ml-1 flex items-center gap-2">
+            <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
+            İletişim E-Posta
+          </label>
+          <div className="relative group/input">
+            <Mail className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 group-focus-within/input:text-amber-500 transition-colors" />
+            <input
+              name="contactEmail"
+              type="email"
+              placeholder="kurumsal@uni.edu.tr"
+              className="w-full rounded-2xl border border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-slate-800/50 pl-14 pr-6 py-5 text-sm font-bold text-indigo-950 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:ring-8 focus:ring-amber-500/5 focus:border-amber-500 transition-all outline-none"
+            />
+          </div>
+        </div>
+
+        <div className="md:col-span-2 grid grid-cols-3 gap-6">
+           <div className="space-y-2.5">
+              <label className="text-[10px] font-black text-indigo-950 dark:text-slate-400 uppercase tracking-[0.2em] px-1 ml-1 flex items-center gap-2">
+                Instagram
+              </label>
+              <div className="relative group/input">
+                <div className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within/input:text-indigo-500 transition-colors">
+                   <Globe className="h-4 w-4" />
+                </div>
+                <input
+                  name="instagram"
+                  placeholder="@username"
+                  className="w-full rounded-2xl border border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-slate-800/50 pl-14 pr-6 py-5 text-sm font-bold text-indigo-950 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:ring-8 focus:ring-indigo-500/5 focus:border-indigo-500 transition-all outline-none"
+                />
+              </div>
+           </div>
+           <div className="space-y-2.5">
+              <label className="text-[10px] font-black text-indigo-950 dark:text-slate-400 uppercase tracking-[0.2em] px-1 ml-1 flex items-center gap-2">
+                X (Twitter)
+              </label>
+              <div className="relative group/input">
+                <div className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within/input:text-indigo-500 transition-colors">
+                   <Globe className="h-4 w-4" />
+                </div>
+                <input
+                  name="twitter"
+                  placeholder="@username"
+                  className="w-full rounded-2xl border border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-slate-800/50 pl-14 pr-6 py-5 text-sm font-bold text-indigo-950 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:ring-8 focus:ring-indigo-500/5 focus:border-indigo-500 transition-all outline-none"
+                />
+              </div>
+           </div>
+           <div className="space-y-2.5">
+              <label className="text-[10px] font-black text-indigo-950 dark:text-slate-400 uppercase tracking-[0.2em] px-1 ml-1 flex items-center gap-2">
+                Web Sitesi
+              </label>
+              <div className="relative group/input">
+                <div className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within/input:text-indigo-500 transition-colors">
+                   <Globe className="h-4 w-4" />
+                </div>
+                <input
+                  name="website"
+                  placeholder="https://..."
+                  className="w-full rounded-2xl border border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-slate-800/50 pl-14 pr-6 py-5 text-sm font-bold text-indigo-950 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:ring-8 focus:ring-indigo-500/5 focus:border-indigo-500 transition-all outline-none"
+                />
+              </div>
+           </div>
         </div>
 
         <div className="md:col-span-2 space-y-2.5">

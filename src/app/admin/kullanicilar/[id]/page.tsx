@@ -127,8 +127,8 @@ export default async function UserDetailPage({ params }: PageProps) {
               <h4 className="text-[11px] font-black uppercase tracking-widest mb-8 border-l-4 border-corporate-orange pl-5 italic">Güvenlik ve Erişim</h4>
               
               <div className="relative z-10">
-                 <UserActionButtons userId={user.id} />
-              </div>
+                  <UserActionButtons userId={user.id} isActive={user.isActive} />
+               </div>
 
               <ShieldAlert className="absolute -right-6 -bottom-6 h-32 w-32 opacity-[0.05] -rotate-12 transition-transform duration-1000 group-hover:rotate-0" />
            </div>

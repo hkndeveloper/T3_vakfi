@@ -102,29 +102,33 @@ async function assignRoleAction(formData: FormData) {
   revalidatePath("/admin/kullanicilar");
 }
 
-export default async function AdminUsersPage() {
+export default async function AdminUsersPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string }>;
+}) {
   await requirePermission("user.view");
+  const { q: search } = await searchParams;
 
-  const [users, roles, communities] = await Promise.all([
+  const [users, roles, communities, activeUserCount] = await Promise.all([
     prisma.user.findMany({
       orderBy: { createdAt: "desc" },
+      where: search ? {
+        OR: [
+          { name: { contains: search, mode: "insensitive" } },
+          { email: { contains: search, mode: "insensitive" } },
+        ],
+      } : undefined,
       include: {
         userRoles: {
-          include: {
-            role: true,
-            community: true,
-          },
+          include: { role: true, community: true },
         },
       },
       take: 100,
     }),
-    prisma.role.findMany({
-      orderBy: { name: "asc" },
-    }),
-    prisma.community.findMany({
-      orderBy: { name: "asc" },
-      take: 200,
-    }),
+    prisma.role.findMany({ orderBy: { name: "asc" } }),
+    prisma.community.findMany({ orderBy: { name: "asc" }, take: 200 }),
+    prisma.user.count({ where: { isActive: true } }),
   ]);
 
   return (
@@ -148,7 +152,7 @@ export default async function AdminUsersPage() {
           <div className="flex gap-8">
             <div className="group/stat rounded-2xl bg-white px-12 py-10 border border-slate-200 transition-all hover:-translate-y-2 text-center shadow-sm">
               <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-4">AKTİF OTURUM</p>
-              <p className="text-6xl font-black tracking-tighter text-slate-950 leading-none">24</p>
+              <p className="text-6xl font-black tracking-tighter text-slate-950 leading-none">{activeUserCount}</p>
             </div>
             <div className="group/stat rounded-2xl bg-white px-12 py-10 border border-slate-200 transition-all hover:-translate-y-2 text-center shadow-sm">
               <p className="text-[10px] font-black text-corporate-blue uppercase tracking-[0.3em] mb-4">TOPLAM KAYIT</p>
@@ -293,22 +297,29 @@ export default async function AdminUsersPage() {
             <h2 className="t3-heading text-4xl text-slate-950 tracking-tighter">Veri Matrisi</h2>
             <div className="flex items-center gap-3 mt-4">
                <div className="h-1.5 w-16 rounded-full bg-corporate-blue" />
-               <p className="t3-label">{users.length} AKTİF PROFiL DENETLENİYOR</p>
+               <p className="t3-label">{users.length} PROFIL LİSTELENİYOR{search ? ` — "${search}" araması` : ""}</p>
             </div>
           </div>
-          <div className="flex items-center gap-4">
+          <form className="flex items-center gap-4">
              <div className="relative group/search">
                 <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within/search:text-corporate-blue transition-colors" />
                 <input 
-                  type="text" 
-                  placeholder="Kullanıcı veya rol ara..." 
+                  type="text"
+                  name="q"
+                  defaultValue={search ?? ""}
+                  placeholder="Ad, e-posta ara..." 
                   className="pl-14 pr-8 py-5 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-bold outline-none focus:ring-8 focus:ring-corporate-blue/5 focus:border-corporate-blue/30 transition-all w-80 shadow-sm" 
                 />
              </div>
-             <button className="h-16 w-16 rounded-2xl bg-slate-100 text-slate-950 hover:bg-white transition-all flex items-center justify-center shadow-sm border border-slate-200">
-                <Filter className="h-6 w-6" />
+             <button type="submit" className="h-16 w-16 rounded-2xl bg-corporate-blue text-white hover:bg-blue-700 transition-all flex items-center justify-center shadow-sm">
+                <Search className="h-6 w-6" />
              </button>
-          </div>
+             {search && (
+               <a href="/admin/kullanicilar" className="h-16 w-16 rounded-2xl bg-slate-100 text-slate-950 hover:bg-white transition-all flex items-center justify-center shadow-sm border border-slate-200 text-xs font-black">
+                 ✕
+               </a>
+             )}
+          </form>
         </div>
 
         <div className="t3-panel overflow-hidden bg-slate-50/30">
