@@ -12,10 +12,11 @@ import {
   Send,
   LayoutDashboard,
   ShieldCheck,
-  Zap,
-  Sparkles,
   ChevronRight,
-  MessageSquare
+  MessageSquare,
+  Clock,
+  Sparkles,
+  Zap
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SubmitButton } from "@/components/ui/SubmitButton";
