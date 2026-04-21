@@ -15,7 +15,7 @@ const navItems = [
   { href: "/uye/etkinliklerim", label: "Etkinliklerim", icon: "Calendar", requiredPermission: "event.view" },
   { href: "/uye/katilim-durumlarim", label: "Katılım Durumlarım", icon: "ClipboardCheck", requiredPermission: "attendance.view" },
   { href: "/uye/duyurular", label: "Duyurular", icon: "Megaphone", requiredPermission: "announcement.view" },
-  { href: "/bildirimler", label: "Bildirimlerim", icon: "Bell" },
+  { href: "/uye/bildirimler", label: "Bildirimlerim", icon: "Bell" },
 ];
 
 export default async function MemberLayout({
@@ -32,7 +32,7 @@ export default async function MemberLayout({
   // Filter items based on role-based permissions
   const filteredNavItems = navItems.map((item) => {
     let badge = undefined;
-    if (item.href === "/bildirimler") badge = unreadNotifications;
+    if (item.href === "/uye/bildirimler") badge = unreadNotifications;
     return { ...item, badge };
   }).filter((item) => {
     if (!item.requiredPermission) return true;

@@ -12,7 +12,7 @@ const navItems = [
   { href: "/admin/medya-belgeler", label: "Medya & Belgeler", icon: "FolderOpen", requiredPermission: "media.view" },
   { href: "/admin/sistem-loglari", label: "Sistem Logları", icon: "History", requiredPermission: "admin.view" },
   { href: "/admin/duyurular", label: "Duyurular", icon: "Megaphone", requiredPermission: "announcement.publish" },
-  { href: "/bildirimler", label: "Bildirimlerim", icon: "Bell" },
+  { href: "/admin/bildirimler", label: "Bildirimlerim", icon: "Bell" },
   { href: "/admin/istatistikler", label: "İstatistikler", icon: "LineChart", requiredPermission: "stats.view" },
   { href: "/admin/kullanicilar", label: "Kullanıcılar", icon: "Users", requiredPermission: "user.view" },
   { href: "/admin/roller", label: "Rol & Yetki", icon: "ShieldCheck", requiredPermission: "role.assign" },
@@ -37,7 +37,7 @@ export default async function AdminLayout({
     let badge = undefined;
     if (item.href === "/admin/etkinlik-onaylari") badge = pendingEvents;
     if (item.href === "/admin/rapor-onaylari") badge = pendingReports;
-    if (item.href === "/bildirimler") badge = unreadNotifications;
+    if (item.href === "/admin/bildirimler") badge = unreadNotifications;
     return { ...item, badge };
   }).filter((item) => {
     if (!item.requiredPermission) return true;

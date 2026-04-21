@@ -80,7 +80,7 @@ export function PresidentDashboardClient({
               <PlusCircle className="h-5 w-5 md:h-6 md:w-6" /> ETKİNLİK OLUŞTUR
             </Link>
             <Link
-              href="/bildirimler"
+              href="/baskan/bildirimler"
               className="relative h-16 w-16 md:h-20 md:w-20 rounded-2xl bg-white border border-slate-200 flex items-center justify-center text-slate-950 hover:bg-slate-50 transition-all shadow-sm active:scale-95 group/bell shrink-0"
             >
               <Bell className="h-7 w-7 md:h-9 md:w-9 group-hover/bell:rotate-12 transition-transform" />

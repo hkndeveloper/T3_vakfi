@@ -11,7 +11,7 @@ const navItems = [
   { href: "/baskan/raporlar", label: "Raporlar", icon: "FileText", requiredPermission: "report.create" },
   { href: "/baskan/gorseller-belgeler", label: "Görseller & Belgeler", icon: "FolderOpen", requiredPermission: "media.upload" },
   { href: "/baskan/duyurular", label: "Duyurular", icon: "Megaphone", requiredPermission: "announcement.view" },
-  { href: "/bildirimler", label: "Bildirimlerim", icon: "Bell" },
+  { href: "/baskan/bildirimler", label: "Bildirimlerim", icon: "Bell" },
   { href: "/baskan/istatistikler", label: "İstatistikler", icon: "LineChart", requiredPermission: "stats.view" },
 ];
 
@@ -34,7 +34,7 @@ export default async function PresidentLayout({
     let badge = undefined;
     if (item.href === "/baskan/etkinlikler") badge = revisionEvents;
     if (item.href === "/baskan/raporlar") badge = revisionReports;
-    if (item.href === "/bildirimler") badge = unreadNotifications;
+    if (item.href === "/baskan/bildirimler") badge = unreadNotifications;
     return { ...item, badge };
   }).filter((item) => {
     if (!item.requiredPermission) return true;
