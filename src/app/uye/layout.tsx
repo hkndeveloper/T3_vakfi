@@ -41,14 +41,14 @@ export default async function MemberLayout({
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <div className="flex w-full gap-4">
+      <div className="flex flex-col lg:flex-row w-full gap-0 lg:gap-4">
         <Sidebar 
           items={filteredNavItems} 
           title="Üye Paneli" 
           subtitle="Topluluk Üyesi" 
         />
         
-        <main className="flex-1 min-w-0 p-6">
+        <main className="flex-1 min-w-0 p-6 pt-28 lg:pt-6">
           {children}
         </main>
       </div>

@@ -52,9 +52,9 @@ export function PresidentDashboardClient({
   return (
     <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-1000 font-outfit pb-20 bg-white min-h-screen">
       {/* Soft Executive Hero Section */}
-      <div className="relative overflow-hidden rounded-t3-xl bg-slate-100/50 p-12 md:p-16 border border-slate-200">
-        <div className="relative z-10 flex flex-wrap items-center justify-between gap-12">
-          <div className="max-w-2xl">
+      <div className="relative overflow-hidden rounded-t3-xl bg-slate-100/50 p-8 md:p-16 border border-slate-200">
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-10 md:gap-12">
+          <div className="max-w-2xl text-left">
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -62,29 +62,29 @@ export function PresidentDashboardClient({
             >
               <Building2 className="h-4 w-4 text-corporate-blue" /> TOPLULUK YÖNETİMİ
             </motion.div>
-            <h1 className="text-5xl font-black tracking-tighter sm:text-7xl leading-[1] uppercase italic text-slate-950">
+            <h1 className="text-4xl font-black tracking-tighter sm:text-7xl leading-[0.9] uppercase italic text-slate-950">
               HOŞ GELDİN, <br />
               <span className="text-corporate-blue decoration-corporate-orange decoration-8 underline underline-offset-8">
                 {(session.user.name ?? "BAŞKAN").split(" ")[0]}
               </span>
             </h1>
-            <p className="mt-12 text-xl text-slate-600 font-medium leading-relaxed max-w-2xl">
+            <p className="mt-8 text-lg md:text-xl text-slate-600 font-medium leading-relaxed max-w-2xl">
               Topluluğunu kurumsal hedeflere ulaştırmak için{" "}
               <span className="text-slate-950 font-bold">stratejik kararlar al</span>, etkinlikleri
               yönet ve üye performanslarını takip et.
             </p>
           </div>
 
-          <div className="flex items-center gap-10">
-            <Link href="/baskan/etkinlikler" className="t3-button t3-button-primary px-12 py-7 text-sm">
-              <PlusCircle className="h-6 w-6" /> ETKİNLİK OLUŞTUR
+          <div className="flex items-center gap-6 md:gap-10">
+            <Link href="/baskan/etkinlikler" className="t3-button t3-button-primary px-8 md:px-12 py-5 md:py-7 text-xs md:text-sm flex-1 md:flex-none">
+              <PlusCircle className="h-5 w-5 md:h-6 md:w-6" /> ETKİNLİK OLUŞTUR
             </Link>
             <Link
               href="/bildirimler"
-              className="relative h-20 w-20 rounded-2xl bg-white border border-slate-200 flex items-center justify-center text-slate-950 hover:bg-slate-50 transition-all shadow-sm active:scale-95 group/bell"
+              className="relative h-16 w-16 md:h-20 md:w-20 rounded-2xl bg-white border border-slate-200 flex items-center justify-center text-slate-950 hover:bg-slate-50 transition-all shadow-sm active:scale-95 group/bell shrink-0"
             >
-              <Bell className="h-9 w-9 group-hover/bell:rotate-12 transition-transform" />
-              <div className="absolute top-5 right-5 h-4 w-4 rounded-full bg-corporate-orange border-4 border-white animate-bounce shadow-sm" />
+              <Bell className="h-7 w-7 md:h-9 md:w-9 group-hover/bell:rotate-12 transition-transform" />
+              <div className="absolute top-4 right-4 md:top-5 md:right-5 h-3 w-3 md:h-4 md:w-4 rounded-full bg-corporate-orange border-2 md:border-4 border-white animate-bounce shadow-sm" />
             </Link>
           </div>
         </div>
@@ -97,7 +97,7 @@ export function PresidentDashboardClient({
       </div>
 
       {/* Stats Grid */}
-      <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         <StatWidget label="AKTİF ÜYELER" value={memberCount} icon={Users} theme="blue" trend={growthLabel} />
         <StatWidget label="YAKLAŞAN ETKİNLİK" value={upcomingEvents} icon={Calendar} theme="orange" trend="BU DÖNEM" />
         <StatWidget
@@ -109,21 +109,21 @@ export function PresidentDashboardClient({
         />
 
         {/* Topluluk Profili Kartı */}
-        <div className="t3-panel p-10 flex flex-col justify-between group bg-slate-50/50">
+        <div className="t3-panel p-8 md:p-10 flex flex-col justify-between group bg-slate-50/50">
           <div className="flex items-center gap-5">
-            <div className="h-16 w-16 rounded-2xl bg-white border border-slate-200 flex items-center justify-center text-corporate-blue shadow-sm group-hover:scale-110 transition-transform">
-              <Building2 className="h-7 w-7" />
+            <div className="h-14 w-14 md:h-16 md:w-16 rounded-2xl bg-white border border-slate-200 flex items-center justify-center text-corporate-blue shadow-sm group-hover:scale-110 transition-transform shrink-0">
+              <Building2 className="h-6 w-6 md:h-7 md:w-7" />
             </div>
             <div className="overflow-hidden">
               <p className="t3-label truncate">{community?.university?.shortName}</p>
-              <p className="text-2xl font-black text-slate-950 truncate uppercase tracking-tighter italic mt-2">
+              <p className="text-xl md:text-2xl font-black text-slate-950 truncate uppercase tracking-tighter italic mt-2">
                 {community?.shortName}
               </p>
             </div>
           </div>
           <Link
             href="/baskan/toplulugum"
-            className="mt-10 flex items-center justify-between t3-label hover:text-corporate-blue transition-colors pt-8 border-t border-slate-200"
+            className="mt-10 flex items-center justify-between t3-label hover:text-corporate-blue transition-colors pt-6 md:pt-8 border-t border-slate-200"
           >
             <span>PROFİLİ YÖNET</span> <ChevronRight className="h-5 w-5" />
           </Link>

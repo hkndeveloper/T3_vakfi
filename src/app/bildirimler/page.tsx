@@ -37,25 +37,25 @@ export default async function NotificationsPage() {
     <div className="min-h-screen bg-slate-50 font-outfit p-8 md:p-12 animate-in fade-in duration-700">
       <div className="mx-auto max-w-5xl space-y-12">
         {/* Soft Executive Hero Section */}
-        <div className="relative overflow-hidden rounded-t3-xl bg-slate-900 p-12 md:p-16 border border-slate-800 shadow-2xl shadow-slate-900/20">
-          <div className="relative z-10 flex flex-wrap items-center justify-between gap-12">
-            <div className="max-w-2xl">
+        <div className="relative overflow-hidden rounded-t3-xl bg-slate-900 p-8 md:p-16 border border-slate-800 shadow-2xl shadow-slate-900/20">
+          <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-10 md:gap-12">
+            <div className="max-w-2xl text-left">
               <div className="inline-flex items-center gap-2 rounded-lg bg-white/5 border border-white/10 px-5 py-2 text-[10px] font-black text-slate-300 uppercase tracking-[0.25em] mb-10 shadow-sm">
                 <Bell className="h-4 w-4 text-corporate-orange" /> SİSTEM İLETİŞİM MERKEZİ
               </div>
-              <h1 className="text-5xl font-black tracking-tighter sm:text-7xl leading-[0.9] uppercase text-white italic">
+              <h1 className="text-4xl font-black tracking-tighter sm:text-7xl leading-[0.9] uppercase text-white italic">
                 BİLDİRİM <br />
                 <span className="text-corporate-blue italic">MERKEZİ</span>
               </h1>
-              <p className="mt-10 text-xl text-slate-400 font-medium leading-relaxed max-w-2xl">
+              <p className="mt-8 text-lg md:text-xl text-slate-400 font-medium leading-relaxed max-w-2xl">
                 Onay süreçleri, revizyon talepleri ve sistem güncellemeleri hakkındaki <span className="text-white font-bold decoration-corporate-blue decoration-4 underline underline-offset-4">kritik bildirimleri</span> buradan yönetin.
               </p>
             </div>
 
-            <div className="flex gap-8">
-              <div className="group/stat rounded-2xl bg-white/5 px-12 py-10 border border-white/10 transition-all hover:bg-white/10 text-center shadow-sm">
+            <div className="flex gap-6">
+              <div className="group/stat rounded-2xl bg-white/5 px-8 md:px-12 py-8 md:py-10 border border-white/10 transition-all hover:bg-white/10 text-center shadow-sm flex-1 md:flex-none">
                 <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-4">OKUNMAMIŞ</p>
-                <p className={cn("text-6xl font-black tracking-tighter leading-none", unreadCount > 0 ? "text-corporate-orange" : "text-white")}>{unreadCount}</p>
+                <p className={cn("text-5xl md:text-6xl font-black tracking-tighter leading-none", unreadCount > 0 ? "text-corporate-orange" : "text-white")}>{unreadCount}</p>
               </div>
             </div>
           </div>

@@ -70,17 +70,17 @@ export default async function AdminPage() {
   return (
     <div className="space-y-16 pb-20 animate-in fade-in slide-in-from-bottom-4 duration-1000 bg-white min-h-screen">
       {/* Soft Executive Hero Header */}
-      <div className="relative overflow-hidden bg-[#f1f5f9] p-14 md:p-20 rounded-t3-xl border border-slate-200">
+      <div className="relative overflow-hidden bg-[#f1f5f9] p-8 md:p-20 rounded-t3-xl border border-slate-200">
         <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-indigo-500/[0.05] to-transparent pointer-events-none" />
         <div className="relative z-10">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-white text-slate-950 text-[10px] font-black uppercase tracking-[0.25em] mb-10 rounded-lg border border-slate-200 shadow-sm">
             <ShieldCheck className="h-3 w-3 text-corporate-blue" /> SİSTEM YÖNETİM MERKEZİ
           </div>
-          <h1 className="text-5xl font-black tracking-tighter sm:text-7xl text-slate-950 leading-none uppercase italic">
+          <h1 className="text-4xl font-black tracking-tighter sm:text-7xl text-slate-950 leading-[0.9] uppercase italic">
             YÖNETİM <br />
             <span className="text-corporate-blue">PANELİ</span>
           </h1>
-          <p className="mt-10 text-slate-600 font-medium max-w-2xl text-xl leading-relaxed">
+          <p className="mt-8 text-slate-600 font-medium max-w-2xl text-lg md:text-xl leading-relaxed">
             T3 Vakfı Topluluk Yönetim Sistemi üzerinden tüm operasyonel süreçleri{" "}
             <span className="text-slate-950 font-bold underline decoration-corporate-blue/30 decoration-4 underline-offset-4">
               gerçek zamanlı
@@ -91,7 +91,7 @@ export default async function AdminPage() {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         <StatWidget label="Toplam Kullanıcı" value={totalUsers} icon={Users} color="blue" />
         <StatWidget label="Aktif Roller" value={totalRoles} icon={ShieldCheck} color="slate" />
         <StatWidget label="Kayıtlı Üni" value={totalUniversities} icon={School} color="blue" />
@@ -103,18 +103,18 @@ export default async function AdminPage() {
       <div className="grid gap-10 lg:grid-cols-12">
         <div className="lg:col-span-8 space-y-12">
           {/* Main Chart */}
-          <div className="t3-panel p-12 bg-slate-50/50">
-            <div className="flex items-center justify-between mb-12">
+          <div className="t3-panel p-6 md:p-12 bg-slate-50/50 overflow-hidden">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mb-12">
               <div>
-                <h2 className="t3-heading text-2xl text-slate-950">Üniversite Dağılımı</h2>
+                <h2 className="t3-heading text-xl md:text-2xl text-slate-950">Üniversite Dağılımı</h2>
                 <p className="t3-label mt-3">En aktif ilk 5 kampüs verisi</p>
               </div>
-              <div className="h-14 w-14 rounded-2xl bg-white flex items-center justify-center text-slate-400 border border-slate-200 shadow-sm">
-                <BarChart3 className="h-7 w-7" />
+              <div className="h-12 w-12 md:h-14 md:w-14 rounded-2xl bg-white flex items-center justify-center text-slate-400 border border-slate-200 shadow-sm shrink-0">
+                <BarChart3 className="h-6 w-6 md:h-7 md:w-7" />
               </div>
             </div>
             {chartData.length > 0 && chartData.some((d) => d.value > 0) ? (
-              <div className="h-[400px] w-full">
+              <div className="h-[300px] md:h-[400px] w-full">
                 <AttendanceChart data={chartData} />
               </div>
             ) : (
@@ -129,9 +129,9 @@ export default async function AdminPage() {
           </div>
 
           {/* Quick Actions Grid */}
-          <div className="space-y-10">
-            <h2 className="t3-heading text-xl ml-2 text-slate-950">Hızlı Operasyonlar</h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
+          <div className="space-y-8">
+            <h2 className="t3-heading text-lg md:text-xl ml-2 text-slate-950">Hızlı Operasyonlar</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
               <AdminNavCard href="/admin/universiteler" label="Üniversiteler" icon={School} />
               <AdminNavCard href="/admin/topluluklar" label="Topluluklar" icon={Building2} />
               <AdminNavCard href="/admin/kullanicilar" label="Kullanıcılar" icon={Users} />

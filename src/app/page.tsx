@@ -107,7 +107,7 @@ export default async function Home() {
           </div>
         </div>
 
-        <div className="mt-32 grid gap-1 lg:grid-cols-3 border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+        <div className="mt-20 md:mt-32 grid gap-6 md:gap-1 lg:grid-cols-3 border-none md:border md:border-slate-200 rounded-xl overflow-hidden shadow-none md:shadow-sm">
           <FeatureCard 
             icon={School} 
             title="Merkezi Yönetim" 
