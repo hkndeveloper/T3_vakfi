@@ -133,7 +133,7 @@ export default async function NotificationsPage() {
 
                     <div className="flex items-center">
                        {!n.isRead ? (
-                         <form action={markAsReadAction}>
+                         <form action={markAsReadAction as any}>
                            <input type="hidden" name="id" value={n.id} />
                            <button className="t3-button t3-button-primary px-8 py-4 text-[10px] shadow-lg shadow-corporate-blue/20">
                               OKUNDU OLARAK İŞARETLE

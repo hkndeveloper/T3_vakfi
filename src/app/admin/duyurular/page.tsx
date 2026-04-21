@@ -155,7 +155,7 @@ export default async function AdminAnnouncementsPage() {
                </div>
             </div>
 
-            <form action={createAnnouncementAction} className="space-y-8">
+            <form action={createAnnouncementAction as any} className="space-y-8">
                <div className="space-y-6">
                   <div className="space-y-3">
                      <label className="text-[11px] font-black text-slate-950 uppercase tracking-widest px-1">Duyuru Başlığı</label>

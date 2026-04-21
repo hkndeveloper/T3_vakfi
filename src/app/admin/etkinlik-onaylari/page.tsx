@@ -7,19 +7,15 @@ import {
   User, 
   Building2, 
   CheckCircle2, 
-  XSquare, 
-  RefreshCcw,
-  MessageSquare,
-  ShieldCheck,
-  ChevronRight,
-  Clock,
-  Sparkles,
-  FileText,
-  Activity
+  ShieldCheck, 
+  ChevronRight, 
+  Clock, 
+  Sparkles, 
+  FileText 
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-import { reviewEventAction } from "@/actions/admin-actions";
+import { EventReviewForm } from "@/components/admin/EventReviewForm";
 
 export default async function AdminEventApprovalsPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
   await requirePermission("event.approve");
@@ -171,46 +167,7 @@ export default async function AdminEventApprovalsPage({ searchParams }: { search
                       </div>
                    </div>
 
-                   <form action={reviewEventAction} className="lg:col-span-5 space-y-8 p-8 bg-white border border-slate-200 rounded-2xl shadow-sm relative overflow-hidden">
-                     <div className="absolute top-0 right-0 h-1 w-full bg-corporate-blue" />
-                     <input type="hidden" name="eventId" value={event.id} />
-                     <div className="space-y-4">
-                        <label className="flex items-center gap-2 text-[10px] font-black text-slate-950 uppercase tracking-[0.2em]">
-                          <MessageSquare className="h-4 w-4 text-corporate-blue" /> DENETÇİ NOTLARI
-                        </label>
-                        <textarea
-                          name="reviewNote"
-                          rows={3}
-                          placeholder="Birim başkanına iletilecek değerlendirme notu..."
-                          className="w-full rounded-2xl border border-slate-200 bg-slate-50 p-6 text-sm font-bold text-slate-950 focus:ring-8 focus:ring-corporate-blue/5 focus:border-corporate-blue transition-all outline-none resize-none"
-                        />
-                     </div>
-                     <div className="space-y-3">
-                        <button
-                          name="decision"
-                          value="APPROVED"
-                          className="t3-button t3-button-primary w-full py-5 text-sm"
-                        >
-                          <CheckCircle2 className="h-5 w-5" /> PROJEYİ ONAYLA
-                        </button>
-                        <div className="grid grid-cols-2 gap-3">
-                           <button
-                             name="decision"
-                             value="DRAFT"
-                             className="t3-button t3-button-accent w-full px-2 py-4"
-                           >
-                             <RefreshCcw className="h-4 w-4" /> REVİZYON İSTE
-                           </button>
-                           <button
-                             name="decision"
-                             value="REJECTED"
-                             className="t3-button bg-rose-600 text-white hover:bg-rose-700 w-full px-2 py-4"
-                           >
-                             <XSquare className="h-4 w-4" /> KESİN RED
-                           </button>
-                        </div>
-                     </div>
-                   </form>
+                   <EventReviewForm eventId={event.id} />
                  </div>
                </div>
             </article>

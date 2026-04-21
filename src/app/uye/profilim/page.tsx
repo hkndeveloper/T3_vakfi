@@ -1,8 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { requirePermission } from "@/lib/permissions";
-import { User, Phone, GraduationCap, Calendar, Building2, ShieldCheck } from "lucide-react";
-import { updateUserProfileAction } from "@/actions/user-actions";
-import { SubmitButton } from "@/components/ui/SubmitButton";
+import { User, Building2, ShieldCheck } from "lucide-react";
+import { ProfileUpdateForm } from "@/components/profile/ProfileUpdateForm";
 
 export default async function MemberProfilePage() {
   const session = await requirePermission("member.view");
@@ -52,61 +51,7 @@ export default async function MemberProfilePage() {
       <div className="grid lg:grid-cols-12 gap-12">
         {/* Left Column: Update Form */}
         <div className="lg:col-span-7 space-y-8">
-          <form action={updateUserProfileAction} className="t3-panel-elevated p-12 bg-white space-y-10 border-l-[16px] border-l-corporate-blue">
-            <div className="flex items-center gap-6 pb-8 border-b border-slate-100">
-               <div className="h-14 w-14 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center text-corporate-blue">
-                  <User className="h-7 w-7" />
-               </div>
-               <div>
-                  <h2 className="text-2xl font-black text-slate-950 tracking-tighter uppercase italic">Kişisel Bilgiler</h2>
-                  <p className="t3-label">SİSTEM KAYITLARINI GÜNCEL TUTUN</p>
-               </div>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-8">
-               <div className="space-y-3">
-                  <label className="text-[10px] font-black text-slate-950 uppercase tracking-widest px-1">Ad Soyad</label>
-                  <input
-                    name="name"
-                    defaultValue={user.name}
-                    className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-6 py-4 text-sm font-bold text-slate-950 focus:bg-white focus:ring-8 focus:ring-corporate-blue/5 focus:border-corporate-blue transition-all outline-none"
-                    required
-                  />
-               </div>
-               <div className="space-y-3">
-                  <label className="text-[10px] font-black text-slate-950 uppercase tracking-widest px-1">Telefon</label>
-                  <input
-                    name="phone"
-                    defaultValue={user.phone || ""}
-                    className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-6 py-4 text-sm font-bold text-slate-950 focus:bg-white focus:ring-8 focus:ring-corporate-blue/5 focus:border-corporate-blue transition-all outline-none"
-                    placeholder="05xx xxx xx xx"
-                  />
-               </div>
-               <div className="space-y-3">
-                  <label className="text-[10px] font-black text-slate-950 uppercase tracking-widest px-1">Bölüm</label>
-                  <input
-                    name="department"
-                    defaultValue={user.department || ""}
-                    className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-6 py-4 text-sm font-bold text-slate-950 focus:bg-white focus:ring-8 focus:ring-corporate-blue/5 focus:border-corporate-blue transition-all outline-none"
-                    placeholder="Örn: Bilgisayar Mühendisliği"
-                  />
-               </div>
-               <div className="space-y-3">
-                  <label className="text-[10px] font-black text-slate-950 uppercase tracking-widest px-1">Sınıf</label>
-                  <select
-                    name="grade"
-                    defaultValue={user.grade || ""}
-                    className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-6 py-4 text-sm font-bold text-slate-950 focus:bg-white focus:ring-8 focus:ring-corporate-blue/5 focus:border-corporate-blue transition-all outline-none"
-                  >
-                    <option value="">Seçiniz...</option>
-                    {[1, 2, 3, 4].map(g => <option key={g} value={g}>{g}. Sınıf</option>)}
-                    <option value="5">Mezun</option>
-                  </select>
-               </div>
-            </div>
-
-            <SubmitButton label="DEĞİŞİKLİKLERİ KAYDET" className="w-full py-6 t3-button-primary" />
-          </form>
+          <ProfileUpdateForm user={user} />
         </div>
 
         {/* Right Column: Status Cards */}

@@ -59,7 +59,7 @@ export default async function ProfilePage() {
         <p className="text-sm text-slate-500 mt-1">Kişisel bilgilerinizi görüntüleyin ve düzenleyin</p>
       </div>
 
-      <form action={updateProfileAction} className="space-y-6">
+      <form action={updateProfileAction as any} className="space-y-6">
         {/* Profile Card */}
         <div className="t3-panel p-6">
           <div className="flex items-start justify-between gap-6 mb-6">

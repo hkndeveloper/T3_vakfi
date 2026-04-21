@@ -304,7 +304,7 @@ export default async function PresidentMembersPage({ searchParams }: { searchPar
             <div className="h-1 w-24 rounded-full bg-indigo-100 dark:bg-indigo-950/40" />
           </div>
 
-          <form action={createMemberAction} className="grid gap-10 md:grid-cols-6 relative z-10">
+          <form action={createMemberAction as any} className="grid gap-10 md:grid-cols-6 relative z-10">
             <div className="md:col-span-3 space-y-4">
                <label className="flex items-center gap-3 text-[11px] font-black text-indigo-950 dark:text-indigo-200 uppercase tracking-[0.3em] px-1 font-montserrat">
                  <Fingerprint className="h-4 w-4 text-indigo-600" /> AD SOYAD
@@ -448,7 +448,7 @@ export default async function PresidentMembersPage({ searchParams }: { searchPar
                     {canManage && (
                       <tr key={`edit-${member.id}`} className="bg-slate-50/50 dark:bg-slate-800/20 border-b border-slate-100">
                         <td colSpan={4} className="px-12 py-6">
-                          <form action={updateMemberAction} className="flex flex-wrap items-end gap-6">
+                          <form action={updateMemberAction as any} className="flex flex-wrap items-end gap-6">
                             <input type="hidden" name="userId" value={member.userId} />
                             <div className="flex flex-col gap-2 min-w-[180px]">
                               <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Ad Soyad</label>

@@ -4,24 +4,20 @@ import { requirePermission } from "@/lib/permissions";
 import { 
   FileText, 
   CheckCircle2, 
-  XSquare, 
-  RefreshCcw,
-  MessageSquare,
-  ShieldCheck,
-  ChevronRight,
-  Clock,
-  ImageIcon,
-  Paperclip,
-  TrendingUp,
-  Building2,
-  User,
-  FileSearch,
-  Award,
-  Fingerprint
+  ShieldCheck, 
+  ChevronRight, 
+  Clock, 
+  ImageIcon, 
+  Paperclip, 
+  TrendingUp, 
+  Building2, 
+  User, 
+  FileSearch, 
+  Fingerprint 
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-import { reviewReportAction } from "@/actions/admin-actions";
+import { ReportReviewForm } from "@/components/admin/ReportReviewForm";
 
 export default async function AdminReportApprovalsPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
   await requirePermission("report.approve");
@@ -183,46 +179,7 @@ export default async function AdminReportApprovalsPage({ searchParams }: { searc
                       </div>
                    </div>
 
-                   <form action={reviewReportAction} className="space-y-10 bg-white border border-slate-200 p-12 rounded-2xl shadow-sm relative overflow-hidden">
-                     <div className="absolute top-0 right-0 h-1.5 w-full bg-corporate-orange" />
-                     <input type="hidden" name="reportId" value={report.id} />
-                     <div className="space-y-5">
-                        <label className="flex items-center gap-3 text-[11px] font-black text-slate-950 uppercase tracking-[0.25em] px-1 font-montserrat">
-                          <MessageSquare className="h-5 w-5 text-corporate-blue" /> DENETİM GÖRÜŞÜ
-                        </label>
-                        <textarea
-                          name="adminNote"
-                          rows={3}
-                          placeholder="Raporun geçerliliği veya eksiklikleri hakkındaki notunuzu buraya ekleyin..."
-                          className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-8 py-7 text-sm font-bold text-slate-950 outline-none focus:ring-8 focus:ring-corporate-orange/5 focus:border-corporate-orange transition-all resize-none shadow-sm"
-                        />
-                     </div>
-                     <div className="flex flex-col gap-5">
-                        <button
-                          name="decision"
-                          value="APPROVED"
-                          className="w-full flex items-center justify-center gap-4 rounded-xl bg-emerald-600 px-10 py-6 text-sm font-black text-white hover:bg-emerald-700 transition-all active:scale-[0.98] uppercase tracking-widest shadow-xl shadow-emerald-500/10"
-                        >
-                          <CheckCircle2 className="h-5 w-5" /> RAPORU ONAYLA
-                        </button>
-                        <div className="grid grid-cols-2 gap-5">
-                           <button
-                             name="decision"
-                             value="REVISION_REQUESTED"
-                             className="t3-button t3-button-accent w-full px-8 py-5"
-                           >
-                             <RefreshCcw className="h-5 w-5" /> REVİZYON
-                           </button>
-                           <button
-                             name="decision"
-                             value="REJECTED"
-                             className="inline-flex items-center justify-center gap-4 rounded-xl bg-rose-600 px-8 py-5 text-sm font-black text-white hover:bg-rose-700 transition-all active:scale-[0.98] uppercase tracking-widest shadow-xl shadow-rose-500/10"
-                           >
-                             <XSquare className="h-5 w-5" /> REDDET
-                           </button>
-                        </div>
-                     </div>
-                   </form>
+                   <ReportReviewForm reportId={report.id} />
                  </div>
                </div>
                

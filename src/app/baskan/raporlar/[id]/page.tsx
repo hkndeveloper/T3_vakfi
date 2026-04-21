@@ -233,7 +233,7 @@ export default async function PresidentReportDetailPage({ params }: PageProps) {
                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
                  <Pencil className="h-3 w-3 text-corporate-blue" /> RAPORU DUZENLE
                </p>
-               <form action={updateReportAction} className="space-y-4">
+               <form action={updateReportAction as any} className="space-y-4">
                  <input type="hidden" name="reportId" value={report.id} />
                  <div className="space-y-1.5">
                    <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Baslik</label>

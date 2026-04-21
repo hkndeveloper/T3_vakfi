@@ -244,7 +244,7 @@ export default async function PresidentEventDetailPage({ params }: PageProps) {
                       <p className="text-[9px] font-black text-corporate-blue uppercase tracking-widest flex items-center gap-1.5">
                         <Pencil className="h-3 w-3" /> ETKİNLİĞİ DÜZENLE
                       </p>
-                      <form action={updateEventAction} className="space-y-3">
+                      <form action={updateEventAction as any} className="space-y-3">
                         <input type="hidden" name="eventId" value={event.id} />
                         <input name="title" defaultValue={event.title} placeholder="Başlık" className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-[11px] font-bold text-slate-950 outline-none focus:border-corporate-blue transition-all" required />
                         <input name="location" defaultValue={event.location ?? ""} placeholder="Yer" className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-[11px] font-bold text-slate-950 outline-none focus:border-corporate-blue transition-all" />

@@ -180,7 +180,7 @@ export default async function AdminUsersPage({
               <p className="t3-label mt-3">Yeni bir kurumsal kullanıcı tanımlayın.</p>
             </div>
           </div>
-          <form action={createUserAction} className="grid gap-8">
+          <form action={createUserAction as any} className="grid gap-8">
             <div className="space-y-3">
                <label className="text-[10px] font-black text-slate-950 uppercase tracking-[0.2em] ml-2">Tam İsim Soyisim</label>
                <div className="relative group/input">

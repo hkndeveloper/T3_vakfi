@@ -111,7 +111,7 @@ export default async function AdminSettingsPage() {
         </div>
       </div>
 
-      <form action={updateSettingsAction} className="space-y-12">
+      <form action={updateSettingsAction as any} className="space-y-12">
         <div className="grid lg:grid-cols-2 gap-12">
           {/* General Settings */}
           <div className="t3-panel p-10 md:p-12 space-y-10 group bg-slate-50/30">
