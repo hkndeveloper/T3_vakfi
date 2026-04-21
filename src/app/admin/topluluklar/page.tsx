@@ -26,35 +26,44 @@ export default async function AdminCommunitiesPage({
 }) {
   await requireSuperAdmin();
   const params = await searchParams;
-  const query = params.q || "";
-  const universityId = params.universityId || "";
+  const query = typeof params.q === "string" ? params.q : "";
+  const universityId = typeof params.universityId === "string" ? params.universityId : "";
 
-  const [universities, communities] = await Promise.all([
-    prisma.university.findMany({ 
-      where: { status: "ACTIVE" },
-      orderBy: { name: "asc" },
-      select: { id: true, name: true }
-    }),
-    prisma.community.findMany({
-      where: {
-        AND: [
-          query ? {
-            OR: [
-              { name: { contains: query } },
-              { shortName: { contains: query } }
-            ]
-          } : {},
-          universityId ? { universityId } : {}
-        ]
-      },
-      orderBy: { createdAt: "desc" },
-      include: {
-        university: true,
-        _count: { select: { members: true } },
-      },
-      take: 100
-    }),
-  ]);
+  let universities = [];
+  let communities = [];
+
+  try {
+    const results = await Promise.all([
+      prisma.university.findMany({ 
+        where: { status: "ACTIVE" },
+        orderBy: { name: "asc" },
+        select: { id: true, name: true }
+      }),
+      prisma.community.findMany({
+        where: {
+          AND: [
+            query ? {
+              OR: [
+                { name: { contains: query, mode: "insensitive" } },
+                { shortName: { contains: query, mode: "insensitive" } }
+              ]
+            } : {},
+            universityId ? { universityId } : {}
+          ]
+        },
+        orderBy: { createdAt: "desc" },
+        include: {
+          university: true,
+          _count: { select: { members: true } },
+        },
+        take: 100
+      }),
+    ]);
+    universities = results[0];
+    communities = results[1];
+  } catch (error) {
+    console.error("Data fetching error:", error);
+  }
 
   const totalComm = communities.length;
   const activeComm = communities.filter(c => c.status === "ACTIVE").length;

@@ -21,40 +21,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-async function reviewReportAction(formData: FormData) {
-  "use server";
-  const session = await requirePermission("report.approve");
-
-  const reportId = String(formData.get("reportId") ?? "").trim();
-  const decision = String(formData.get("decision") ?? "").trim();
-  const adminNote = String(formData.get("adminNote") ?? "").trim();
-
-  if (!reportId || !["APPROVED", "REJECTED", "REVISION_REQUESTED"].includes(decision)) {
-    return;
-  }
-
-  await prisma.report.update({
-    where: { id: reportId },
-    data: {
-      status: decision as "APPROVED" | "REJECTED" | "REVISION_REQUESTED",
-      approvedBy: decision === "APPROVED" ? session.user.id : null,
-      approvedAt: decision === "APPROVED" ? new Date() : null,
-      adminNote: adminNote || null,
-    },
-  });
-
-  await prisma.activityLog.create({
-    data: {
-      userId: session.user.id,
-      action: `report.review.${decision.toLowerCase()}`,
-      modelType: "Report",
-      modelId: reportId,
-    },
-  });
-
-  revalidatePath("/admin/rapor-onaylari");
-  revalidatePath("/baskan/raporlar");
-}
+import { reviewReportAction } from "@/actions/admin-actions";
 
 export default async function AdminReportApprovalsPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
   await requirePermission("report.approve");

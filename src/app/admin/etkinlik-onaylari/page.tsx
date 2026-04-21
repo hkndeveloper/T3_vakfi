@@ -19,40 +19,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-async function reviewEventAction(formData: FormData) {
-  "use server";
-  const session = await requirePermission("event.approve");
-
-  const eventId = String(formData.get("eventId") ?? "").trim();
-  const decision = String(formData.get("decision") ?? "").trim();
-  const reviewNote = String(formData.get("reviewNote") ?? "").trim();
-
-  if (!eventId || !["APPROVED", "REJECTED", "DRAFT"].includes(decision)) {
-    return;
-  }
-
-  await prisma.event.update({
-    where: { id: eventId },
-    data: {
-      status: decision as "APPROVED" | "REJECTED" | "DRAFT",
-      approvedBy: decision === "APPROVED" ? session.user.id : null,
-      approvedAt: decision === "APPROVED" ? new Date() : null,
-      reviewNote: reviewNote || null,
-    },
-  });
-
-  await prisma.activityLog.create({
-    data: {
-      userId: session.user.id,
-      action: `event.review.${decision.toLowerCase()}`,
-      modelType: "Event",
-      modelId: eventId,
-    },
-  });
-
-  revalidatePath("/admin/etkinlik-onaylari");
-  revalidatePath("/baskan/etkinlikler");
-}
+import { reviewEventAction } from "@/actions/admin-actions";
 
 export default async function AdminEventApprovalsPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
   await requirePermission("event.approve");

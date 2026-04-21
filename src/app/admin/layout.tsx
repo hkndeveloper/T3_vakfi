@@ -1,20 +1,6 @@
+import { prisma } from "@/lib/prisma";
 import { requirePermission } from "@/lib/permissions";
 import { Sidebar } from "@/components/layout/Sidebar";
-import { 
-  LayoutDashboard, 
-  School, 
-  Building2, 
-  ClipboardCheck, 
-  Navigation, 
-  FileCheck2, 
-  Bell, 
-  LineChart, 
-  Users, 
-  ShieldCheck,
-  History,
-  FolderOpen,
-  Settings
-} from "lucide-react";
 
 const navItems = [
   { href: "/admin", label: "Dashboard", icon: "LayoutDashboard" },
@@ -25,7 +11,8 @@ const navItems = [
   { href: "/admin/rapor-onaylari", label: "Rapor Onayları", icon: "FileCheck2", requiredPermission: "report.approve" },
   { href: "/admin/medya-belgeler", label: "Medya & Belgeler", icon: "FolderOpen", requiredPermission: "media.view" },
   { href: "/admin/sistem-loglari", label: "Sistem Logları", icon: "History", requiredPermission: "admin.view" },
-  { href: "/admin/duyurular", label: "Duyurular", icon: "Bell", requiredPermission: "announcement.publish" },
+  { href: "/admin/duyurular", label: "Duyurular", icon: "Megaphone", requiredPermission: "announcement.publish" },
+  { href: "/bildirimler", label: "Bildirimlerim", icon: "Bell" },
   { href: "/admin/istatistikler", label: "İstatistikler", icon: "LineChart", requiredPermission: "stats.view" },
   { href: "/admin/kullanicilar", label: "Kullanıcılar", icon: "Users", requiredPermission: "user.view" },
   { href: "/admin/roller", label: "Rol & Yetki", icon: "ShieldCheck", requiredPermission: "role.assign" },
@@ -39,8 +26,20 @@ export default async function AdminLayout({
 }>) {
   const session = await requirePermission("admin.view");
 
+  const [pendingEvents, pendingReports, unreadNotifications] = await Promise.all([
+    prisma.event.count({ where: { status: "PENDING_APPROVAL" } }),
+    prisma.report.count({ where: { status: "SUBMITTED" } }),
+    prisma.notification.count({ where: { userId: session.user.id, isRead: false } }),
+  ]);
+
   // Filter items based on role-based permissions
-  const filteredNavItems = navItems.filter((item) => {
+  const filteredNavItems = navItems.map((item) => {
+    let badge = undefined;
+    if (item.href === "/admin/etkinlik-onaylari") badge = pendingEvents;
+    if (item.href === "/admin/rapor-onaylari") badge = pendingReports;
+    if (item.href === "/bildirimler") badge = unreadNotifications;
+    return { ...item, badge };
+  }).filter((item) => {
     if (!item.requiredPermission) return true;
     return session.user.permissions.includes(item.requiredPermission);
   });

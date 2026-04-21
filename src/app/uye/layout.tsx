@@ -1,3 +1,4 @@
+import { prisma } from "@/lib/prisma";
 import { requirePermission } from "@/lib/permissions";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { 
@@ -13,7 +14,8 @@ const navItems = [
   { href: "/uye/profilim", label: "Profilim", icon: "User" },
   { href: "/uye/etkinliklerim", label: "Etkinliklerim", icon: "Calendar", requiredPermission: "event.view" },
   { href: "/uye/katilim-durumlarim", label: "Katılım Durumlarım", icon: "ClipboardCheck", requiredPermission: "attendance.view" },
-  { href: "/uye/duyurular", label: "Duyurular", icon: "Bell", requiredPermission: "announcement.view" },
+  { href: "/uye/duyurular", label: "Duyurular", icon: "Megaphone", requiredPermission: "announcement.view" },
+  { href: "/bildirimler", label: "Bildirimlerim", icon: "Bell" },
 ];
 
 export default async function MemberLayout({
@@ -23,8 +25,16 @@ export default async function MemberLayout({
 }>) {
   const session = await requirePermission("member.view");
 
+  const unreadNotifications = await prisma.notification.count({ 
+    where: { userId: session.user.id, isRead: false } 
+  });
+
   // Filter items based on role-based permissions
-  const filteredNavItems = navItems.filter((item) => {
+  const filteredNavItems = navItems.map((item) => {
+    let badge = undefined;
+    if (item.href === "/bildirimler") badge = unreadNotifications;
+    return { ...item, badge };
+  }).filter((item) => {
     if (!item.requiredPermission) return true;
     return session.user.permissions.includes(item.requiredPermission);
   });

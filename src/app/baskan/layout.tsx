@@ -1,16 +1,6 @@
+import { prisma } from "@/lib/prisma";
 import { requireCommunityManager } from "@/lib/permissions";
 import { Sidebar } from "@/components/layout/Sidebar";
-import { 
-  LayoutDashboard, 
-  Building, 
-  Users, 
-  Calendar, 
-  ClipboardCheck, 
-  FileText, 
-  Bell,
-  FolderOpen,
-  LineChart,
-} from "lucide-react";
 
 const navItems = [
   { href: "/baskan", label: "Dashboard", icon: "LayoutDashboard" },
@@ -20,7 +10,8 @@ const navItems = [
   { href: "/baskan/katilim", label: "Katılım", icon: "ClipboardCheck", requiredPermission: "attendance.manage" },
   { href: "/baskan/raporlar", label: "Raporlar", icon: "FileText", requiredPermission: "report.create" },
   { href: "/baskan/gorseller-belgeler", label: "Görseller & Belgeler", icon: "FolderOpen", requiredPermission: "media.upload" },
-  { href: "/baskan/duyurular", label: "Duyurular", icon: "Bell", requiredPermission: "announcement.view" },
+  { href: "/baskan/duyurular", label: "Duyurular", icon: "Megaphone", requiredPermission: "announcement.view" },
+  { href: "/bildirimler", label: "Bildirimlerim", icon: "Bell" },
   { href: "/baskan/istatistikler", label: "İstatistikler", icon: "LineChart", requiredPermission: "stats.view" },
 ];
 
@@ -30,9 +21,22 @@ export default async function PresidentLayout({
   children: React.ReactNode;
 }>) {
   const session = await requireCommunityManager();
+  const communityId = session.user.communityIds[0];
+
+  const [revisionEvents, revisionReports, unreadNotifications] = await Promise.all([
+    prisma.event.count({ where: { communityId, status: "DRAFT", reviewNote: { not: null } } }),
+    prisma.report.count({ where: { communityId, status: "REVISION_REQUESTED" } }),
+    prisma.notification.count({ where: { userId: session.user.id, isRead: false } }),
+  ]);
 
   // Filter items based on role-based permissions
-  const filteredNavItems = navItems.filter((item) => {
+  const filteredNavItems = navItems.map((item) => {
+    let badge = undefined;
+    if (item.href === "/baskan/etkinlikler") badge = revisionEvents;
+    if (item.href === "/baskan/raporlar") badge = revisionReports;
+    if (item.href === "/bildirimler") badge = unreadNotifications;
+    return { ...item, badge };
+  }).filter((item) => {
     if (!item.requiredPermission) return true;
     return session.user.permissions.includes(item.requiredPermission);
   });

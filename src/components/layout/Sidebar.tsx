@@ -14,6 +14,7 @@ interface NavItem {
   href: string;
   label: string;
   icon: string;
+  badge?: number;
 }
 
 interface SidebarProps {
@@ -69,6 +70,12 @@ export function Sidebar({ items, title, subtitle }: SidebarProps) {
                     isActive ? "text-corporate-orange" : "text-slate-500 group-hover:text-white"
                   )} />
                   <span className="truncate">{item.label}</span>
+                  
+                  {item.badge !== undefined && item.badge > 0 && (
+                    <span className="ml-auto bg-corporate-orange text-white text-[9px] font-black px-2 py-0.5 rounded-full shadow-lg shadow-corporate-orange/20 animate-pulse">
+                      {item.badge}
+                    </span>
+                  )}
                   
                   {isActive && (
                     <motion.div 
