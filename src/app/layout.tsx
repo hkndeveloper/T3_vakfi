@@ -18,6 +18,8 @@ export const metadata: Metadata = {
   description: "T3 Vakfı üniversite topluluk yönetim platformu",
 };
 
+import { SessionProvider } from "@/components/providers/SessionProvider";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -29,10 +31,12 @@ export default function RootLayout({
       className={`${lexend.variable} ${sourceSans.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-source-sans">
-        <main className="flex-1 flex flex-col">
-          {children}
-        </main>
-        <Toaster richColors position="top-right" />
+        <SessionProvider>
+          <main className="flex-1 flex flex-col">
+            {children}
+          </main>
+          <Toaster richColors position="top-right" />
+        </SessionProvider>
       </body>
     </html>
   );

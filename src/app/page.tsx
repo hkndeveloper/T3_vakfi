@@ -11,10 +11,21 @@ import {
   Users
 } from "lucide-react";
 
+import { redirect } from "next/navigation";
+
 export default async function Home() {
   const session = await getServerSession(authOptions);
+  
+  if (session) {
+    const roles = session.user?.roles ?? [];
+    if (roles.includes("super_admin")) {
+      redirect("/admin");
+    } else {
+      redirect("/baskan");
+    }
+  }
+
   const permissions = session?.user?.permissions ?? [];
-  const roles = session?.user?.roles ?? [];
 
   return (
     <main className="min-h-screen bg-slate-50 relative overflow-hidden font-source-sans">

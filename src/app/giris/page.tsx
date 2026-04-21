@@ -26,12 +26,12 @@ export default function LoginPage() {
     setLoading(false);
 
     if (result?.error) {
-      setError("Giris basarisiz. Email veya sifreyi kontrol edin.");
+      setError("Giriş başarısız. Email veya şifreyi kontrol edin.");
       return;
     }
 
-    router.push("/");
-    router.refresh();
+    // Full refresh to ensure session is picked up correctly
+    window.location.href = "/";
   };
 
   return (

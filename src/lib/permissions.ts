@@ -8,6 +8,8 @@ export async function getCurrentSession() {
 
 export async function hasPermission(permissionCode: string) {
   const session = await getCurrentSession();
+  const roles = session?.user?.roles ?? [];
+  if (roles.includes("super_admin")) return true;
   return Boolean(session?.user?.permissions?.includes(permissionCode));
 }
 
@@ -28,8 +30,13 @@ export async function requireSuperAdmin() {
 
 export async function requirePermission(permissionCode: string) {
   const session = await getCurrentSession();
+  const roles = session?.user?.roles ?? [];
 
-  if (!session || !session.user?.permissions?.includes(permissionCode)) {
+  if (!session) {
+    redirect("/giris");
+  }
+
+  if (!roles.includes("super_admin") && !session.user?.permissions?.includes(permissionCode)) {
     redirect("/");
   }
 
