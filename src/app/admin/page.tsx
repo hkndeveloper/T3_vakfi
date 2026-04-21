@@ -1,28 +1,40 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { requireSuperAdmin } from "@/lib/permissions";
-import { 
-  Users, 
-  Building2, 
-  School, 
-  ShieldCheck, 
-  ClipboardCheck, 
-  FileCheck2, 
+import {
+  Users,
+  Building2,
+  School,
+  ShieldCheck,
+  ClipboardCheck,
+  FileCheck2,
   History,
-  LayoutDashboard,
   ArrowRight,
   TrendingUp,
   BarChart3,
   Zap,
-  Activity
+  Activity,
+  Clock,
+  User,
 } from "lucide-react";
 import { AttendanceChart } from "@/components/charts/AttendanceChart";
 import { cn } from "@/lib/utils";
 
 export default async function AdminPage() {
   await requireSuperAdmin();
-  
-  const [totalUsers, totalRoles, totalCommunities, totalUniversities, pendingEvents, pendingReports, universityStats] = await Promise.all([
+
+  const [
+    totalUsers,
+    totalRoles,
+    totalCommunities,
+    totalUniversities,
+    pendingEvents,
+    pendingReports,
+    universityStats,
+    recentLogs,
+    totalEvents,
+    totalApprovedReports,
+  ] = await Promise.all([
     prisma.user.count(),
     prisma.role.count(),
     prisma.community.count(),
@@ -30,28 +42,34 @@ export default async function AdminPage() {
     prisma.event.count({ where: { status: "PENDING_APPROVAL" } }),
     prisma.report.count({ where: { status: { in: ["SUBMITTED", "IN_REVIEW"] } } }),
     prisma.university.findMany({
-      include: {
-        _count: {
-          select: { users: true }
-        }
-      },
+      include: { _count: { select: { users: true } } },
       take: 5,
-      orderBy: { users: { _count: 'desc' } }
-    })
+      orderBy: { users: { _count: "desc" } },
+    }),
+    // Gerçek sistem logu — son 5 kritik işlem
+    prisma.activityLog.findMany({
+      orderBy: { createdAt: "desc" },
+      include: { user: { select: { name: true } } },
+      take: 5,
+    }),
+    prisma.event.count(),
+    prisma.report.count({ where: { status: "APPROVED" } }),
   ]);
 
-  const chartData = universityStats.map(u => ({
+  const chartData = universityStats.map((u) => ({
     name: u.name,
-    value: u._count.users
+    value: u._count.users,
   }));
 
-  if (chartData.length === 0) {
-    chartData.push({ name: "İTÜ", value: 45 }, { name: "ODTÜ", value: 38 }, { name: "Yeditepe", value: 32 });
-  }
+  // Genel onay oranı (hafif bir "sistem sağlığı" metriği)
+  const approvalRate =
+    totalEvents > 0
+      ? Math.round(((totalEvents - pendingEvents) / totalEvents) * 100)
+      : 100;
 
   return (
     <div className="space-y-16 pb-20 animate-in fade-in slide-in-from-bottom-4 duration-1000 bg-white min-h-screen">
-      {/* Soft Executive Hero Header - FIXED LIGHT */}
+      {/* Soft Executive Hero Header */}
       <div className="relative overflow-hidden bg-[#f1f5f9] p-14 md:p-20 rounded-t3-xl border border-slate-200">
         <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-indigo-500/[0.05] to-transparent pointer-events-none" />
         <div className="relative z-10">
@@ -63,12 +81,16 @@ export default async function AdminPage() {
             <span className="text-corporate-blue">PANELİ</span>
           </h1>
           <p className="mt-10 text-slate-600 font-medium max-w-2xl text-xl leading-relaxed">
-            T3 Vakfı Topluluk Yönetim Sistemi üzerinden tüm operasyonel süreçleri <span className="text-slate-950 font-bold underline decoration-corporate-blue/30 decoration-4 underline-offset-4">gerçek zamanlı</span> izleyin ve yönetin.
+            T3 Vakfı Topluluk Yönetim Sistemi üzerinden tüm operasyonel süreçleri{" "}
+            <span className="text-slate-950 font-bold underline decoration-corporate-blue/30 decoration-4 underline-offset-4">
+              gerçek zamanlı
+            </span>{" "}
+            izleyin ve yönetin.
           </p>
         </div>
       </div>
 
-      {/* Stats Grid - Fixed Soft Tints */}
+      {/* Stats Grid */}
       <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         <StatWidget label="Toplam Kullanıcı" value={totalUsers} icon={Users} color="blue" />
         <StatWidget label="Aktif Roller" value={totalRoles} icon={ShieldCheck} color="slate" />
@@ -80,7 +102,7 @@ export default async function AdminPage() {
 
       <div className="grid gap-10 lg:grid-cols-12">
         <div className="lg:col-span-8 space-y-12">
-          {/* Main Chart Section - Softer Tint */}
+          {/* Main Chart */}
           <div className="t3-panel p-12 bg-slate-50/50">
             <div className="flex items-center justify-between mb-12">
               <div>
@@ -91,9 +113,19 @@ export default async function AdminPage() {
                 <BarChart3 className="h-7 w-7" />
               </div>
             </div>
-            <div className="h-[400px] w-full">
-              <AttendanceChart data={chartData} />
-            </div>
+            {chartData.length > 0 && chartData.some((d) => d.value > 0) ? (
+              <div className="h-[400px] w-full">
+                <AttendanceChart data={chartData} />
+              </div>
+            ) : (
+              <div className="h-[300px] flex flex-col items-center justify-center gap-4 text-slate-400 bg-white rounded-2xl border-2 border-dashed border-slate-200">
+                <BarChart3 className="h-16 w-16 opacity-30" />
+                <p className="text-[11px] font-black uppercase tracking-[0.3em]">Henüz Kullanıcı Verisi Yok</p>
+                <Link href="/admin/universiteler" className="text-[10px] font-black text-corporate-blue uppercase tracking-widest hover:underline">
+                  Üniversite Ekle →
+                </Link>
+              </div>
+            )}
           </div>
 
           {/* Quick Actions Grid */}
@@ -111,10 +143,10 @@ export default async function AdminPage() {
         </div>
 
         <div className="lg:col-span-4 space-y-12">
-          {/* Side Module: Logs */}
+          {/* Sistem Logları Kartı */}
           <div className="t3-panel-elevated p-10 relative overflow-hidden group bg-[#f8fafc] border-slate-200">
             <div className="absolute top-0 right-0 p-4 opacity-[0.08] group-hover:opacity-15 transition-opacity">
-               <History className="h-44 w-44 text-slate-400" />
+              <History className="h-44 w-44 text-slate-400" />
             </div>
             <div className="relative z-10">
               <div className="h-16 w-16 rounded-2xl bg-white flex items-center justify-center text-corporate-blue mb-10 border border-slate-200 shadow-sm">
@@ -131,23 +163,74 @@ export default async function AdminPage() {
             </div>
           </div>
 
-          {/* Side Module: AI Insights */}
-          {/* Side Module: AI Insights */}
-          <div className="t3-panel p-10 bg-[#eff6ff]/50 border-dashed border-blue-200">
-            <div className="flex items-center gap-6 mb-10">
-              <div className="h-16 w-16 rounded-2xl bg-white shadow-sm border border-slate-200 flex items-center justify-center text-corporate-blue">
-                <Zap className="h-8 w-8" />
+          {/* Canlı Sistem Akışı — Gerçek Veri */}
+          <div className="t3-panel p-10 space-y-8">
+            <div className="flex items-center gap-5 pb-6 border-b border-slate-200">
+              <div className="h-12 w-12 rounded-2xl bg-white border border-slate-200 flex items-center justify-center text-corporate-blue shadow-sm">
+                <Zap className="h-6 w-6" />
               </div>
               <div>
-                 <h3 className="t3-heading text-sm text-slate-950 uppercase tracking-wider">Analitik Zeka</h3>
-                 <p className="text-[10px] text-corporate-blue font-black uppercase tracking-widest mt-2 px-3 py-1 bg-white rounded-full w-fit border border-blue-100 shadow-sm">BETA</p>
+                <h3 className="t3-heading text-sm text-slate-950 uppercase tracking-wider">Canlı Akış</h3>
+                <div className="flex items-center gap-2 mt-1">
+                  <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                  <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">
+                    {recentLogs.length} SON İŞLEM
+                  </span>
+                </div>
               </div>
             </div>
-            <p className="text-md text-slate-600 mb-10 leading-relaxed font-medium">Topluluk performans metrikleri ve yapay zeka destekli büyüme tahminleri yakında aktif edilecektir.</p>
-            
-            <div className="flex items-center gap-3 px-5 py-2.5 bg-white w-fit rounded-xl border border-slate-200 shadow-sm">
-               <div className="h-2 w-2 rounded-full bg-blue-400 animate-pulse" />
-               <span className="text-[11px] font-black text-slate-500 uppercase tracking-widest">Veri Toplanıyor</span>
+
+            {recentLogs.length > 0 ? (
+              <div className="space-y-4">
+                {recentLogs.map((log) => (
+                  <div key={log.id} className="flex items-start gap-4 p-4 rounded-xl bg-slate-50 border border-slate-100 hover:border-slate-200 transition-all">
+                    <div className="h-9 w-9 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-400 shrink-0 shadow-sm">
+                      <User className="h-4 w-4" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[10px] font-black text-slate-950 uppercase tracking-wider truncate">
+                        {log.action.replace(".", " › ")}
+                      </p>
+                      <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-1 truncate">
+                        {log.user?.name || "Sistem"} · {log.modelType || "GENEL"}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-1 text-[9px] font-black text-slate-400 uppercase tracking-widest shrink-0">
+                      <Clock className="h-3 w-3" />
+                      {new Date(log.createdAt).toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" })}
+                    </div>
+                  </div>
+                ))}
+                <Link href="/admin/sistem-loglari" className="flex items-center justify-center gap-2 text-[10px] font-black text-corporate-blue uppercase tracking-widest hover:gap-4 transition-all pt-2">
+                  TÜM LOGLAR <ArrowRight className="h-3 w-3" />
+                </Link>
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <Activity className="h-10 w-10 text-slate-200 mx-auto mb-3" />
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Henüz İşlem Yok</p>
+              </div>
+            )}
+
+            {/* Sistem Sağlık Metriği */}
+            <div className="pt-6 border-t border-slate-200 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Sistem Onay Oranı</span>
+                <span className={cn(
+                  "text-[11px] font-black italic",
+                  approvalRate >= 80 ? "text-emerald-600" : approvalRate >= 50 ? "text-corporate-orange" : "text-rose-600"
+                )}>
+                  %{approvalRate}
+                </span>
+              </div>
+              <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                <div
+                  className={cn("h-full rounded-full transition-all duration-1000",
+                    approvalRate >= 80 ? "bg-emerald-500" : approvalRate >= 50 ? "bg-corporate-orange" : "bg-rose-500"
+                  )}
+                  style={{ width: `${approvalRate}%` }}
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -166,10 +249,7 @@ function StatWidget({ label, value, icon: Icon, color, alert }: any) {
   const colorClass = colors[color] || colors.slate;
 
   return (
-    <div className={cn(
-      "t3-card p-8 border-b-4",
-      alert ? "border-b-corporate-orange" : "border-b-transparent"
-    )}>
+    <div className={cn("t3-card p-8 border-b-4", alert ? "border-b-corporate-orange" : "border-b-transparent")}>
       <div className={cn("h-14 w-14 rounded-2xl flex items-center justify-center border shadow-sm", colorClass)}>
         <Icon className="h-7 w-7" />
       </div>
@@ -183,22 +263,31 @@ function StatWidget({ label, value, icon: Icon, color, alert }: any) {
 
 function AdminNavCard({ href, label, icon: Icon, highlight }: any) {
   return (
-    <Link href={href} className={cn(
-      "t3-card group p-10 flex flex-col items-center justify-center gap-5 text-center relative overflow-hidden",
-      highlight ? "border-corporate-orange/30 bg-orange-50/50" : "bg-slate-50/50"
-    )}>
-      <div className={cn(
-        "h-16 w-16 rounded-2xl flex items-center justify-center transition-all duration-300 group-hover:scale-110 shadow-sm border border-slate-200",
-        highlight 
-          ? "bg-corporate-orange text-white" 
-          : "bg-white text-slate-700 group-hover:bg-corporate-blue group-hover:text-white"
-      )}>
+    <Link
+      href={href}
+      className={cn(
+        "t3-card group p-10 flex flex-col items-center justify-center gap-5 text-center relative overflow-hidden",
+        highlight ? "border-corporate-orange/30 bg-orange-50/50" : "bg-slate-50/50"
+      )}
+    >
+      <div
+        className={cn(
+          "h-16 w-16 rounded-2xl flex items-center justify-center transition-all duration-300 group-hover:scale-110 shadow-sm border border-slate-200",
+          highlight
+            ? "bg-corporate-orange text-white"
+            : "bg-white text-slate-700 group-hover:bg-corporate-blue group-hover:text-white"
+        )}
+      >
         <Icon className="h-8 w-8" />
       </div>
-      <span className={cn(
-        "text-[11px] font-black uppercase tracking-[0.2em] transition-colors",
-        highlight ? "text-corporate-orange" : "text-slate-600 group-hover:text-slate-950"
-      )}>{label}</span>
+      <span
+        className={cn(
+          "text-[11px] font-black uppercase tracking-[0.2em] transition-colors",
+          highlight ? "text-corporate-orange" : "text-slate-600 group-hover:text-slate-950"
+        )}
+      >
+        {label}
+      </span>
       {highlight && (
         <span className="absolute top-5 right-5 flex h-2 w-2">
           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-corporate-orange opacity-75"></span>

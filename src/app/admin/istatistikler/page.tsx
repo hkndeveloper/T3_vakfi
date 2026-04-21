@@ -33,7 +33,7 @@ export default async function AdminStatsPage({
   const department = typeof params.department === "string" ? params.department : "";
   const grade = typeof params.grade === "string" ? params.grade : "";
 
-  const [usersByUniversity, usersByDepartment, usersByGrade, eventCountsByCommunity, topActiveCommunity] =
+  const [usersByUniversity, usersByDepartment, usersByGrade, eventCountsByCommunity, topActiveCommunity, upcomingEvents, recentReports] =
     await Promise.all([
       prisma.university.findMany({
         include: { _count: { select: { users: true } } },
@@ -56,6 +56,20 @@ export default async function AdminStatsPage({
       prisma.community.findFirst({
         include: { _count: { select: { createdEvents: true } }, university: true },
         orderBy: { createdEvents: { _count: "desc" } },
+      }),
+      // Spec: yaklaşan etkinlikler
+      prisma.event.findMany({
+        where: { status: "APPROVED", eventDate: { gte: new Date() } },
+        orderBy: { eventDate: "asc" },
+        take: 5,
+        include: { community: { select: { shortName: true } } },
+      }),
+      // Spec: son yüklenen raporlar
+      prisma.report.findMany({
+        where: { status: { in: ["SUBMITTED", "IN_REVIEW"] } },
+        orderBy: { createdAt: "desc" },
+        take: 5,
+        include: { community: { select: { shortName: true } } },
       }),
     ]);
 
@@ -267,6 +281,89 @@ export default async function AdminStatsPage({
             
             <BarChart4 className="absolute -right-10 -bottom-10 h-64 w-64 opacity-[0.03] rotate-12 transition-transform duration-1000 group-hover/top:rotate-0 text-amber-950" />
           </div>
+        </div>
+      </section>
+
+      {/* Yaklaşan Etkinlikler + Son Raporlar */}
+      <section className="grid gap-12 lg:grid-cols-2">
+        {/* Yaklaşan Etkinlikler */}
+        <div className="t3-panel p-10 space-y-8">
+          <div className="flex items-center gap-6 pb-6 border-b border-slate-200">
+            <div className="h-12 w-12 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-corporate-blue shadow-sm">
+              <LayoutDashboard className="h-6 w-6" />
+            </div>
+            <div>
+              <h3 className="text-xl font-black text-slate-950 tracking-tighter uppercase italic">Yaklaşan Etkinlikler</h3>
+              <p className="t3-label">ONAYLANMIŞ VE PLANLANMIŞ</p>
+            </div>
+          </div>
+          {upcomingEvents.length > 0 ? (
+            <div className="space-y-4">
+              {upcomingEvents.map((event) => (
+                <div key={event.id} className="flex items-center gap-5 p-5 rounded-2xl bg-slate-50 border border-slate-100 hover:border-corporate-blue/20 hover:bg-white transition-all group">
+                  <div className="h-14 w-14 shrink-0 rounded-xl bg-white border border-slate-200 flex flex-col items-center justify-center shadow-sm">
+                    <span className="text-[9px] font-black text-slate-400 uppercase leading-none">
+                      {new Date(event.eventDate).toLocaleString("tr-TR", { month: "short" }).toUpperCase()}
+                    </span>
+                    <span className="text-xl font-black text-slate-950 leading-none">
+                      {new Date(event.eventDate).getDate()}
+                    </span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-black text-slate-950 uppercase tracking-tight truncate group-hover:text-corporate-blue transition-colors">{event.title}</p>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">{event.community.shortName}</p>
+                  </div>
+                  <span className="text-[9px] font-black text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-100 shrink-0">ONAYLANDI</span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12 text-slate-400">
+              <LayoutDashboard className="h-12 w-12 mx-auto mb-3 opacity-30" />
+              <p className="text-[11px] font-black uppercase tracking-[0.3em]">Yaklaşan Etkinlik Yok</p>
+            </div>
+          )}
+        </div>
+
+        {/* Son Gelen Raporlar */}
+        <div className="t3-panel p-10 space-y-8">
+          <div className="flex items-center gap-6 pb-6 border-b border-slate-200">
+            <div className="h-12 w-12 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-corporate-orange shadow-sm">
+              <Activity className="h-6 w-6" />
+            </div>
+            <div>
+              <h3 className="text-xl font-black text-slate-950 tracking-tighter uppercase italic">Bekleyen Raporlar</h3>
+              <p className="t3-label">İNCELEMEYE ALINACAK</p>
+            </div>
+          </div>
+          {recentReports.length > 0 ? (
+            <div className="space-y-4">
+              {recentReports.map((report) => (
+                <div key={report.id} className="flex items-center gap-5 p-5 rounded-2xl bg-slate-50 border border-slate-100 hover:border-corporate-orange/20 hover:bg-white transition-all group">
+                  <div className="h-12 w-12 shrink-0 rounded-xl bg-corporate-orange/10 border border-corporate-orange/20 flex items-center justify-center">
+                    <Activity className="h-5 w-5 text-corporate-orange" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-black text-slate-950 uppercase tracking-tight truncate group-hover:text-corporate-orange transition-colors">{report.title}</p>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">{report.community.shortName}</p>
+                  </div>
+                  <span className={cn(
+                    "text-[9px] font-black px-3 py-1.5 rounded-lg border shrink-0",
+                    report.status === "IN_REVIEW"
+                      ? "text-blue-600 bg-blue-50 border-blue-100"
+                      : "text-amber-600 bg-amber-50 border-amber-100"
+                  )}>
+                    {report.status === "IN_REVIEW" ? "İNCELENİYOR" : "ONAY BEKLİYOR"}
+                  </span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12 text-slate-400">
+              <Activity className="h-12 w-12 mx-auto mb-3 opacity-30" />
+              <p className="text-[11px] font-black uppercase tracking-[0.3em]">Bekleyen Rapor Yok</p>
+            </div>
+          )}
         </div>
       </section>
     </div>
