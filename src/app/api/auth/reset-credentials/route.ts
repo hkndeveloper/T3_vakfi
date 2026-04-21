@@ -9,16 +9,33 @@ export async function GET() {
     const yonetimPassword = await bcrypt.hash("Yonetim12345!", 12);
     const uyePassword = await bcrypt.hash("Uye12345!", 12);
 
+    const roles = [
+      { code: "super_admin", name: "Super Admin" },
+      { code: "president", name: "Topluluk Başkanı" },
+      { code: "management_team", name: "Yönetim Ekibi" },
+      { code: "member", name: "Üye" },
+    ];
+
+    // 1. Rollere emin ol
+    for (const r of roles) {
+      await prisma.role.upsert({
+        where: { code: r.code },
+        update: { name: r.name },
+        create: { code: r.code, name: r.name },
+      });
+    }
+
     const accounts = [
-      { email: "admin@t3.org.tr", name: "T3 Süper Admin", password: adminPassword },
-      { email: "baskan@t3.org.tr", name: "Topluluk Başkanı", password: baskanPassword },
-      { email: "yonetim@t3.org.tr", name: "Yönetim Ekibi Üyesi", password: yonetimPassword },
-      { email: "uye@t3.org.tr", name: "Kayıtlı Topluluk Üyesi", password: uyePassword },
+      { email: "admin@t3.org.tr", name: "T3 Süper Admin", password: adminPassword, role: "super_admin" },
+      { email: "baskan@t3.org.tr", name: "Topluluk Başkanı", password: baskanPassword, role: "president" },
+      { email: "yonetim@t3.org.tr", name: "Yönetim Ekibi Üyesi", password: yonetimPassword, role: "management_team" },
+      { email: "uye@t3.org.tr", name: "Kayıtlı Topluluk Üyesi", password: uyePassword, role: "member" },
     ];
 
     const results = [];
 
     for (const acc of accounts) {
+      // 2. Kullanıcıyı güncelle/oluştur
       const user = await prisma.user.upsert({
         where: { email: acc.email },
         update: {
@@ -33,12 +50,27 @@ export async function GET() {
           isActive: true,
         },
       });
-      results.push(`${acc.email} güncellendi.`);
+
+      // 3. Rolü ata
+      const role = await prisma.role.findUnique({ where: { code: acc.role } });
+      if (role) {
+        await prisma.userRole.upsert({
+          where: { id: `${user.id}-${role.id}` },
+          update: {},
+          create: {
+             id: `${user.id}-${role.id}`,
+             userId: user.id,
+             roleId: role.id
+          }
+        });
+      }
+      
+      results.push(`${acc.email} (${acc.role}) başarıyla güncellendi.`);
     }
 
     return NextResponse.json({
       success: true,
-      message: "Tüm test hesapları başarıyla sıfırlandı ve aktif edildi.",
+      message: "Sistem rolleri ve test hesapları tam yetki ile senkronize edildi.",
       details: results,
     });
   } catch (error: any) {
