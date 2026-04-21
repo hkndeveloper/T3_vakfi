@@ -80,8 +80,16 @@ export async function GET() {
     for (const acc of accounts) {
       const hashedPassword = await bcrypt.hash(acc.password, 10);
       
-      const user = await prisma.user.create({
-        data: {
+      // 3. Varsa GÜNCELLE, yoksa OLUŞTUR
+      const user = await prisma.user.upsert({
+        where: { email: acc.email },
+        update: {
+          passwordHash: hashedPassword,
+          isActive: true,
+          name: acc.name,
+          universityId: testUni.id,
+        },
+        create: {
           email: acc.email,
           name: acc.name,
           passwordHash: hashedPassword,
@@ -92,8 +100,14 @@ export async function GET() {
 
       const role = await prisma.role.findUnique({ where: { code: acc.role } });
       if (role) {
-        await prisma.userRole.create({
-          data: {
+        // Role atamasını da güvenli yap
+        await prisma.userRole.upsert({
+          where: { id: `${user.id}-${role.id}` },
+          update: {
+            communityId: acc.role !== "super_admin" ? testCommunity.id : null
+          },
+          create: {
+             id: `${user.id}-${role.id}`,
              userId: user.id,
              roleId: role.id,
              communityId: acc.role !== "super_admin" ? testCommunity.id : null
@@ -101,8 +115,13 @@ export async function GET() {
         });
 
         if (acc.role !== "super_admin") {
-          await prisma.communityMember.create({
-            data: {
+          await prisma.communityMember.upsert({
+            where: { communityId_userId: { communityId: testCommunity.id, userId: user.id } },
+            update: {
+              membershipType: acc.role === "president" ? "PRESIDENT" : (acc.role === "management_team" ? "MANAGEMENT" : "MEMBER"),
+              status: "ACTIVE"
+            },
+            create: {
               communityId: testCommunity.id,
               userId: user.id,
               membershipType: acc.role === "president" ? "PRESIDENT" : (acc.role === "management_team" ? "MANAGEMENT" : "MEMBER"),
@@ -112,7 +131,7 @@ export async function GET() {
         }
       }
       
-      results.push(`${acc.email} (${acc.role}) yetkileri ile sıfırdan kuruldu.`);
+      results.push(`${acc.email} (${acc.role}) başarıyla güncellendi/onarıldı.`);
     }
 
     const totalUsers = await prisma.user.count();
