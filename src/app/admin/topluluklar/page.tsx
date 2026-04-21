@@ -29,8 +29,8 @@ export default async function AdminCommunitiesPage({
   const query = typeof params.q === "string" ? params.q : "";
   const universityId = typeof params.universityId === "string" ? params.universityId : "";
 
-  let universities = [];
-  let communities = [];
+  let universities: { id: string; name: string }[] = [];
+  let communities: any[] = [];
 
   try {
     const results = await Promise.all([
