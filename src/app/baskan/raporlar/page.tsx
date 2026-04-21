@@ -252,8 +252,6 @@ export default async function PresidentReportsPage() {
         )}
       </div>
     </div>
-      </div>
-    </div>
   );
 }
 

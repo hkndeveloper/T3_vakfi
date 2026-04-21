@@ -308,5 +308,3 @@ function ReportTypeBadge({ type }: { type: string }) {
     </span>
   );
 }
-  );
-}
