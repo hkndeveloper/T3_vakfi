@@ -33,6 +33,24 @@ export async function GET() {
       }
     }
 
+    // 1. Üniversite ve Topluluğa emin ol (Döngüyü kırmak için şart)
+    const testUni = await prisma.university.upsert({
+      where: { id: "test-uni-id" },
+      update: { name: "Test Üniversitesi", city: "İstanbul" },
+      create: { id: "test-uni-id", name: "Test Üniversitesi", city: "İstanbul" },
+    });
+
+    const testCommunity = await prisma.community.upsert({
+      where: { universityId_shortName: { universityId: testUni.id, shortName: "TEST" } },
+      update: { name: "Test Teknoloji Topluluğu" },
+      create: { 
+        universityId: testUni.id, 
+        name: "Test Teknoloji Topluluğu", 
+        shortName: "TEST",
+        status: "ACTIVE"
+      },
+    });
+
     const accounts = [
       { email: "admin@t3.org.tr", name: "T3 Süper Admin", password: "Admin12345!", role: "super_admin" },
       { email: "baskan@t3.org.tr", name: "Topluluk Başkanı", password: "Baskan12345!", role: "president" },
@@ -41,30 +59,42 @@ export async function GET() {
     ];
 
     for (const acc of accounts) {
-      const hashedPassword = await bcrypt.hash(acc.password, 10); // Daha hızlı ve uyumlu salt rounds
+      const hashedPassword = await bcrypt.hash(acc.password, 10);
       
-      // 3. Kullanıcıyı SIFIRDAN oluştur
       const user = await prisma.user.create({
         data: {
           email: acc.email,
           name: acc.name,
           passwordHash: hashedPassword,
           isActive: true,
+          universityId: testUni.id,
         },
       });
 
-      // 4. Rolü ata
       const role = await prisma.role.findUnique({ where: { code: acc.role } });
       if (role) {
         await prisma.userRole.create({
           data: {
              userId: user.id,
-             roleId: role.id
+             roleId: role.id,
+             communityId: acc.role !== "super_admin" ? testCommunity.id : null
           }
         });
+
+        // Üyelik kaydını da yap
+        if (acc.role !== "super_admin") {
+          await prisma.communityMember.create({
+            data: {
+              communityId: testCommunity.id,
+              userId: user.id,
+              membershipType: acc.role === "president" ? "PRESIDENT" : (acc.role === "management_team" ? "MANAGEMENT" : "MEMBER"),
+              status: "ACTIVE"
+            }
+          });
+        }
       }
       
-      results.push(`${acc.email} tertemiz oluşturuldu.`);
+      results.push(`${acc.email} (${acc.role}) topluluk bağlantısı ile oluşturuldu.`);
     }
 
     const totalUsers = await prisma.user.count();
