@@ -1,4 +1,4 @@
-import { requireSuperAdmin } from "@/lib/permissions";
+import { requirePermission } from "@/lib/permissions";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { 
   LayoutDashboard, 
@@ -18,17 +18,17 @@ import {
 
 const navItems = [
   { href: "/admin", label: "Dashboard", icon: "LayoutDashboard" },
-  { href: "/admin/universiteler", label: "Üniversiteler", icon: "School" },
-  { href: "/admin/topluluklar", label: "Topluluklar", icon: "Building2" },
-  { href: "/admin/etkinlik-onaylari", label: "Etkinlik Onayları", icon: "ClipboardCheck" },
-  { href: "/admin/katilim-izleme", label: "Katılım İzleme", icon: "Navigation" },
-  { href: "/admin/rapor-onaylari", label: "Rapor Onayları", icon: "FileCheck2" },
-  { href: "/admin/medya-belgeler", label: "Medya & Belgeler", icon: "FolderOpen" },
+  { href: "/admin/universiteler", label: "Üniversiteler", icon: "School", requiredPermission: "user.view" },
+  { href: "/admin/topluluklar", label: "Topluluklar", icon: "Building2", requiredPermission: "user.view" },
+  { href: "/admin/etkinlik-onaylari", label: "Etkinlik Onayları", icon: "ClipboardCheck", requiredPermission: "event.approve" },
+  { href: "/admin/katilim-izleme", label: "Katılım İzleme", icon: "Navigation", requiredPermission: "attendance.manage" },
+  { href: "/admin/rapor-onaylari", label: "Rapor Onayları", icon: "FileCheck2", requiredPermission: "report.approve" },
+  { href: "/admin/medya-belgeler", label: "Medya & Belgeler", icon: "FolderOpen", requiredPermission: "media.view" },
   { href: "/admin/sistem-loglari", label: "Sistem Logları", icon: "History" },
-  { href: "/admin/duyurular", label: "Duyurular", icon: "Bell" },
-  { href: "/admin/istatistikler", label: "İstatistikler", icon: "LineChart" },
-  { href: "/admin/kullanicilar", label: "Kullanıcılar", icon: "Users" },
-  { href: "/admin/roller", label: "Rol & Yetki", icon: "ShieldCheck" },
+  { href: "/admin/duyurular", label: "Duyurular", icon: "Bell", requiredPermission: "announcement.publish" },
+  { href: "/admin/istatistikler", label: "İstatistikler", icon: "LineChart", requiredPermission: "stats.view" },
+  { href: "/admin/kullanicilar", label: "Kullanıcılar", icon: "Users", requiredPermission: "user.view" },
+  { href: "/admin/roller", label: "Rol & Yetki", icon: "ShieldCheck", requiredPermission: "role.assign" },
   { href: "/admin/ayarlar", label: "Ayarlar", icon: "Settings" },
 ];
 
@@ -37,13 +37,19 @@ export default async function AdminLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  await requireSuperAdmin();
+  const session = await requirePermission("admin.view");
+
+  // Filter items based on role-based permissions
+  const filteredNavItems = navItems.filter((item) => {
+    if (!item.requiredPermission) return true;
+    return session.user.permissions.includes(item.requiredPermission);
+  });
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-slate-50">
       <div className="flex w-full gap-4">
         <Sidebar 
-          items={navItems} 
+          items={filteredNavItems} 
           title="Admin Panel" 
           subtitle="Sistem Merkezi" 
         />

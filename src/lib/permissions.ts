@@ -19,7 +19,7 @@ export async function isSuperAdmin() {
 export async function requireSuperAdmin() {
   const session = await getCurrentSession();
 
-  if (!session?.user.roles.includes("super_admin")) {
+  if (!session || !session.user?.roles?.includes("super_admin")) {
     redirect("/");
   }
 
@@ -29,7 +29,7 @@ export async function requireSuperAdmin() {
 export async function requirePermission(permissionCode: string) {
   const session = await getCurrentSession();
 
-  if (!session?.user.permissions.includes(permissionCode)) {
+  if (!session || !session.user?.permissions?.includes(permissionCode)) {
     redirect("/");
   }
 
@@ -43,11 +43,14 @@ export async function requireCommunityManager() {
     redirect("/giris");
   }
 
-  const isCommunityManager = session.user.roles.some((role) =>
-    ["president", "management_team"].includes(role),
+  const userRoles = session.user?.roles || [];
+  const isCommunityManager = userRoles.some((role) =>
+    ["president", "management_team"].includes(role.toLowerCase()),
   );
 
-  if (!isCommunityManager || session.user.communityIds.length === 0) {
+  const communityIds = session.user?.communityIds || [];
+
+  if (!isCommunityManager || communityIds.length === 0) {
     redirect("/");
   }
 

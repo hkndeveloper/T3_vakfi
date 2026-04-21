@@ -14,14 +14,14 @@ import {
 
 const navItems = [
   { href: "/baskan", label: "Giriş", icon: "LayoutDashboard" },
-  { href: "/baskan/toplulugum", label: "Topluluğum", icon: "Building" },
-  { href: "/baskan/uyeler", label: "Üyeler", icon: "Users" },
-  { href: "/baskan/etkinlikler", label: "Etkinlikler", icon: "Calendar" },
-  { href: "/baskan/katilim", label: "Katılım", icon: "ClipboardCheck" },
-  { href: "/baskan/raporlar", label: "Raporlar", icon: "FileText" },
-  { href: "/baskan/gorseller-belgeler", label: "Görseller & Belgeler", icon: "FolderOpen" },
+  { href: "/baskan/toplulugum", label: "Topluluğum", icon: "Building", requiredPermission: "stats.view" },
+  { href: "/baskan/uyeler", label: "Üyeler", icon: "Users", requiredPermission: "member.view" },
+  { href: "/baskan/etkinlikler", label: "Etkinlikler", icon: "Calendar", requiredPermission: "event.create" },
+  { href: "/baskan/katilim", label: "Katılım", icon: "ClipboardCheck", requiredPermission: "attendance.manage" },
+  { href: "/baskan/raporlar", label: "Raporlar", icon: "FileText", requiredPermission: "report.create" },
+  { href: "/baskan/gorseller-belgeler", label: "Görseller & Belgeler", icon: "FolderOpen", requiredPermission: "media.upload" },
   { href: "/baskan/duyurular", label: "Duyurular", icon: "Bell" },
-  { href: "/baskan/istatistikler", label: "İstatistikler", icon: "LineChart" },
+  { href: "/baskan/istatistikler", label: "İstatistikler", icon: "LineChart", requiredPermission: "stats.view" },
 ];
 
 export default async function PresidentLayout({
@@ -29,13 +29,19 @@ export default async function PresidentLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  await requireCommunityManager();
+  const session = await requireCommunityManager();
+
+  // Filter items based on role-based permissions
+  const filteredNavItems = navItems.filter((item) => {
+    if (!item.requiredPermission) return true;
+    return session.user.permissions.includes(item.requiredPermission);
+  });
 
   return (
     <div className="min-h-screen bg-slate-50">
       <div className="flex w-full gap-4">
         <Sidebar 
-          items={navItems} 
+          items={filteredNavItems} 
           title="Başkan Paneli" 
           subtitle="Topluluk Yönetimi" 
         />

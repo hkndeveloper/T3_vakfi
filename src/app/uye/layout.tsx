@@ -11,8 +11,8 @@ import {
 const navItems = [
   { href: "/uye", label: "Giriş", icon: "LayoutDashboard" },
   { href: "/uye/profilim", label: "Profilim", icon: "User" },
-  { href: "/uye/etkinliklerim", label: "Etkinliklerim", icon: "Calendar" },
-  { href: "/uye/katilim-durumlarim", label: "Katılım Durumlarım", icon: "ClipboardCheck" },
+  { href: "/uye/etkinliklerim", label: "Etkinliklerim", icon: "Calendar", requiredPermission: "member.view" },
+  { href: "/uye/katilim-durumlarim", label: "Katılım Durumlarım", icon: "ClipboardCheck", requiredPermission: "member.view" },
   { href: "/uye/duyurular", label: "Duyurular", icon: "Bell" },
 ];
 
@@ -21,13 +21,19 @@ export default async function MemberLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  await requirePermission("member.view");
+  const session = await requirePermission("member.view");
+
+  // Filter items based on role-based permissions
+  const filteredNavItems = navItems.filter((item) => {
+    if (!item.requiredPermission) return true;
+    return session.user.permissions.includes(item.requiredPermission);
+  });
 
   return (
     <div className="min-h-screen bg-slate-50">
       <div className="flex w-full gap-4">
         <Sidebar 
-          items={navItems} 
+          items={filteredNavItems} 
           title="Üye Paneli" 
           subtitle="Topluluk Üyesi" 
         />

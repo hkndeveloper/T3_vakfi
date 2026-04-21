@@ -1,4 +1,4 @@
-﻿import { prisma } from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 import { requireCommunityManager } from "@/lib/permissions";
 import { notFound } from "next/navigation";
 import { revalidatePath } from "next/cache";
@@ -44,9 +44,9 @@ async function updateReportAction(formData: FormData) {
     where: { id: reportId },
     data: {
       title,
-      summary: summary || null,
+      summary: summary || undefined,
       content: content || report.content,
-      participantCount: participantCountRaw ? Number(participantCountRaw) : null,
+      participantCount: participantCountRaw ? Number(participantCountRaw) : undefined,
     },
   });
 
@@ -227,7 +227,7 @@ export default async function PresidentReportDetailPage({ params }: PageProps) {
               </div>
            </div>
 
-           {/* Rapor Duzenleme - DRAFT veya REVISION_REQUESTED */
+           {/* Rapor Duzenleme - DRAFT veya REVISION_REQUESTED */}
            {(report.status === "DRAFT" || report.status === "REVISION_REQUESTED") && (
              <div className="rounded-[2.5rem] bg-white border border-slate-100 p-8 shadow-xl shadow-slate-200/20 space-y-5">
                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
