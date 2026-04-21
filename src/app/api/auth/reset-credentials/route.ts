@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 
 export async function GET() {
   try {
+    const results: string[] = [];
     // 1. Tüm Sistem Yetkilerini Tanımla
     const PERMISSIONS = [
       "admin.view", "user.view", "user.create", "user.update", "user.delete",
