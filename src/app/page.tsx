@@ -20,13 +20,14 @@ export default async function Home() {
     const roles = session.user?.roles ?? [];
     if (roles.includes("super_admin")) {
       redirect("/admin");
-    } else {
+    } else if (roles.includes("president") || roles.includes("management_team")) {
       redirect("/baskan");
+    } else {
+      redirect("/uye");
     }
   }
 
-  const permissions = session?.user?.permissions ?? [];
-
+  // The code below only runs if session is null
   return (
     <main className="min-h-screen bg-slate-50 relative overflow-hidden font-source-sans">
       {/* Background Ornaments - Minimalist approach */}
@@ -51,24 +52,13 @@ export default async function Home() {
             </p>
 
             <div className="mt-12 flex flex-wrap items-center gap-4">
-              {session ? (
-                <Link
-                  href={roles.includes("super_admin") ? "/admin" : "/baskan"}
-                  className="t3-button t3-button-primary"
-                >
-                  <LayoutDashboard className="h-4 w-4" />
-                  PANELİME GİT
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-              ) : (
-                <Link
-                  href="/giris"
-                  className="t3-button t3-button-primary"
-                >
-                  SİSTEME GİRİŞ YAP
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-              )}
+              <Link
+                href="/giris"
+                className="t3-button t3-button-primary"
+              >
+                SİSTEME GİRİŞ YAP
+                <ArrowRight className="h-4 w-4" />
+              </Link>
               
               <Link
                 href="/bildirimler"
