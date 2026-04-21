@@ -99,7 +99,7 @@ export default async function MemberEventsPage() {
                         )}>
                           {event.status === "APPROVED" ? "ONAYLI OPERASYON" : 
                            event.status === "COMPLETED" ? "TAMAMLANDI" : 
-                           event.status === "PENDING" ? "DENETİMDE" : event.status}
+                           event.status === "PENDING_APPROVAL" ? "DENETİMDE" : event.status}
                         </span>
                       </div>
                       <h3 className="text-3xl font-black text-slate-950 tracking-tighter italic uppercase group-hover:text-corporate-blue transition-colors">

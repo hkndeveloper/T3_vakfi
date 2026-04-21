@@ -5,7 +5,7 @@ import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface SubmitButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  label: string;
+  label: React.ReactNode;
   loadingLabel?: string;
   icon?: React.ReactNode;
 }
