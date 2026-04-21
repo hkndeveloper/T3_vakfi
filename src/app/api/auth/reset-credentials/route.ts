@@ -4,36 +4,54 @@ import bcrypt from "bcryptjs";
 
 export async function GET() {
   try {
-    const results = [];
-    
-    // 1. Rollere emin ol
-    const roles = [
-      { code: "super_admin", name: "Super Admin" },
-      { code: "president", name: "Topluluk Başkanı" },
-      { code: "management_team", name: "Yönetim Ekibi" },
-      { code: "member", name: "Üye" },
+    // 1. Tüm Sistem Yetkilerini Tanımla
+    const PERMISSIONS = [
+      "admin.view", "user.view", "user.create", "user.update", "user.delete",
+      "member.view", "member.manage", "event.view", "event.create", "event.update",
+      "event.approve", "attendance.view", "attendance.manage", "report.view",
+      "report.create", "report.approve", "media.view", "media.upload", "media.delete",
+      "announcement.view", "announcement.publish", "stats.view", "role.assign"
     ];
 
-    for (const r of roles) {
-      await prisma.role.upsert({
+    const permissionMap = new Map();
+    for (const code of PERMISSIONS) {
+      const p = await prisma.permission.upsert({
+        where: { code },
+        update: { name: code },
+        create: { code, name: code },
+      });
+      permissionMap.set(code, p.id);
+    }
+
+    // 2. Rollere ve Yetkilerine emin ol
+    const roleDefinitions = [
+      { code: "super_admin", name: "Super Admin", perms: PERMISSIONS },
+      { code: "president", name: "Topluluk Başkanı", perms: ["member.view", "event.view", "event.create", "report.view", "report.create", "announcement.view", "stats.view"] },
+      { code: "management_team", name: "Yönetim Ekibi", perms: ["member.view", "event.view", "report.view", "announcement.view"] },
+      { code: "member", name: "Üye", perms: ["member.view", "event.view", "announcement.view"] },
+    ];
+
+    for (const r of roleDefinitions) {
+      const role = await prisma.role.upsert({
         where: { code: r.code },
         update: { name: r.name },
         create: { code: r.code, name: r.name },
       });
-    }
 
-    const testEmails = ["admin@t3.org.tr", "baskan@t3.org.tr", "yonetim@t3.org.tr", "uye@t3.org.tr"];
-    
-    // 2. Mevcut hatalı kayıtları temizle (Zorunlu temizlik)
-    for (const email of testEmails) {
-      try {
-        await prisma.user.delete({ where: { email } });
-      } catch (e) {
-        // Kullanıcı yoksa hata vermesin
+      // Yetkileri role bağla
+      for (const pCode of r.perms) {
+        const pId = permissionMap.get(pCode);
+        if (pId) {
+          await prisma.rolePermission.upsert({
+            where: { roleId_permissionId: { roleId: role.id, permissionId: pId } },
+            update: {},
+            create: { roleId: role.id, permissionId: pId },
+          });
+        }
       }
     }
 
-    // 1. Üniversite ve Topluluğa emin ol (Döngüyü kırmak için şart)
+    // 3. Üniversite ve Topluluğa emin ol
     const testUni = await prisma.university.upsert({
       where: { id: "test-uni-id" },
       update: { name: "Test Üniversitesi", city: "İstanbul" },
@@ -81,7 +99,6 @@ export async function GET() {
           }
         });
 
-        // Üyelik kaydını da yap
         if (acc.role !== "super_admin") {
           await prisma.communityMember.create({
             data: {
@@ -94,7 +111,7 @@ export async function GET() {
         }
       }
       
-      results.push(`${acc.email} (${acc.role}) topluluk bağlantısı ile oluşturuldu.`);
+      results.push(`${acc.email} (${acc.role}) yetkileri ile sıfırdan kuruldu.`);
     }
 
     const totalUsers = await prisma.user.count();
