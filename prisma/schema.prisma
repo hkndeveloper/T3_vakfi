@@ -264,6 +264,14 @@ model Notification {
   user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+model SystemSetting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  group     String   @default("GENERAL")
+  updatedAt DateTime @updatedAt
+}
+
 enum Status {
   ACTIVE
   PASSIVE

@@ -6,7 +6,7 @@ import { requireSuperAdmin, requireCommunityManager } from "@/lib/permissions";
 
 export async function createCommunityAction(formData: FormData) {
   try {
-    await requireSuperAdmin();
+    const session = await requireSuperAdmin();
 
     const universityId = String(formData.get("universityId") ?? "").trim();
     const name = String(formData.get("name") ?? "").trim();
@@ -39,6 +39,7 @@ export async function createCommunityAction(formData: FormData) {
 
     await prisma.activityLog.create({
       data: {
+        userId: session.user.id,
         action: "community.create",
         modelType: "Community",
         modelId: community.id,
@@ -55,7 +56,7 @@ export async function createCommunityAction(formData: FormData) {
 
 export async function toggleCommunityStatusAction(id: string, currentStatus: string) {
   try {
-    await requireSuperAdmin();
+    const session = await requireSuperAdmin();
     const newStatus = currentStatus === "ACTIVE" ? "PASSIVE" : "ACTIVE";
 
     await prisma.community.update({
@@ -65,6 +66,7 @@ export async function toggleCommunityStatusAction(id: string, currentStatus: str
 
     await prisma.activityLog.create({
       data: {
+        userId: session.user.id,
         action: "community.status.toggle",
         modelType: "Community",
         modelId: id,
@@ -80,7 +82,7 @@ export async function toggleCommunityStatusAction(id: string, currentStatus: str
 
 export async function updateCommunityAction(id: string, formData: FormData) {
   try {
-    await requireSuperAdmin();
+    const session = await requireSuperAdmin();
 
     const name = String(formData.get("name") ?? "").trim();
     const shortName = String(formData.get("shortName") ?? "").trim().toUpperCase();
@@ -113,6 +115,7 @@ export async function updateCommunityAction(id: string, formData: FormData) {
 
     await prisma.activityLog.create({
       data: {
+        userId: session.user.id,
         action: "community.update",
         modelType: "Community",
         modelId: id,
@@ -129,7 +132,7 @@ export async function updateCommunityAction(id: string, formData: FormData) {
 
 export async function assignCommunityPresidentAction(communityId: string, userId: string) {
   try {
-    await requireSuperAdmin();
+    const session = await requireSuperAdmin();
 
     const presidentRole = await prisma.role.findUnique({
       where: { code: "president" },
@@ -194,10 +197,10 @@ export async function assignCommunityPresidentAction(communityId: string, userId
 
     await prisma.activityLog.create({
       data: {
+        userId: session.user.id,
         action: "community.president.assign",
         modelType: "Community",
         modelId: communityId,
-        userId: userId,
       },
     });
 

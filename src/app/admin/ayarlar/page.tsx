@@ -26,13 +26,27 @@ async function updateSettingsAction(formData: FormData) {
   const session = await requireSuperAdmin();
 
   const siteName = String(formData.get("siteName") ?? "").trim();
-  const maintenanceMode = String(formData.get("maintenanceMode") ?? "") === "on";
-  const emailNotifications = String(formData.get("emailNotifications") ?? "") === "on";
-  const maxFileSize = String(formData.get("maxFileSize") ?? "").trim();
+  const maintenanceMode = String(formData.get("maintenanceMode") ?? "") === "on" ? "true" : "false";
+  const emailNotifications = String(formData.get("emailNotifications") ?? "") === "on" ? "true" : "false";
   const sessionTimeout = String(formData.get("sessionTimeout") ?? "").trim();
 
-  // In a real implementation, you would save these to a settings table
-  // For now, we'll just log the action
+  const settingsToUpdate = [
+    { key: "site_name", value: siteName },
+    { key: "maintenance_mode", value: maintenanceMode },
+    { key: "email_notifications", value: emailNotifications },
+    { key: "session_timeout", value: sessionTimeout },
+  ];
+
+  await Promise.all(
+    settingsToUpdate.map((s) =>
+      prisma.systemSetting.upsert({
+        where: { key: s.key },
+        update: { value: s.value },
+        create: { key: s.key, value: s.value, group: "GENERAL" },
+      })
+    )
+  );
+
   await prisma.activityLog.create({
     data: {
       userId: session.user.id,
@@ -48,13 +62,17 @@ async function updateSettingsAction(formData: FormData) {
 export default async function AdminSettingsPage() {
   await requireSuperAdmin();
 
-  // In a real implementation, you would fetch settings from database
+  const dbSettings = await prisma.systemSetting.findMany({
+    where: { group: "GENERAL" },
+  });
+
+  const settingsMap = new Map(dbSettings.map((s: { key: string; value: string }) => [s.key, s.value]));
+
   const settings = {
-    siteName: "T3 Vakfı Topluluk Yönetim Sistemi",
-    maintenanceMode: false,
-    emailNotifications: true,
-    maxFileSize: "10",
-    sessionTimeout: "24",
+    siteName: (settingsMap.get("site_name") as string) ?? "T3 Vakfı Topluluk Yönetim Sistemi",
+    maintenanceMode: settingsMap.get("maintenance_mode") === "true",
+    emailNotifications: settingsMap.get("email_notifications") === "true",
+    sessionTimeout: (settingsMap.get("session_timeout") as string) ?? "24",
   };
 
   return (

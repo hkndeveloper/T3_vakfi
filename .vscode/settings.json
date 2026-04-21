@@ -1,3 +1,11 @@
 {
-  "css.lint.unknownAtRules": "ignore"
+  "css.lint.unknownAtRules": "ignore",
+  "scss.lint.unknownAtRules": "ignore",
+  "less.lint.unknownAtRules": "ignore",
+  "tailwindCSS.includeLanguages": {
+    "plaintext": "javascript"
+  },
+  "files.associations": {
+    "*.css": "tailwindcss"
+  }
 }

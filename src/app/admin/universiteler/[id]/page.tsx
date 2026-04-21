@@ -33,7 +33,7 @@ export default async function UniversityDetailPage({ params }: PageProps) {
     include: {
       communities: {
         include: {
-          _count: { select: { members: true } }
+          _count: { select: { members: true, createdEvents: true, reports: true } }
         }
       },
       _count: {
@@ -43,6 +43,22 @@ export default async function UniversityDetailPage({ params }: PageProps) {
   });
 
   if (!university) notFound();
+
+  const [approvedEventsCount, approvedReportsCount] = await Promise.all([
+    prisma.event.count({
+      where: { community: { universityId: id }, status: "APPROVED" }
+    }),
+    prisma.report.count({
+      where: { community: { universityId: id }, status: "APPROVED" }
+    }),
+  ]);
+
+  const totalEvents = university.communities.reduce((acc, c) => acc + c._count.createdEvents, 0);
+  const totalReports = university.communities.reduce((acc, c) => acc + c._count.reports, 0);
+
+  const corporateScore = totalEvents > 0 
+    ? Math.round(((approvedEventsCount / totalEvents) * 70) + ((approvedReportsCount / Math.max(1, totalReports)) * 30))
+    : 0;
 
   return (
     <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-1000 font-outfit pb-20 bg-white min-h-screen">
@@ -101,9 +117,12 @@ export default async function UniversityDetailPage({ params }: PageProps) {
               <h3 className="text-3xl font-black text-slate-950 tracking-tighter italic uppercase leading-none">KURUMSAL SKOR</h3>
               <p className="t3-label mt-4">OPERASYONEL KAPASİTE</p>
               <div className="mt-12 flex items-end gap-3">
-                 <span className="text-7xl font-black text-slate-950 tracking-tighter leading-none italic">%92</span>
-                 <p className="text-[11px] text-emerald-600 font-black mb-1 uppercase tracking-widest flex items-center gap-1.5 bg-emerald-50 px-4 py-2 rounded-xl border border-emerald-100">
-                    <Activity className="h-3.5 w-3.5" /> +14.2%
+                 <span className="text-7xl font-black text-slate-950 tracking-tighter leading-none italic">%{corporateScore}</span>
+                 <p className={cn(
+                   "text-[11px] font-black mb-1 uppercase tracking-widest flex items-center gap-1.5 px-4 py-2 rounded-xl border",
+                   corporateScore > 50 ? "text-emerald-600 bg-emerald-50 border-emerald-100" : "text-amber-600 bg-amber-50 border-amber-100"
+                 )}>
+                    <Activity className="h-3.5 w-3.5" /> {corporateScore > 50 ? "YÜKSEK" : "GELİŞTİRİLMELİ"}
                  </p>
               </div>
            </div>

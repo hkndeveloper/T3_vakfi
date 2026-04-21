@@ -6,7 +6,7 @@ import { requireSuperAdmin } from "@/lib/permissions";
 
 export async function createUniversityAction(formData: FormData) {
   try {
-    await requireSuperAdmin();
+    const session = await requireSuperAdmin();
 
     const name = String(formData.get("name") ?? "").trim();
     const city = String(formData.get("city") ?? "").trim();
@@ -25,6 +25,7 @@ export async function createUniversityAction(formData: FormData) {
 
     await prisma.activityLog.create({
       data: {
+        userId: session.user.id,
         action: "university.create",
         modelType: "University",
         modelId: university.id,
@@ -41,7 +42,7 @@ export async function createUniversityAction(formData: FormData) {
 
 export async function toggleUniversityStatusAction(id: string, currentStatus: string) {
   try {
-    await requireSuperAdmin();
+    const session = await requireSuperAdmin();
 
     const newStatus = currentStatus === "ACTIVE" ? "PASSIVE" : "ACTIVE";
 
@@ -52,6 +53,7 @@ export async function toggleUniversityStatusAction(id: string, currentStatus: st
 
     await prisma.activityLog.create({
       data: {
+        userId: session.user.id,
         action: "university.status.toggle",
         modelType: "University",
         modelId: id,
@@ -67,7 +69,7 @@ export async function toggleUniversityStatusAction(id: string, currentStatus: st
 
 export async function updateUniversityAction(id: string, formData: FormData) {
   try {
-    await requireSuperAdmin();
+    const session = await requireSuperAdmin();
 
     const name = String(formData.get("name") ?? "").trim();
     const city = String(formData.get("city") ?? "").trim();
@@ -84,6 +86,7 @@ export async function updateUniversityAction(id: string, formData: FormData) {
 
     await prisma.activityLog.create({
       data: {
+        userId: session.user.id,
         action: "university.update",
         modelType: "University",
         modelId: id,
