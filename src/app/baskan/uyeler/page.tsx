@@ -225,9 +225,10 @@ async function promoteToManagementAction(formData: FormData) {
   revalidatePath("/baskan/uyeler");
 }
 
-export default async function PresidentMembersPage() {
+export default async function PresidentMembersPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
   const session = await requireCommunityManager();
   const communityId = session.user.communityIds[0];
+  const { q: search } = await searchParams;
 
   const [community, members, events] = await Promise.all([
     prisma.community.findUnique({
@@ -235,7 +236,17 @@ export default async function PresidentMembersPage() {
       select: { id: true, name: true, shortName: true },
     }),
     prisma.communityMember.findMany({
-      where: { communityId },
+      where: { 
+        communityId,
+        ...(search ? {
+          user: {
+            OR: [
+              { name: { contains: search, mode: "insensitive" } },
+              { email: { contains: search, mode: "insensitive" } },
+            ]
+          }
+        } : {})
+      },
       orderBy: { joinedAt: "desc" },
       include: {
         user: true,
@@ -249,8 +260,9 @@ export default async function PresidentMembersPage() {
       },
       orderBy: { eventDate: "asc" },
       select: { id: true, title: true, eventDate: true, type: true }
-    })
+    }),
   ]);
+  const canManage = session.user.permissions.includes("member.manage");
 
   return (
     <div className="space-y-12 animate-in fade-in slide-in-from-bottom-6 duration-1000 font-outfit pb-20">
@@ -277,60 +289,62 @@ export default async function PresidentMembersPage() {
       </div>
 
       {/* Create Member Form */}
-      <div className="rounded-[4rem] border border-slate-100 dark:border-white/5 bg-white dark:bg-slate-900 p-12 md:p-16 shadow-2xl dark:shadow-black/40 relative overflow-hidden group/form border-t-[12px] border-t-indigo-600">
-        <div className="flex flex-wrap items-center justify-between gap-6 mb-12 relative z-10">
-          <div className="flex items-center gap-6">
-            <div className="h-16 w-16 rounded-3xl bg-indigo-600 p-5 text-white shadow-xl shadow-indigo-600/20 group-hover/form:scale-110 transition-all duration-500">
-               <UserPlus className="h-8 w-8" />
+      {canManage && (
+        <div className="rounded-[4rem] border border-slate-100 dark:border-white/5 bg-white dark:bg-slate-900 p-12 md:p-16 shadow-2xl dark:shadow-black/40 relative overflow-hidden group/form border-t-[12px] border-t-indigo-600">
+          <div className="flex flex-wrap items-center justify-between gap-6 mb-12 relative z-10">
+            <div className="flex items-center gap-6">
+              <div className="h-16 w-16 rounded-3xl bg-indigo-600 p-5 text-white shadow-xl shadow-indigo-600/20 group-hover/form:scale-110 transition-all duration-500">
+                 <UserPlus className="h-8 w-8" />
+              </div>
+              <div>
+                <h3 className="text-3xl font-black text-indigo-950 dark:text-white font-montserrat uppercase tracking-tight leading-none">STRATEJİK KAYIT ÜSSÜ</h3>
+                <p className="text-[11px] text-slate-400 dark:text-slate-500 font-black uppercase tracking-[0.25em] mt-3">Yeni yetenekleri ekosisteme dahil edin.</p>
+              </div>
             </div>
-            <div>
-              <h3 className="text-3xl font-black text-indigo-950 dark:text-white font-montserrat uppercase tracking-tight leading-none">STRATEJİK KAYIT ÜSSÜ</h3>
-              <p className="text-[11px] text-slate-400 dark:text-slate-500 font-black uppercase tracking-[0.25em] mt-3">Yeni yetenekleri ekosisteme dahil edin.</p>
-            </div>
+            <div className="h-1 w-24 rounded-full bg-indigo-100 dark:bg-indigo-950/40" />
           </div>
-          <div className="h-1 w-24 rounded-full bg-indigo-100 dark:bg-indigo-950/40" />
-        </div>
 
-        <form action={createMemberAction} className="grid gap-10 md:grid-cols-6 relative z-10">
-          <div className="md:col-span-3 space-y-4">
-             <label className="flex items-center gap-3 text-[11px] font-black text-indigo-950 dark:text-indigo-200 uppercase tracking-[0.3em] px-1 font-montserrat">
-               <Fingerprint className="h-4 w-4 text-indigo-600" /> AD SOYAD
-             </label>
-             <input name="name" placeholder="Örn: Ahmet Yılmaz" className="w-full rounded-2xl border border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-slate-800/50 px-8 py-6 text-sm font-bold text-indigo-950 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:ring-8 focus:ring-indigo-500/5 focus:border-indigo-600 transition-all outline-none shadow-sm placeholder:text-slate-300 dark:placeholder:text-slate-600" required />
-          </div>
-          <div className="md:col-span-3 space-y-4">
-             <label className="flex items-center gap-3 text-[11px] font-black text-indigo-950 dark:text-indigo-200 uppercase tracking-[0.3em] px-1 font-montserrat">
-               <MailCheck className="h-4 w-4 text-amber-500" /> KURUMSAL E-POSTA
-             </label>
-             <input name="email" type="email" placeholder="ahmet.yilmaz@edu.tr" className="w-full rounded-2xl border border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-slate-800/50 px-8 py-6 text-sm font-bold text-indigo-950 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:ring-8 focus:ring-amber-500/5 focus:border-amber-500 transition-all outline-none shadow-sm placeholder:text-slate-300 dark:placeholder:text-slate-600" required />
-          </div>
-          <div className="md:col-span-2 space-y-4">
-             <label className="flex items-center gap-3 text-[11px] font-black text-indigo-950 dark:text-indigo-200 uppercase tracking-[0.3em] px-1 font-montserrat">
-               <Lock className="h-4 w-4 text-indigo-600" /> ERİŞİM ŞİFRESİ
-             </label>
-             <input name="password" type="password" placeholder="Min. 8 karakter" className="w-full rounded-2xl border border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-slate-800/50 px-8 py-6 text-sm font-bold text-indigo-950 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:ring-8 focus:ring-indigo-500/5 focus:border-indigo-600 transition-all outline-none shadow-sm placeholder:text-slate-300 dark:placeholder:text-slate-600" minLength={8} required />
-          </div>
-          <div className="md:col-span-2 space-y-4">
-             <label className="flex items-center gap-3 text-[11px] font-black text-indigo-950 dark:text-indigo-200 uppercase tracking-[0.3em] px-1 font-montserrat">
-               <Building className="h-4 w-4 text-amber-500" /> AKADEMİK BÖLÜM
-             </label>
-             <input name="department" placeholder="Bilgisayar Mühendisliği" className="w-full rounded-2xl border border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-slate-800/50 px-8 py-6 text-sm font-bold text-indigo-950 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:ring-8 focus:ring-amber-500/5 focus:border-amber-500 transition-all outline-none shadow-sm placeholder:text-slate-300 dark:placeholder:text-slate-600" />
-          </div>
-          <div className="md:col-span-1 space-y-4">
-             <label className="flex items-center gap-3 text-[11px] font-black text-indigo-950 dark:text-indigo-200 uppercase tracking-[0.3em] px-1 font-montserrat">
-               <GraduationCap className="h-4 w-4 text-indigo-600" /> SINIF
-             </label>
-             <input name="grade" type="number" placeholder="2" className="w-full rounded-2xl border border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-slate-800/50 px-8 py-6 text-sm font-bold text-indigo-950 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:ring-8 focus:ring-indigo-500/5 focus:border-indigo-600 transition-all outline-none shadow-sm placeholder:text-slate-300 dark:placeholder:text-slate-600" min={1} max={8} />
-          </div>
-          <div className="md:col-span-1 space-y-4">
-             <label className="flex items-center gap-3 text-[11px] font-black text-indigo-950 dark:text-indigo-200 uppercase tracking-[0.3em] px-1 font-montserrat">
-               <IdCard className="h-4 w-4 text-amber-500" /> NO
-             </label>
-             <input name="studentNumber" placeholder="2024..." className="w-full rounded-2xl border border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-slate-800/50 px-6 py-6 text-sm font-bold text-indigo-950 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:ring-8 focus:ring-amber-500/5 focus:border-amber-500 transition-all outline-none shadow-sm placeholder:text-slate-300 dark:placeholder:text-slate-600" />
-          </div>
-          <button className="md:col-span-6 h-20 rounded-[2rem] bg-indigo-950 dark:bg-indigo-600 text-base font-black text-white shadow-2xl dark:shadow-indigo-500/20 active:scale-95 transition-all uppercase tracking-[0.25em] hover:bg-indigo-900 border border-white/10">SİSTEME KAYDET VE YETKİLENDİR</button>
-        </form>
-      </div>
+          <form action={createMemberAction} className="grid gap-10 md:grid-cols-6 relative z-10">
+            <div className="md:col-span-3 space-y-4">
+               <label className="flex items-center gap-3 text-[11px] font-black text-indigo-950 dark:text-indigo-200 uppercase tracking-[0.3em] px-1 font-montserrat">
+                 <Fingerprint className="h-4 w-4 text-indigo-600" /> AD SOYAD
+               </label>
+               <input name="name" placeholder="Örn: Ahmet Yılmaz" className="w-full rounded-2xl border border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-slate-800/50 px-8 py-6 text-sm font-bold text-indigo-950 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:ring-8 focus:ring-indigo-500/5 focus:border-indigo-600 transition-all outline-none shadow-sm placeholder:text-slate-300 dark:placeholder:text-slate-600" required />
+            </div>
+            <div className="md:col-span-3 space-y-4">
+               <label className="flex items-center gap-3 text-[11px] font-black text-indigo-950 dark:text-indigo-200 uppercase tracking-[0.3em] px-1 font-montserrat">
+                 <MailCheck className="h-4 w-4 text-amber-500" /> KURUMSAL E-POSTA
+               </label>
+               <input name="email" type="email" placeholder="ahmet.yilmaz@edu.tr" className="w-full rounded-2xl border border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-slate-800/50 px-8 py-6 text-sm font-bold text-indigo-950 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:ring-8 focus:ring-amber-500/5 focus:border-amber-500 transition-all outline-none shadow-sm placeholder:text-slate-300 dark:placeholder:text-slate-600" required />
+            </div>
+            <div className="md:col-span-2 space-y-4">
+               <label className="flex items-center gap-3 text-[11px] font-black text-indigo-950 dark:text-indigo-200 uppercase tracking-[0.3em] px-1 font-montserrat">
+                 <Lock className="h-4 w-4 text-indigo-600" /> ERİŞİM ŞİFRESİ
+               </label>
+               <input name="password" type="password" placeholder="Min. 8 karakter" className="w-full rounded-2xl border border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-slate-800/50 px-8 py-6 text-sm font-bold text-indigo-950 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:ring-8 focus:ring-indigo-500/5 focus:border-indigo-600 transition-all outline-none shadow-sm placeholder:text-slate-300 dark:placeholder:text-slate-600" minLength={8} required />
+            </div>
+            <div className="md:col-span-2 space-y-4">
+               <label className="flex items-center gap-3 text-[11px] font-black text-indigo-950 dark:text-indigo-200 uppercase tracking-[0.3em] px-1 font-montserrat">
+                 <Building className="h-4 w-4 text-amber-500" /> AKADEMİK BÖLÜM
+               </label>
+               <input name="department" placeholder="Bilgisayar Mühendisliği" className="w-full rounded-2xl border border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-slate-800/50 px-8 py-6 text-sm font-bold text-indigo-950 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:ring-8 focus:ring-amber-500/5 focus:border-amber-500 transition-all outline-none shadow-sm placeholder:text-slate-300 dark:placeholder:text-slate-600" />
+            </div>
+            <div className="md:col-span-1 space-y-4">
+               <label className="flex items-center gap-3 text-[11px] font-black text-indigo-950 dark:text-indigo-200 uppercase tracking-[0.3em] px-1 font-montserrat">
+                 <GraduationCap className="h-4 w-4 text-indigo-600" /> SINIF
+               </label>
+               <input name="grade" type="number" placeholder="2" className="w-full rounded-2xl border border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-slate-800/50 px-8 py-6 text-sm font-bold text-indigo-950 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:ring-8 focus:ring-indigo-500/5 focus:border-indigo-600 transition-all outline-none shadow-sm placeholder:text-slate-300 dark:placeholder:text-slate-600" min={1} max={8} />
+            </div>
+            <div className="md:col-span-1 space-y-4">
+               <label className="flex items-center gap-3 text-[11px] font-black text-indigo-950 dark:text-indigo-200 uppercase tracking-[0.3em] px-1 font-montserrat">
+                 <IdCard className="h-4 w-4 text-amber-500" /> NO
+               </label>
+               <input name="studentNumber" placeholder="2024..." className="w-full rounded-2xl border border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-slate-800/50 px-6 py-6 text-sm font-bold text-indigo-950 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:ring-8 focus:ring-amber-500/5 focus:border-amber-500 transition-all outline-none shadow-sm placeholder:text-slate-300 dark:placeholder:text-slate-600" />
+            </div>
+            <button className="md:col-span-6 h-20 rounded-[2rem] bg-indigo-950 dark:bg-indigo-600 text-base font-black text-white shadow-2xl dark:shadow-indigo-500/20 active:scale-95 transition-all uppercase tracking-[0.25em] hover:bg-indigo-900 border border-white/10">SİSTEME KAYDET VE YETKİLENDİR</button>
+          </form>
+        </div>
+      )}
 
       <div className="space-y-10">
         <div className="flex flex-wrap items-center justify-between gap-6 px-10">
@@ -341,8 +355,22 @@ export default async function PresidentMembersPage() {
                <p className="text-[11px] text-slate-400 dark:text-slate-500 font-black uppercase tracking-[0.25em]">{members.length} AKTİF BİLEŞEN LİSTELENİYOR</p>
             </div>
           </div>
-          <div className="h-16 w-16 rounded-3xl bg-white dark:bg-slate-900 flex items-center justify-center text-indigo-600 shadow-2xl shadow-slate-200/50 dark:shadow-black/20 border border-slate-100 dark:border-white/5">
-             <Filter className="h-7 w-7" />
+          <div className="flex flex-wrap items-center gap-4">
+            <form className="relative group">
+              <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-indigo-400 dark:text-indigo-600 group-focus-within:text-indigo-600 transition-colors" />
+              <input 
+                name="q"
+                type="text" 
+                defaultValue={search}
+                placeholder="İsim veya E-posta ara..." 
+                className="pl-14 pr-8 py-5 bg-white dark:bg-slate-900 border border-slate-100 dark:border-white/5 rounded-3xl text-sm font-bold outline-none focus:ring-8 focus:ring-indigo-500/10 focus:border-indigo-500/30 transition-all w-72 shadow-xl shadow-slate-200/50 dark:shadow-black/20 text-indigo-950 dark:text-white" 
+              />
+            </form>
+            {(search) && (
+              <a href="/baskan/uyeler" className="text-[10px] font-black text-rose-600 uppercase tracking-widest hover:underline px-2">
+                Aramayı Temizle
+              </a>
+            )}
           </div>
         </div>
 
@@ -402,49 +430,53 @@ export default async function PresidentMembersPage() {
                          </div>
                       </td>
                       <td className="px-12 py-10">
-                        <MemberActionButtons 
-                          memberId={member.id}
-                          userId={member.userId}
-                          memberName={member.user.name}
-                          status={member.status}
-                          membershipType={member.membershipType}
-                          updateMemberStatusAction={updateMemberStatusAction}
-                          promoteToManagementAction={promoteToManagementAction}
-                          events={events}
-                        />
+                        {canManage && (
+                          <MemberActionButtons 
+                            memberId={member.id}
+                            userId={member.userId}
+                            memberName={member.user.name}
+                            status={member.status}
+                            membershipType={member.membershipType}
+                            updateMemberStatusAction={updateMemberStatusAction}
+                            promoteToManagementAction={promoteToManagementAction}
+                            events={events}
+                          />
+                        )}
                       </td>
                     </tr>
                     {/* Satır İçi Düzenleme Formu */}
-                    <tr key={`edit-${member.id}`} className="bg-slate-50/50 dark:bg-slate-800/20 border-b border-slate-100">
-                      <td colSpan={4} className="px-12 py-6">
-                        <form action={updateMemberAction} className="flex flex-wrap items-end gap-6">
-                          <input type="hidden" name="userId" value={member.userId} />
-                          <div className="flex flex-col gap-2 min-w-[180px]">
-                            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Ad Soyad</label>
-                            <input name="name" defaultValue={member.user.name} className="rounded-xl border border-slate-200 bg-white px-5 py-3 text-[11px] font-bold text-slate-950 outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-400 transition-all shadow-sm" required />
-                          </div>
-                          <div className="flex flex-col gap-2 min-w-[160px]">
-                            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Telefon</label>
-                            <input name="phone" defaultValue={member.user.phone ?? ""} placeholder="+90..." className="rounded-xl border border-slate-200 bg-white px-5 py-3 text-[11px] font-bold text-slate-950 outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-400 transition-all shadow-sm" />
-                          </div>
-                          <div className="flex flex-col gap-2 min-w-[160px]">
-                            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Bölüm</label>
-                            <input name="department" defaultValue={member.user.department ?? ""} placeholder="Bilg. Müh." className="rounded-xl border border-slate-200 bg-white px-5 py-3 text-[11px] font-bold text-slate-950 outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-400 transition-all shadow-sm" />
-                          </div>
-                          <div className="flex flex-col gap-2 w-24">
-                            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Sınıf</label>
-                            <input name="grade" type="number" defaultValue={member.user.grade ?? ""} min={1} max={8} className="rounded-xl border border-slate-200 bg-white px-5 py-3 text-[11px] font-bold text-slate-950 outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-400 transition-all shadow-sm" />
-                          </div>
-                          <div className="flex flex-col gap-2 min-w-[130px]">
-                            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Öğrenci No</label>
-                            <input name="studentNumber" defaultValue={member.user.studentNumber ?? ""} placeholder="2024..." className="rounded-xl border border-slate-200 bg-white px-5 py-3 text-[11px] font-bold text-slate-950 outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-400 transition-all shadow-sm" />
-                          </div>
-                          <button className="flex items-center gap-3 px-8 py-4 rounded-xl bg-indigo-600 text-white text-[10px] font-black uppercase tracking-widest hover:bg-indigo-700 active:scale-95 transition-all shadow-lg shadow-indigo-500/20 whitespace-nowrap">
-                            <UserCog className="h-4 w-4" /> Güncelle
-                          </button>
-                        </form>
-                      </td>
-                    </tr>
+                    {canManage && (
+                      <tr key={`edit-${member.id}`} className="bg-slate-50/50 dark:bg-slate-800/20 border-b border-slate-100">
+                        <td colSpan={4} className="px-12 py-6">
+                          <form action={updateMemberAction} className="flex flex-wrap items-end gap-6">
+                            <input type="hidden" name="userId" value={member.userId} />
+                            <div className="flex flex-col gap-2 min-w-[180px]">
+                              <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Ad Soyad</label>
+                              <input name="name" defaultValue={member.user.name} className="rounded-xl border border-slate-200 bg-white px-5 py-3 text-[11px] font-bold text-slate-950 outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-400 transition-all shadow-sm" required />
+                            </div>
+                            <div className="flex flex-col gap-2 min-w-[160px]">
+                              <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Telefon</label>
+                              <input name="phone" defaultValue={member.user.phone ?? ""} placeholder="+90..." className="rounded-xl border border-slate-200 bg-white px-5 py-3 text-[11px] font-bold text-slate-950 outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-400 transition-all shadow-sm" />
+                            </div>
+                            <div className="flex flex-col gap-2 min-w-[160px]">
+                              <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Bölüm</label>
+                              <input name="department" defaultValue={member.user.department ?? ""} placeholder="Bilg. Müh." className="rounded-xl border border-slate-200 bg-white px-5 py-3 text-[11px] font-bold text-slate-950 outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-400 transition-all shadow-sm" />
+                            </div>
+                            <div className="flex flex-col gap-2 w-24">
+                              <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Sınıf</label>
+                              <input name="grade" type="number" defaultValue={member.user.grade ?? ""} min={1} max={8} className="rounded-xl border border-slate-200 bg-white px-5 py-3 text-[11px] font-bold text-slate-950 outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-400 transition-all shadow-sm" />
+                            </div>
+                            <div className="flex flex-col gap-2 min-w-[130px]">
+                              <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Öğrenci No</label>
+                              <input name="studentNumber" defaultValue={member.user.studentNumber ?? ""} placeholder="2024..." className="rounded-xl border border-slate-200 bg-white px-5 py-3 text-[11px] font-bold text-slate-950 outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-400 transition-all shadow-sm" />
+                            </div>
+                            <button className="flex items-center gap-3 px-8 py-4 rounded-xl bg-indigo-600 text-white text-[10px] font-black uppercase tracking-widest hover:bg-indigo-700 active:scale-95 transition-all shadow-lg shadow-indigo-500/20 whitespace-nowrap">
+                              <UserCog className="h-4 w-4" /> Güncelle
+                            </button>
+                          </form>
+                        </td>
+                      </tr>
+                    )}
                   </>
                 ))}
               </tbody>

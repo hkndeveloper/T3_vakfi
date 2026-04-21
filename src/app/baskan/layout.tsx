@@ -13,14 +13,14 @@ import {
 } from "lucide-react";
 
 const navItems = [
-  { href: "/baskan", label: "Giriş", icon: "LayoutDashboard" },
-  { href: "/baskan/toplulugum", label: "Topluluğum", icon: "Building", requiredPermission: "stats.view" },
+  { href: "/baskan", label: "Dashboard", icon: "LayoutDashboard" },
+  { href: "/baskan/toplulugum", label: "Topluluğum", icon: "Building", requiredPermission: "member.view" },
   { href: "/baskan/uyeler", label: "Üyeler", icon: "Users", requiredPermission: "member.view" },
   { href: "/baskan/etkinlikler", label: "Etkinlikler", icon: "Calendar", requiredPermission: "event.create" },
   { href: "/baskan/katilim", label: "Katılım", icon: "ClipboardCheck", requiredPermission: "attendance.manage" },
   { href: "/baskan/raporlar", label: "Raporlar", icon: "FileText", requiredPermission: "report.create" },
   { href: "/baskan/gorseller-belgeler", label: "Görseller & Belgeler", icon: "FolderOpen", requiredPermission: "media.upload" },
-  { href: "/baskan/duyurular", label: "Duyurular", icon: "Bell" },
+  { href: "/baskan/duyurular", label: "Duyurular", icon: "Bell", requiredPermission: "announcement.view" },
   { href: "/baskan/istatistikler", label: "İstatistikler", icon: "LineChart", requiredPermission: "stats.view" },
 ];
 

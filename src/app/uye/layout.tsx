@@ -9,11 +9,11 @@ import {
 } from "lucide-react";
 
 const navItems = [
-  { href: "/uye", label: "Giriş", icon: "LayoutDashboard" },
+  { href: "/uye", label: "Dashboard", icon: "LayoutDashboard" },
   { href: "/uye/profilim", label: "Profilim", icon: "User" },
-  { href: "/uye/etkinliklerim", label: "Etkinliklerim", icon: "Calendar", requiredPermission: "member.view" },
-  { href: "/uye/katilim-durumlarim", label: "Katılım Durumlarım", icon: "ClipboardCheck", requiredPermission: "member.view" },
-  { href: "/uye/duyurular", label: "Duyurular", icon: "Bell" },
+  { href: "/uye/etkinliklerim", label: "Etkinliklerim", icon: "Calendar", requiredPermission: "event.view" },
+  { href: "/uye/katilim-durumlarim", label: "Katılım Durumlarım", icon: "ClipboardCheck", requiredPermission: "attendance.view" },
+  { href: "/uye/duyurular", label: "Duyurular", icon: "Bell", requiredPermission: "announcement.view" },
 ];
 
 export default async function MemberLayout({

@@ -19,10 +19,17 @@ import {
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 
-export default async function AdminUniversitiesPage() {
+export default async function AdminUniversitiesPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
   await requireSuperAdmin();
+  const { q: search } = await searchParams;
   
   const universities = await prisma.university.findMany({
+    where: search ? {
+      OR: [
+        { name: { contains: search, mode: "insensitive" } },
+        { city: { contains: search, mode: "insensitive" } }
+      ]
+    } : undefined,
     orderBy: { createdAt: "desc" },
     include: {
       _count: { select: { communities: true, users: true } },
@@ -87,17 +94,21 @@ export default async function AdminUniversitiesPage() {
               </div>
             </div>
             <div className="flex items-center gap-4">
-              <div className="relative hidden xl:block group">
+              <form className="relative hidden xl:block group">
                 <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within:text-corporate-blue transition-colors" />
                 <input 
+                  name="q"
                   type="text" 
+                  defaultValue={search}
                   placeholder="Üniversite veya şehir ara..." 
-                  className="pl-14 pr-8 py-4.5 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-bold outline-none focus:ring-8 focus:ring-corporate-blue/5 focus:border-corporate-blue/30 transition-all w-80 shadow-sm" 
+                  className="pl-14 pr-8 py-4.5 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-bold outline-none focus:ring-8 focus:ring-corporate-blue/5 focus:border-corporate-blue/30 transition-all w-80 shadow-sm text-slate-950" 
                 />
-              </div>
-              <button className="h-14 w-14 rounded-2xl border border-slate-200 bg-slate-50 text-slate-950 hover:bg-white shadow-sm transition-all active:scale-95 flex items-center justify-center">
-                <Filter className="h-6 w-6" />
-              </button>
+              </form>
+              {(search) && (
+                <a href="/admin/universiteler" className="text-[10px] font-black text-rose-600 uppercase tracking-widest hover:underline px-2">
+                  Temizle
+                </a>
+              )}
             </div>
           </div>
 

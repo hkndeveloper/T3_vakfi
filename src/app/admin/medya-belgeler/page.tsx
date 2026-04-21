@@ -20,31 +20,28 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export default async function AdminMediaDocumentsPage() {
+export default async function AdminMediaDocumentsPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
   await requirePermission("media.view");
+  const { q: search } = await searchParams;
 
   // Fetch media files and documents from database
   const [mediaFiles, documents] = await Promise.all([
     prisma.mediaFile.findMany({
+      where: search ? { fileName: { contains: search, mode: "insensitive" } } : undefined,
       orderBy: { createdAt: "desc" },
       take: 50,
       include: {
-        report: {
-          include: {
-            community: true
-          }
-        }
+        community: true,
+        report: true
       }
     }),
     prisma.document.findMany({
+      where: search ? { title: { contains: search, mode: "insensitive" } } : undefined,
       orderBy: { createdAt: "desc" },
       take: 50,
       include: {
-        report: {
-          include: {
-            community: true
-          }
-        }
+        community: true,
+        report: true
       }
     })
   ]);
@@ -100,6 +97,23 @@ export default async function AdminMediaDocumentsPage() {
                <p className="t3-label mt-2">SAHADAN GELEN FOTOĞRAFLAR VE VİDEO KAYITLARI</p>
              </div>
           </div>
+          <div className="flex flex-wrap items-center gap-4">
+            <form className="relative group">
+              <FileSearch className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within:text-corporate-blue transition-colors" />
+              <input 
+                name="q"
+                type="text" 
+                defaultValue={search}
+                placeholder="Dosya adı ara..." 
+                className="pl-12 pr-6 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-bold outline-none focus:ring-8 focus:ring-corporate-blue/5 focus:border-corporate-blue transition-all w-64 shadow-sm text-slate-950" 
+              />
+            </form>
+            {(search) && (
+              <a href="/admin/medya-belgeler" className="text-[10px] font-black text-rose-600 uppercase tracking-widest hover:underline px-2">
+                Temizle
+              </a>
+            )}
+          </div>
           <div className="flex gap-4">
              <button className="h-16 px-8 rounded-xl bg-slate-50 border border-slate-200 text-[11px] font-black text-slate-950 hover:bg-white transition-all shadow-sm flex items-center gap-3">
                <Filter className="h-5 w-5" /> FİLTRELE
@@ -145,12 +159,10 @@ export default async function AdminMediaDocumentsPage() {
               <div className="space-y-4">
                 <p className="text-[11px] font-black text-slate-950 uppercase tracking-widest truncate italic border-b border-slate-100 pb-2">{media.fileName}</p>
                 <div className="flex flex-col gap-2">
-                   {media.report && (
-                      <div className="flex items-center justify-between">
-                         <span className="text-[9px] text-corporate-blue font-black uppercase tracking-tight">@{media.report.community.shortName}</span>
-                         <span className="text-[9px] text-slate-400 font-bold uppercase">{media.fileType.split('/')[1]}</span>
-                      </div>
-                   )}
+                    <div className="flex items-center justify-between">
+                       <span className="text-[9px] text-corporate-blue font-black uppercase tracking-tight">@{media.community.shortName}</span>
+                       <span className="text-[9px] text-slate-400 font-bold uppercase">{media.fileType.split('/')[1]}</span>
+                    </div>
                 </div>
                 <div className="flex items-center gap-2 text-[10px] text-slate-500 font-black uppercase tracking-tight italic">
                    <Calendar className="h-3.5 w-3.5 text-corporate-orange" /> {new Date(media.createdAt).toLocaleDateString("tr-TR")}
@@ -219,12 +231,10 @@ export default async function AdminMediaDocumentsPage() {
                       </span>
                     </td>
                     <td className="px-10 py-8">
-                      {doc.report && (
-                        <div className="flex items-center gap-3">
-                           <Building2 className="h-4 w-4 text-corporate-blue" />
-                           <span className="text-[11px] font-black text-slate-950 uppercase italic tracking-tight">{doc.report.community.shortName}</span>
-                        </div>
-                      )}
+                      <div className="flex items-center gap-3">
+                         <Building2 className="h-4 w-4 text-corporate-blue" />
+                         <span className="text-[11px] font-black text-slate-950 uppercase italic tracking-tight">{doc.community.shortName}</span>
+                      </div>
                     </td>
                     <td className="px-10 py-8">
                       <div className="flex items-center justify-end gap-3">

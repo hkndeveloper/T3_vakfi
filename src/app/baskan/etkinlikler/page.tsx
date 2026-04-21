@@ -16,14 +16,16 @@ import {
   Calendar,
   Zap,
   LayoutDashboard,
-  ArrowRight
+  ArrowRight,
+  Search
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 
-export default async function PresidentEventsPage() {
+export default async function PresidentEventsPage({ searchParams }: { searchParams: Promise<{ q?: string; status?: string }> }) {
   const session = await requireCommunityManager();
   const communityId = session.user.communityIds[0];
+  const { q: search, status: statusFilter } = await searchParams;
 
   const [community, events] = await Promise.all([
     prisma.community.findUnique({
@@ -31,7 +33,13 @@ export default async function PresidentEventsPage() {
       select: { id: true, name: true, shortName: true },
     }),
     prisma.event.findMany({
-      where: { communityId },
+      where: { 
+        communityId,
+        ...(search ? {
+          title: { contains: search, mode: "insensitive" }
+        } : {}),
+        ...(statusFilter ? { status: statusFilter as any } : {})
+      },
       orderBy: { createdAt: "desc" },
       take: 100,
     }),
@@ -85,7 +93,41 @@ export default async function PresidentEventsPage() {
                 <p className="t3-label">SİSTEME KAYITLI AKTİF FAALİYETLER</p>
              </div>
           </div>
-          <div className="h-1.5 w-24 rounded-full bg-corporate-blue/10" />
+          <div className="flex flex-wrap items-center gap-4">
+            <form className="relative group">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within:text-corporate-blue transition-colors" />
+              <input 
+                name="q"
+                type="text" 
+                defaultValue={search}
+                placeholder="Etkinlik ara..." 
+                className="pl-12 pr-6 py-4 bg-white border border-slate-200 rounded-2xl text-sm font-bold outline-none focus:ring-8 focus:ring-corporate-blue/5 focus:border-corporate-blue transition-all w-64 shadow-sm text-slate-950" 
+              />
+              {statusFilter && <input type="hidden" name="status" value={statusFilter} />}
+            </form>
+            <form>
+              {search && <input type="hidden" name="q" value={search} />}
+              <select 
+                name="status"
+                defaultValue={statusFilter}
+                onChange={(e) => e.target.form?.submit()}
+                className="h-14 pl-6 pr-10 rounded-2xl border border-slate-200 bg-white text-[11px] font-black uppercase tracking-widest outline-none focus:ring-8 focus:ring-corporate-blue/5 transition-all text-slate-950 appearance-none cursor-pointer shadow-sm"
+              >
+                <option value="">TÜM DURUMLAR</option>
+                <option value="DRAFT">TASLAK</option>
+                <option value="PENDING_APPROVAL">DENETİMDE</option>
+                <option value="APPROVED">ONAYLANDI</option>
+                <option value="REJECTED">REVİZYON</option>
+                <option value="COMPLETED">TAMAMLANDI</option>
+                <option value="CANCELED">İPTAL</option>
+              </select>
+            </form>
+            {(search || statusFilter) && (
+              <a href="/baskan/etkinlikler" className="text-[10px] font-black text-rose-600 uppercase tracking-widest hover:underline px-2">
+                Temizle
+              </a>
+            )}
+          </div>
         </div>
 
         <div className="t3-panel overflow-hidden bg-slate-50/30">

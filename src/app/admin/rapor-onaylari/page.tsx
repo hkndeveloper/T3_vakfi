@@ -56,12 +56,19 @@ async function reviewReportAction(formData: FormData) {
   revalidatePath("/baskan/raporlar");
 }
 
-export default async function AdminReportApprovalsPage() {
+export default async function AdminReportApprovalsPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
   await requirePermission("report.approve");
+  const { q: search } = await searchParams;
 
   const reports = await prisma.report.findMany({
     where: {
       status: { in: ["SUBMITTED", "IN_REVIEW"] },
+      ...(search ? {
+        OR: [
+          { title: { contains: search, mode: "insensitive" } },
+          { community: { name: { contains: search, mode: "insensitive" } } }
+        ]
+      } : {})
     },
     orderBy: { createdAt: "asc" },
     include: {
@@ -118,8 +125,22 @@ export default async function AdminReportApprovalsPage() {
                <p className="t3-label">{reports.length} DOSYA KARAR BEKLİYOR</p>
             </div>
           </div>
-          <div className="h-16 w-16 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-center text-corporate-blue shadow-sm">
-             <Award className="h-8 w-8" />
+          <div className="flex flex-wrap items-center gap-4">
+            <form className="relative group">
+              <FileSearch className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within:text-corporate-orange transition-colors" />
+              <input 
+                name="q"
+                type="text" 
+                defaultValue={search}
+                placeholder="Topluluk veya Rapor ara..." 
+                className="pl-12 pr-6 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-bold outline-none focus:ring-8 focus:ring-corporate-orange/5 focus:border-corporate-orange transition-all w-72 shadow-sm text-slate-950" 
+              />
+            </form>
+            {(search) && (
+              <a href="/admin/rapor-onaylari" className="text-[10px] font-black text-rose-600 uppercase tracking-widest hover:underline px-2">
+                Temizle
+              </a>
+            )}
           </div>
         </div>
 

@@ -101,15 +101,17 @@ async function markAttendanceAction(formData: FormData) {
   revalidatePath("/baskan/katilim");
 }
 
-export default async function AttendancePage() {
+export default async function AttendancePage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
   const session = await requireCommunityManager();
   const communityId = session.user.communityIds[0];
+  const { q: search } = await searchParams;
 
   const [events, members] = await Promise.all([
     prisma.event.findMany({
       where: {
         communityId,
         status: { in: ["APPROVED", "COMPLETED"] },
+        ...(search ? { title: { contains: search, mode: "insensitive" } } : {})
       },
       orderBy: { eventDate: "desc" },
       include: {
@@ -148,6 +150,24 @@ export default async function AttendancePage() {
         <div className="absolute bottom-10 right-10 flex items-center gap-2 opacity-5 scale-150 transform group-hover:rotate-12 transition-transform duration-1000">
            <UserCheck className="h-40 w-40" />
         </div>
+      </div>
+
+      <div className="flex flex-wrap items-center justify-end gap-4 px-4">
+        <form className="relative group">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 dark:text-slate-500 group-focus-within:text-indigo-600 transition-colors" />
+          <input 
+            name="q"
+            type="text" 
+            defaultValue={search}
+            placeholder="Faaliyet ismine göre ara..." 
+            className="pl-12 pr-6 py-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-2xl text-sm font-bold outline-none focus:ring-8 focus:ring-indigo-500/10 focus:border-indigo-500/30 transition-all w-72 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-black/20 text-indigo-950 dark:text-white" 
+          />
+        </form>
+        {(search) && (
+          <a href="/baskan/katilim" className="text-[10px] font-black text-rose-600 uppercase tracking-[0.2em] hover:underline px-4 py-3 bg-rose-50 dark:bg-rose-950/30 rounded-xl transition-colors">
+            Filtreyi Temizle
+          </a>
+        )}
       </div>
 
       <div className="grid gap-12">

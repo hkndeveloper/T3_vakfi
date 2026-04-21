@@ -24,9 +24,10 @@ import {
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 
-export default async function PresidentReportsPage() {
+export default async function PresidentReportsPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
   const session = await requireCommunityManager();
   const communityId = session.user.communityIds[0];
+  const { q: search } = await searchParams;
 
   const [events, reports] = await Promise.all([
     prisma.event.findMany({
@@ -36,7 +37,10 @@ export default async function PresidentReportsPage() {
       take: 100,
     }),
     prisma.report.findMany({
-      where: { communityId },
+      where: { 
+        communityId,
+        ...(search ? { title: { contains: search, mode: "insensitive" } } : {})
+      },
       orderBy: { createdAt: "desc" },
       include: {
         event: true,
@@ -95,7 +99,23 @@ export default async function PresidentReportsPage() {
                 <p className="t3-label">SİSTEM ÜZERİNDEKİ TÜM KURUMSAL KAYITLAR</p>
              </div>
           </div>
-          <div className="h-1.5 w-24 rounded-full bg-corporate-blue/10" />
+          <div className="flex flex-wrap items-center gap-4">
+            <form className="relative group">
+              <FileSearch className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within:text-corporate-blue transition-colors" />
+              <input 
+                name="q"
+                type="text" 
+                defaultValue={search}
+                placeholder="Rapor ara..." 
+                className="pl-12 pr-6 py-4 bg-white border border-slate-200 rounded-2xl text-sm font-bold outline-none focus:ring-8 focus:ring-corporate-blue/5 focus:border-corporate-blue transition-all w-64 shadow-sm text-slate-950" 
+              />
+            </form>
+            {(search) && (
+              <a href="/baskan/raporlar" className="text-[10px] font-black text-rose-600 uppercase tracking-widest hover:underline px-2">
+                Temizle
+              </a>
+            )}
+          </div>
         </div>
 
         {reports.length === 0 ? (

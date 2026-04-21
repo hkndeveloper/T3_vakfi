@@ -24,12 +24,12 @@ const navItems = [
   { href: "/admin/katilim-izleme", label: "Katılım İzleme", icon: "Navigation", requiredPermission: "attendance.manage" },
   { href: "/admin/rapor-onaylari", label: "Rapor Onayları", icon: "FileCheck2", requiredPermission: "report.approve" },
   { href: "/admin/medya-belgeler", label: "Medya & Belgeler", icon: "FolderOpen", requiredPermission: "media.view" },
-  { href: "/admin/sistem-loglari", label: "Sistem Logları", icon: "History" },
+  { href: "/admin/sistem-loglari", label: "Sistem Logları", icon: "History", requiredPermission: "admin.view" },
   { href: "/admin/duyurular", label: "Duyurular", icon: "Bell", requiredPermission: "announcement.publish" },
   { href: "/admin/istatistikler", label: "İstatistikler", icon: "LineChart", requiredPermission: "stats.view" },
   { href: "/admin/kullanicilar", label: "Kullanıcılar", icon: "Users", requiredPermission: "user.view" },
   { href: "/admin/roller", label: "Rol & Yetki", icon: "ShieldCheck", requiredPermission: "role.assign" },
-  { href: "/admin/ayarlar", label: "Ayarlar", icon: "Settings" },
+  { href: "/admin/ayarlar", label: "Ayarlar", icon: "Settings", requiredPermission: "admin.view" },
 ];
 
 export default async function AdminLayout({

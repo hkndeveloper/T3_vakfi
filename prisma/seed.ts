@@ -16,26 +16,36 @@ const ROLE_CODES = {
 } as const;
 
 const PERMISSIONS = [
+  "admin.view",
   "user.view",
   "user.create",
   "user.update",
   "user.delete",
+  "member.view",
   "member.manage",
+  "event.view",
   "event.create",
   "event.update",
   "event.approve",
+  "attendance.view",
   "attendance.manage",
+  "report.view",
   "report.create",
   "report.approve",
+  "media.view",
   "media.upload",
   "media.delete",
+  "announcement.view",
   "announcement.publish",
   "stats.view",
   "role.assign",
 ];
 
 async function main() {
-  const hashedPassword = await bcrypt.hash("Admin12345!", 12);
+  const adminPassword = await bcrypt.hash("Admin12345!", 12);
+  const baskanPassword = await bcrypt.hash("Baskan12345!", 12);
+  const yonetimPassword = await bcrypt.hash("Yonetim12345!", 12);
+  const uyePassword = await bcrypt.hash("Uye12345!", 12);
 
   const permissions = await Promise.all(
     PERMISSIONS.map((code) =>
@@ -59,6 +69,7 @@ async function main() {
     },
   });
 
+  // Super Admin gets all permissions
   await Promise.all(
     permissions.map((permission) =>
       prisma.rolePermission.upsert({
@@ -79,19 +90,45 @@ async function main() {
 
   const presidentPermissions = permissions.filter((p) =>
     [
+      "member.view",
       "member.manage",
+      "event.view",
       "event.create",
       "event.update",
+      "attendance.view",
       "attendance.manage",
+      "report.view",
       "report.create",
+      "media.view",
       "media.upload",
+      "media.delete",
+      "announcement.view",
       "announcement.publish",
       "stats.view",
     ].includes(p.code),
   );
 
+  const managementPermissions = permissions.filter((p) =>
+    [
+      "member.view",
+      "event.view",
+      "event.create",
+      "report.view",
+      "report.create",
+      "media.view",
+      "media.upload",
+      "announcement.view",
+    ].includes(p.code),
+  );
+
   const memberPermissions = permissions.filter((p) =>
-    ["stats.view"].includes(p.code),
+    [
+      "member.view",
+      "event.view",
+      "attendance.view",
+      "announcement.view",
+      "stats.view",
+    ].includes(p.code),
   );
 
   const presidentRole = await prisma.role.upsert({
@@ -99,7 +136,7 @@ async function main() {
     update: {},
     create: {
       code: ROLE_CODES.PRESIDENT,
-      name: "Topluluk Baskani",
+      name: "Topluluk Başkani",
     },
   });
 
@@ -108,7 +145,7 @@ async function main() {
     update: {},
     create: {
       code: ROLE_CODES.MANAGEMENT,
-      name: "Yonetim Ekibi",
+      name: "Yönetim Ekibi",
     },
   });
 
@@ -117,66 +154,57 @@ async function main() {
     update: {},
     create: {
       code: ROLE_CODES.MEMBER,
-      name: "Uye",
+      name: "Üye",
     },
   });
 
-  for (const role of [presidentRole, managementRole]) {
-    for (const permission of presidentPermissions) {
-      await prisma.rolePermission.upsert({
-        where: {
-          roleId_permissionId: {
-            roleId: role.id,
-            permissionId: permission.id,
-          },
-        },
-        update: {},
-        create: {
-          roleId: role.id,
-          permissionId: permission.id,
-        },
-      });
-    }
+  // Assign permissions to roles
+  for (const permission of presidentPermissions) {
+    await prisma.rolePermission.upsert({
+      where: { roleId_permissionId: { roleId: presidentRole.id, permissionId: permission.id } },
+      update: {},
+      create: { roleId: presidentRole.id, permissionId: permission.id },
+    });
+  }
+
+  for (const permission of managementPermissions) {
+    await prisma.rolePermission.upsert({
+      where: { roleId_permissionId: { roleId: managementRole.id, permissionId: permission.id } },
+      update: {},
+      create: { roleId: managementRole.id, permissionId: permission.id },
+    });
   }
 
   for (const permission of memberPermissions) {
     await prisma.rolePermission.upsert({
-      where: {
-        roleId_permissionId: {
-          roleId: memberRole.id,
-          permissionId: permission.id,
-        },
-      },
+      where: { roleId_permissionId: { roleId: memberRole.id, permissionId: permission.id } },
       update: {},
-      create: {
-        roleId: memberRole.id,
-        permissionId: permission.id,
-      },
+      create: { roleId: memberRole.id, permissionId: permission.id },
     });
   }
 
-  const user = await prisma.user.upsert({
+  const superAdminUser = await prisma.user.upsert({
     where: { email: "admin@t3.org.tr" },
     update: {
-      passwordHash: hashedPassword,
+      passwordHash: adminPassword,
       isActive: true,
     },
     create: {
-      name: "T3 Super Admin",
+      name: "T3 Süper Admin",
       email: "admin@t3.org.tr",
-      passwordHash: hashedPassword,
+      passwordHash: adminPassword,
       isActive: true,
     },
   });
 
   await prisma.userRole.upsert({
     where: {
-      id: `${user.id}-${superAdminRole.id}`,
+      id: `${superAdminUser.id}-${superAdminRole.id}`,
     },
     update: {},
     create: {
-      id: `${user.id}-${superAdminRole.id}`,
-      userId: user.id,
+      id: `${superAdminUser.id}-${superAdminRole.id}`,
+      userId: superAdminUser.id,
       roleId: superAdminRole.id,
     },
   });
@@ -184,14 +212,14 @@ async function main() {
   const sampleUniversity = await prisma.university.upsert({
     where: { id: "seed-university-ytu" },
     update: {
-      name: "Yildiz Teknik Universitesi",
-      city: "Istanbul",
+      name: "Yıldız Teknik Üniversitesi",
+      city: "İstanbul",
       status: "ACTIVE",
     },
     create: {
       id: "seed-university-ytu",
-      name: "Yildiz Teknik Universitesi",
-      city: "Istanbul",
+      name: "Yıldız Teknik Üniversitesi",
+      city: "İstanbul",
       status: "ACTIVE",
     },
   });
@@ -204,71 +232,82 @@ async function main() {
       },
     },
     update: {
-      name: "T3 YTU Teknoloji Toplulugu",
-      advisorName: "Dr. Ahmet Yilmaz",
+      name: "T3 YTÜ Teknoloji Topluluğu",
+      advisorName: "Dr. Ahmet Yılmaz",
       status: "ACTIVE",
     },
     create: {
       universityId: sampleUniversity.id,
-      name: "T3 YTU Teknoloji Toplulugu",
+      name: "T3 YTÜ Teknoloji Topluluğu",
       shortName: "T3YTU",
-      advisorName: "Dr. Ahmet Yilmaz",
+      advisorName: "Dr. Ahmet Yılmaz",
       status: "ACTIVE",
     },
   });
 
-  const presidentPassword = await bcrypt.hash("Baskan12345!", 12);
-  const presidentUser = await prisma.user.upsert({
-    where: { email: "baskan@t3.org.tr" },
-    update: {
-      name: "Topluluk Baskani",
-      passwordHash: presidentPassword,
-      universityId: sampleUniversity.id,
-      isActive: true,
-    },
-    create: {
-      name: "Topluluk Baskani",
-      email: "baskan@t3.org.tr",
-      passwordHash: presidentPassword,
-      universityId: sampleUniversity.id,
-      isActive: true,
-    },
-  });
+  // Example users for each role
+  const roles = [
+    { email: "baskan@t3.org.tr", name: "Topluluk Başkanı", role: presidentRole, password: baskanPassword, type: "PRESIDENT" },
+    { email: "yonetim@t3.org.tr", name: "Yönetim Ekibi Üyesi", role: managementRole, password: yonetimPassword, type: "MANAGEMENT" },
+    { email: "uye@t3.org.tr", name: "Kayıtlı Topluluk Üyesi", role: memberRole, password: uyePassword, type: "MEMBER" },
+  ];
 
-  await prisma.userRole.upsert({
-    where: {
-      id: `${presidentUser.id}-${presidentRole.id}-${sampleCommunity.id}`,
-    },
-    update: {},
-    create: {
-      id: `${presidentUser.id}-${presidentRole.id}-${sampleCommunity.id}`,
-      userId: presidentUser.id,
-      roleId: presidentRole.id,
-      communityId: sampleCommunity.id,
-    },
-  });
-
-  await prisma.communityMember.upsert({
-    where: {
-      communityId_userId: {
-        communityId: sampleCommunity.id,
-        userId: presidentUser.id,
+  for (const r of roles) {
+    const user = await prisma.user.upsert({
+      where: { email: r.email },
+      update: {
+        name: r.name,
+        passwordHash: r.password,
+        universityId: sampleUniversity.id,
+        isActive: true,
       },
-    },
-    update: {
-      membershipType: "PRESIDENT",
-      status: "ACTIVE",
-    },
-    create: {
-      communityId: sampleCommunity.id,
-      userId: presidentUser.id,
-      membershipType: "PRESIDENT",
-      status: "ACTIVE",
-    },
-  });
+      create: {
+        name: r.name,
+        email: r.email,
+        passwordHash: r.password,
+        universityId: sampleUniversity.id,
+        isActive: true,
+      },
+    });
 
-  console.log("Seed tamamlandi. Ornek admin: admin@t3.org.tr / Admin12345!");
-  console.log("Ornek baskan: baskan@t3.org.tr / Baskan12345!");
+    await prisma.userRole.upsert({
+      where: {
+        id: `${user.id}-${r.role.id}-${sampleCommunity.id}`,
+      },
+      update: {},
+      create: {
+        id: `${user.id}-${r.role.id}-${sampleCommunity.id}`,
+        userId: user.id,
+        roleId: r.role.id,
+        communityId: sampleCommunity.id,
+      },
+    });
+
+    await prisma.communityMember.upsert({
+      where: {
+        communityId_userId: {
+          communityId: sampleCommunity.id,
+          userId: user.id,
+        },
+      },
+      update: {
+        membershipType: r.type as any,
+        status: "ACTIVE",
+      },
+      create: {
+        communityId: sampleCommunity.id,
+        userId: user.id,
+        membershipType: r.type as any,
+        status: "ACTIVE",
+      },
+    });
+  }
+
+  console.log("\n--- SEED TAMAMLANDI ---");
+  console.log("1. SÜPER ADMİN: admin@t3.org.tr / Admin12345!");
+  console.log("2. BAŞKAN: baskan@t3.org.tr / Baskan12345!");
+  console.log("3. YÖNETİM: yonetim@t3.org.tr / Yonetim12345!");
+  console.log("4. ÜYE: uye@t3.org.tr / Uye12345!");
 }
 
 main()

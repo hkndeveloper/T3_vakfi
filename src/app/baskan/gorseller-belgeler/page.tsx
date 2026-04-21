@@ -85,9 +85,10 @@ async function deleteDocumentAction(formData: FormData) {
   revalidatePath("/baskan/gorseller-belgeler");
 }
 
-export default async function PresidentMediaDocumentsPage() {
+export default async function PresidentMediaDocumentsPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
   const session = await requireCommunityManager();
   const communityId = session.user.communityIds[0];
+  const { q: search } = await searchParams;
 
   const [community, mediaFiles, documents] = await Promise.all([
     prisma.community.findUnique({
@@ -96,7 +97,8 @@ export default async function PresidentMediaDocumentsPage() {
     }),
     prisma.mediaFile.findMany({
       where: {
-        report: { communityId }
+        report: { communityId },
+        ...(search ? { fileName: { contains: search, mode: "insensitive" } } : {})
       },
       orderBy: { createdAt: "desc" },
       take: 100,
@@ -106,7 +108,8 @@ export default async function PresidentMediaDocumentsPage() {
     }),
     prisma.document.findMany({
       where: {
-        report: { communityId }
+        report: { communityId },
+        ...(search ? { fileName: { contains: search, mode: "insensitive" } } : {})
       },
       orderBy: { createdAt: "desc" },
       take: 100,
@@ -181,6 +184,23 @@ export default async function PresidentMediaDocumentsPage() {
               <h2 className="text-3xl font-black text-slate-950 dark:text-white font-montserrat uppercase tracking-tight italic underline decoration-indigo-500 decoration-8 underline-offset-8">Faaliyet Galerisi</h2>
               <p className="text-[11px] text-slate-400 font-black uppercase tracking-[0.25em] mt-3">Sahadan gelen tüm görsel veriler</p>
             </div>
+          </div>
+          <div className="flex flex-wrap items-center gap-4">
+            <form className="relative group">
+              <FileSearch className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within:text-corporate-blue transition-colors" />
+              <input 
+                name="q"
+                type="text" 
+                defaultValue={search}
+                placeholder="Dosya adı ara..." 
+                className="pl-12 pr-6 py-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-2xl text-sm font-bold outline-none focus:ring-8 focus:ring-corporate-blue/5 focus:border-corporate-blue transition-all w-64 shadow-sm text-slate-950 dark:text-white" 
+              />
+            </form>
+            {(search) && (
+              <a href="/baskan/gorseller-belgeler" className="text-[10px] font-black text-rose-600 uppercase tracking-widest hover:underline px-2">
+                Temizle
+              </a>
+            )}
           </div>
         </div>
 
