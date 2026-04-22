@@ -52,23 +52,25 @@ export default async function PresidentMediaDocumentsPage({ searchParams }: { se
     }),
     prisma.mediaFile.findMany({
       where: {
-        report: { communityId },
+        communityId,
         ...(search ? { fileName: { contains: search, mode: "insensitive" } } : {})
       },
       orderBy: { createdAt: "desc" },
       take: 100,
       include: {
+        community: true,
         report: true
       }
     }),
     prisma.document.findMany({
       where: {
-        report: { communityId },
-        ...(search ? { fileName: { contains: search, mode: "insensitive" } } : {})
+        communityId,
+        ...(search ? { title: { contains: search, mode: "insensitive" } } : {})
       },
       orderBy: { createdAt: "desc" },
       take: 100,
       include: {
+        community: true,
         report: true
       }
     })

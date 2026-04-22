@@ -4,6 +4,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { uploadMediaAction, uploadDocumentAction } from "@/actions/media-actions";
 import { FileUpload } from "@/components/ui/FileUpload";
+import { useRouter } from "next/navigation";
 import { Image, FileText, Plus, Sparkles, FolderPlus, Building2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -16,6 +17,7 @@ interface MediaUploadFormProps {
 }
 
 export function MediaUploadForm({ communityId, reportId, eventId, communities, onSuccess }: MediaUploadFormProps) {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<"media" | "document">("media");
   const [selectedCommunityId, setSelectedCommunityId] = useState(communityId || "");
   const [docCategory, setDocCategory] = useState("Genel");
@@ -37,6 +39,7 @@ export function MediaUploadForm({ communityId, reportId, eventId, communities, o
 
     if (result.success) {
       toast.success(result.message);
+      router.refresh();
       onSuccess?.();
     } else {
       toast.error(result.error);
@@ -60,6 +63,7 @@ export function MediaUploadForm({ communityId, reportId, eventId, communities, o
 
     if (result.success) {
       toast.success(result.message);
+      router.refresh();
       onSuccess?.();
     } else {
       toast.error(result.error);
