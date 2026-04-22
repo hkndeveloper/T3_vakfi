@@ -1,13 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
-import { writeFile } from "fs/promises";
+import { writeFile, mkdir } from "fs/promises";
 import { join } from "path";
 import { v4 as uuidv4 } from "uuid";
-import { requireCommunityManager } from "@/lib/permissions";
+import { getCurrentSession } from "@/lib/permissions";
+import { existsSync } from "fs";
 
 export async function POST(req: NextRequest) {
   try {
-    // Auth check
-    await requireCommunityManager();
+    // Auth check: Allow both admins and community managers
+    const session = await getCurrentSession();
+    if (!session) {
+      return NextResponse.json({ error: "Oturum açmanız gerekiyor." }, { status: 401 });
+    }
+
+    const roles = session.user.roles || [];
+    const isAuthorized = roles.includes("super_admin") || 
+                       roles.includes("president") || 
+                       roles.includes("management_team");
+
+    if (!isAuthorized) {
+      return NextResponse.json({ error: "Bu işlem için yetkiniz yok." }, { status: 403 });
+    }
 
     const formData = await req.formData();
     const file = formData.get("file") as File;
@@ -19,10 +32,16 @@ export async function POST(req: NextRequest) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
+    // Ensure directory exists
+    const uploadDir = join(process.cwd(), "public/uploads");
+    if (!existsSync(uploadDir)) {
+      await mkdir(uploadDir, { recursive: true });
+    }
+
     // Unique filename
     const fileExtension = file.name.split(".").pop();
     const fileName = `${uuidv4()}.${fileExtension}`;
-    const path = join(process.cwd(), "public/uploads", fileName);
+    const path = join(uploadDir, fileName);
 
     await writeFile(path, buffer);
 
