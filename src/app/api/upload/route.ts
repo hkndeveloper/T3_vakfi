@@ -6,10 +6,18 @@ import { PutObjectCommand } from "@aws-sdk/client-s3";
 
 export async function POST(req: NextRequest) {
   try {
-    // Auth check
     const session = await getCurrentSession();
     if (!session) {
       return NextResponse.json({ error: "Oturum açmanız gerekiyor." }, { status: 401 });
+    }
+
+    const roles = session.user.roles || [];
+    const isAuthorized = roles.includes("super_admin") || 
+                       roles.includes("president") || 
+                       roles.includes("management_team");
+
+    if (!isAuthorized) {
+      return NextResponse.json({ error: "Bu işlem için yetkiniz yok." }, { status: 403 });
     }
 
     const formData = await req.formData();
@@ -22,43 +30,29 @@ export async function POST(req: NextRequest) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // Unique filename
     const fileExtension = file.name.split(".").pop();
     const fileName = `${uuidv4()}.${fileExtension}`;
 
-    try {
-      // Upload to R2
-      const command = new PutObjectCommand({
-        Bucket: R2_BUCKET_NAME,
-        Key: fileName,
-        Body: buffer,
-        ContentType: file.type,
-      });
+    const command = new PutObjectCommand({
+      Bucket: R2_BUCKET_NAME,
+      Key: fileName,
+      Body: buffer,
+      ContentType: file.type,
+    });
 
-      await r2Client.send(command);
+    await r2Client.send(command);
 
-      // Final URL
-      const baseUrl = R2_PUBLIC_URL.endsWith("/") ? R2_PUBLIC_URL.slice(0, -1) : R2_PUBLIC_URL;
-      const fileUrl = `${baseUrl}/${fileName}`;
+    const baseUrl = R2_PUBLIC_URL.endsWith("/") ? R2_PUBLIC_URL.slice(0, -1) : R2_PUBLIC_URL;
+    const fileUrl = `${baseUrl}/${fileName}`;
 
-      return NextResponse.json({ 
-        success: true, 
-        url: fileUrl,
-        name: file.name,
-        type: file.type
-      });
-    } catch (s3Error: any) {
-      console.error("S3/R2 Internal Error:", s3Error);
-      // Hatayı detaylıca döndür ki ne olduğunu görelim
-      return NextResponse.json({ 
-        error: "Bulut depolama hatası", 
-        details: s3Error.message,
-        code: s3Error.code,
-        metadata: s3Error.$metadata
-      }, { status: 500 });
-    }
-  } catch (error: any) {
-    console.error("General Upload error:", error);
-    return NextResponse.json({ error: "Dosya işlenirken bir hata oluştu.", details: error.message }, { status: 500 });
+    return NextResponse.json({ 
+      success: true, 
+      url: fileUrl,
+      name: file.name,
+      type: file.type
+    });
+  } catch (error) {
+    console.error("Upload error:", error);
+    return NextResponse.json({ error: "Dosya yüklenirken bir hata oluştu." }, { status: 500 });
   }
 }
