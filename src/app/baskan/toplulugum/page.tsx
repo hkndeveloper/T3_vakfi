@@ -49,33 +49,33 @@ export default async function MyCommunityPage() {
 
   return (
     <div className="space-y-12 animate-in fade-in slide-in-from-bottom-6 duration-1000 font-outfit pb-20">
-      {/* T3 Premium Hero Section */}
-      <div className="relative overflow-hidden rounded-[3.5rem] bg-indigo-950 p-12 md:p-16 text-white shadow-2xl group border border-white/5">
+      {/* Soft Executive Hero Section */}
+      <div className="relative overflow-hidden rounded-t3-xl bg-slate-100/50 p-12 md:p-16 border border-slate-200">
         <div className="relative z-10">
-          <div className="inline-flex items-center gap-2 rounded-full bg-amber-500/20 border border-amber-500/30 px-5 py-2 text-[10px] font-black text-amber-500 uppercase tracking-[0.3em] mb-10 animate-pulse-subtle">
-            <Building2 className="h-4 w-4 fill-amber-500" /> KURUMSAL KİMLİK
+          <div className="inline-flex items-center gap-2 rounded-lg bg-white border border-slate-200 px-5 py-2 text-[10px] font-black text-slate-950 uppercase tracking-[0.25em] mb-10 shadow-sm">
+            <Building2 className="h-4 w-4 text-corporate-blue" /> KURUMSAL KİMLİK
           </div>
           <div className="flex flex-wrap items-end justify-between gap-10">
-            <div className="max-w-2xl">
-              <h1 className="text-6xl font-black tracking-tighter sm:text-7xl font-montserrat leading-[0.9] uppercase">
+            <div className="max-w-2xl text-left">
+              <h1 className="text-5xl font-black tracking-tighter sm:text-7xl leading-[0.9] uppercase text-slate-950 italic">
                 {community.shortName} <br />
-                <span className="text-indigo-400 italic border-b-8 border-amber-500/30">ÜSSÜ</span>
+                <span className="text-corporate-blue italic">ÜSSÜ</span>
               </h1>
-              <p className="mt-10 text-xl text-slate-300/80 font-medium leading-relaxed">
-                {community.name} ekosisteminin kurumsal verilerini, akademik entegrasyonlarını ve performans metriklerini profesyonel standartlarda denetleyin.
+              <p className="mt-10 text-xl text-slate-600 font-medium leading-relaxed max-w-2xl">
+                {community.name} ekosisteminin kurumsal verilerini, akademik entegrasyonlarını ve performans metriklerini <span className="text-slate-950 font-bold underline decoration-corporate-blue/30 decoration-4 underline-offset-4">profesyonel standartlarda</span> denetleyin.
               </p>
             </div>
             
-            <div className="pb-4">
+            <div className="pb-4 shrink-0">
                <PresidentProfileEditModal community={community as any} />
             </div>
           </div>
         </div>
         
         {/* Background Patterns */}
-        <div className="absolute -right-20 -top-20 h-[600px] w-[600px] rounded-full bg-indigo-500/10 opacity-30 blur-[130px] pointer-events-none group-hover:bg-indigo-500/20 transition-all duration-1000" />
-        <div className="absolute bottom-10 right-10 flex items-center gap-2 opacity-10 scale-150 transform group-hover:rotate-12 transition-transform duration-1000">
-           <Star className="h-40 w-40 fill-white" />
+        <div className="absolute -right-20 -top-20 h-[500px] w-[500px] rounded-full bg-corporate-blue/5 blur-[120px] pointer-events-none" />
+        <div className="absolute bottom-10 right-10 flex items-center gap-2 opacity-[0.03] scale-150 transform">
+           <Star className="h-32 w-32" />
         </div>
       </div>
 
@@ -150,54 +150,45 @@ function LinkCard({ icon: Icon, label, value, href }: { icon: any; label: string
 }
 
 function InfoCard({ icon: Icon, label, value, color }: { icon: any; label: string; value: string; color: "indigo" | "amber" }) {
-  const configs = {
-    indigo: "border-l-indigo-600 bg-white dark:bg-slate-900 shadow-xl dark:shadow-black/20",
-    amber: "border-l-amber-500 bg-white dark:bg-slate-900 shadow-xl dark:shadow-black/20",
-  };
-  
-  const iconConfigs = {
-    indigo: "bg-indigo-600 shadow-indigo-600/20 text-white",
-    amber: "bg-amber-500 shadow-amber-500/20 text-white",
-  };
-
   return (
-    <div className={cn("rounded-[2.5rem] border border-slate-50 dark:border-white/5 p-10 transition-all hover:translate-x-3 border-l-[10px] group", configs[color])}>
-      <div className="flex items-center gap-8">
-        <div className={cn("h-16 w-16 rounded-[1.25rem] flex items-center justify-center shadow-2xl transition-all duration-500 group-hover:scale-110 group-hover:rotate-6", iconConfigs[color])}>
-           <Icon className="h-8 w-8" />
-        </div>
-        <div className="flex flex-col gap-2">
-          <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.3em] font-montserrat">{label}</p>
-          <p className="text-2xl font-black text-indigo-950 dark:text-white leading-none tracking-tight font-montserrat uppercase shrink-0 transition-colors group-hover:text-indigo-600 dark:group-hover:text-amber-500">{value}</p>
-        </div>
+    <div className={cn(
+      "t3-panel p-10 flex items-center gap-8 group transition-all hover:translate-x-3",
+      color === "indigo" ? "border-l-[12px] border-l-corporate-blue" : "border-l-[12px] border-l-corporate-orange"
+    )}>
+      <div className={cn(
+        "h-14 w-14 rounded-2xl flex items-center justify-center border shadow-sm transition-transform duration-500 group-hover:scale-110",
+        color === "indigo" ? "bg-blue-50 text-corporate-blue border-blue-100" : "bg-orange-50 text-corporate-orange border-orange-100"
+      )}>
+         <Icon className="h-7 w-7" />
+      </div>
+      <div className="flex flex-col gap-2 min-w-0">
+        <p className="t3-label">{label}</p>
+        <p className="text-2xl font-black text-slate-950 leading-none tracking-tighter italic uppercase truncate">{value}</p>
       </div>
     </div>
   );
 }
 
 function StatCard({ icon: Icon, label, value, color, trend }: { icon: any; label: string; value: string; color: "indigo" | "amber", trend?: string }) {
-  const configs = {
-    indigo: "bg-indigo-950 text-white shadow-indigo-950/20",
-    amber: "bg-amber-500 text-white shadow-amber-500/20",
-  };
-
   return (
-    <div className={cn("rounded-[3.5rem] p-12 flex flex-col items-center justify-center text-center shadow-2xl transition-all hover:scale-[1.05] active:scale-95 group relative overflow-hidden", configs[color])}>
+    <div className="t3-panel p-12 flex flex-col items-center justify-center text-center group relative overflow-hidden bg-white">
       <div className="relative z-10 flex flex-col items-center">
-        <div className="h-20 w-20 rounded-3xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center mb-10 transition-transform duration-500 group-hover:-translate-y-2">
-           <Icon className="h-10 w-10 opacity-60 group-hover:opacity-100 transition-opacity" />
+        <div className={cn(
+          "h-16 w-16 rounded-2xl flex items-center justify-center border shadow-sm mb-8 transition-transform duration-500 group-hover:-translate-y-2",
+          color === "indigo" ? "bg-blue-50 text-corporate-blue border-blue-100" : "bg-orange-50 text-corporate-orange border-orange-100"
+        )}>
+           <Icon className="h-8 w-8" />
         </div>
-        <span className="text-[11px] font-black uppercase tracking-[0.3em] mb-4 font-montserrat opacity-70 group-hover:opacity-100 transition-opacity">{label}</span>
-        <span className="text-7xl font-black font-montserrat tracking-tighter leading-none italic group-hover:scale-110 transition-transform duration-700">{value}</span>
+        <span className="t3-label mb-4 opacity-70 group-hover:opacity-100 transition-opacity">{label}</span>
+        <span className="text-6xl font-black text-slate-950 tracking-tighter leading-none italic group-hover:scale-110 transition-transform duration-700">{value}</span>
         {trend && (
-           <div className="mt-8 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/10 text-[9px] font-black tracking-widest uppercase">
+           <div className="mt-8 px-5 py-2 rounded-lg bg-slate-50 border border-slate-200 text-[9px] font-black tracking-widest uppercase text-slate-400">
               {trend} ANALİZİ
            </div>
         )}
       </div>
       
-      {/* Background Graphic */}
-      <Icon className="absolute -right-10 -bottom-10 h-48 w-48 opacity-10 rotate-12 transition-transform duration-1000 group-hover:rotate-0" />
+      <Icon className="absolute -right-10 -bottom-10 h-32 w-32 opacity-[0.02] rotate-12 transition-transform duration-1000 group-hover:rotate-0" />
     </div>
   );
 }

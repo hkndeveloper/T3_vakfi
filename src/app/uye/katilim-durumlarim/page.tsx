@@ -38,60 +38,60 @@ export default async function MemberAttendancePage() {
 
   return (
     <div className="space-y-12 animate-in fade-in slide-in-from-bottom-8 duration-1000 font-outfit pb-20">
-      {/* Premium Hero Section */}
-      <div className="relative overflow-hidden rounded-[3.5rem] bg-indigo-950 p-12 md:p-16 text-white shadow-2xl border border-white/5 group">
+      {/* Soft Executive Hero Section */}
+      <div className="relative overflow-hidden rounded-t3-xl bg-slate-100/50 p-12 md:p-16 border border-slate-200">
         <div className="relative z-10">
-          <div className="inline-flex items-center gap-3 rounded-full bg-indigo-500/20 border border-indigo-500/30 px-6 py-2.5 text-[10px] font-black text-indigo-300 uppercase tracking-[0.3em] mb-10">
-            <Target className="h-4 w-4" /> KATILIM ANALİTİĞİ
+          <div className="inline-flex items-center gap-2 rounded-lg bg-white border border-slate-200 px-5 py-2 text-[10px] font-black text-slate-950 uppercase tracking-[0.25em] mb-10 shadow-sm">
+            <Target className="h-4 w-4 text-corporate-blue" /> KATILIM ANALİTİĞİ
           </div>
-          <h1 className="text-6xl font-black tracking-tighter sm:text-7xl font-montserrat leading-[0.9] uppercase italic">
+          <h1 className="text-5xl font-black tracking-tighter sm:text-7xl leading-[0.9] uppercase text-slate-950 italic">
             KATILIM <br />
-            <span className="text-amber-500 border-b-8 border-amber-500/20">KARNEM</span>
+            <span className="text-corporate-blue italic">KARNEM</span>
           </h1>
-          <p className="mt-10 text-xl text-slate-300/80 font-medium max-w-2xl leading-relaxed">
-            Kurumsal etkinliklerinizdeki performansınızı takip edin, mazeret süreçlerinizi yönetin ve topluluk profilinizi <span className="text-white font-bold decoration-amber-500 decoration-4 underline underline-offset-8">aktif tutun</span>.
+          <p className="mt-10 text-xl text-slate-600 font-medium leading-relaxed max-w-2xl">
+            Kurumsal etkinliklerinizdeki performansınızı takip edin, mazeret süreçlerinizi yönetin ve topluluk profilinizi <span className="text-slate-950 font-bold underline decoration-corporate-blue decoration-4 underline-offset-8">aktif tutun</span>.
           </p>
         </div>
         
         {/* Background Patterns */}
-        <div className="absolute -right-20 -top-20 h-[600px] w-[600px] rounded-full bg-indigo-500/10 opacity-30 blur-[130px] pointer-events-none group-hover:bg-indigo-500/20 transition-all duration-1000" />
-        <div className="absolute bottom-10 right-10 flex items-center gap-2 opacity-5 scale-150 transform group-hover:rotate-12 transition-transform duration-1000">
-           <ShieldCheck className="h-40 w-40" />
+        <div className="absolute -right-20 -top-20 h-[500px] w-[500px] rounded-full bg-corporate-blue/5 blur-[120px] pointer-events-none" />
+        <div className="absolute bottom-10 right-10 flex items-center gap-2 opacity-[0.03] scale-150 transform">
+           <ShieldCheck className="h-32 w-32" />
         </div>
       </div>
 
       {/* Analytics Statistics Row */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-        <div className="rounded-[2.5rem] bg-white dark:bg-slate-900 p-8 border border-slate-100 dark:border-white/5 shadow-xl shadow-slate-200/50 dark:shadow-black/20 hover:scale-[1.02] transition-transform">
-           <div className="h-14 w-14 rounded-2xl bg-indigo-50 dark:bg-indigo-950/50 flex items-center justify-center text-indigo-600 mb-6">
+        <div className="t3-panel p-8 group hover:-translate-y-2 transition-all">
+           <div className="h-14 w-14 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center text-corporate-blue mb-6 shadow-sm">
              <Zap className="h-7 w-7" />
            </div>
-           <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">TOPLAM FAALİYET</p>
-           <p className="text-4xl font-black text-slate-950 dark:text-white leading-none italic">{eventParticipants.length}</p>
+           <p className="t3-label mb-1">TOPLAM FAALİYET</p>
+           <p className="text-4xl font-black text-slate-950 leading-none italic">{eventParticipants.length}</p>
         </div>
 
-        <div className="rounded-[2.5rem] bg-white dark:bg-slate-900 p-8 border border-slate-100 dark:border-white/5 shadow-xl shadow-slate-200/50 dark:shadow-black/20 hover:scale-[1.02] transition-transform">
-           <div className="h-14 w-14 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 flex items-center justify-center text-emerald-600 mb-6">
+        <div className="t3-panel p-8 group hover:-translate-y-2 transition-all">
+           <div className="h-14 w-14 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 mb-6 shadow-sm">
              <CheckCircle2 className="h-7 w-7" />
            </div>
-           <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">TAM KATILIM</p>
-           <p className="text-4xl font-black text-slate-950 dark:text-white leading-none italic">{attendedCount}</p>
+           <p className="t3-label mb-1">TAM KATILIM</p>
+           <p className="text-4xl font-black text-slate-950 leading-none italic">{attendedCount}</p>
         </div>
 
-        <div className="rounded-[2.5rem] bg-white dark:bg-slate-900 p-8 border border-slate-100 dark:border-white/5 shadow-xl shadow-slate-200/50 dark:shadow-black/20 hover:scale-[1.02] transition-transform">
-           <div className="h-14 w-14 rounded-2xl bg-rose-50 dark:bg-rose-950/50 flex items-center justify-center text-rose-600 mb-6">
+        <div className="t3-panel p-8 group hover:-translate-y-2 transition-all">
+           <div className="h-14 w-14 rounded-2xl bg-rose-50 border border-rose-100 flex items-center justify-center text-rose-600 mb-6 shadow-sm">
              <XCircle className="h-7 w-7" />
            </div>
-           <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">KATILMADI</p>
-           <p className="text-4xl font-black text-slate-950 dark:text-white leading-none italic">{absentCount}</p>
+           <p className="t3-label mb-1">KATILMADI</p>
+           <p className="text-4xl font-black text-slate-950 leading-none italic">{absentCount}</p>
         </div>
 
-        <div className="rounded-[2.5rem] bg-white dark:bg-slate-900 p-8 border border-slate-100 dark:border-white/5 shadow-xl shadow-slate-200/50 dark:shadow-black/20 hover:scale-[1.02] transition-transform">
-           <div className="h-14 w-14 rounded-2xl bg-amber-50 dark:bg-amber-950/50 flex items-center justify-center text-amber-600 mb-6">
+        <div className="t3-panel p-8 group hover:-translate-y-2 transition-all">
+           <div className="h-14 w-14 rounded-2xl bg-orange-50 border border-orange-100 flex items-center justify-center text-corporate-orange mb-6 shadow-sm">
              <AlertCircle className="h-7 w-7" />
            </div>
-           <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">MAZERETLİ</p>
-           <p className="text-4xl font-black text-slate-950 dark:text-white leading-none italic">{excusedCount}</p>
+           <p className="t3-label mb-1">MAZERETLİ</p>
+           <p className="text-4xl font-black text-slate-950 leading-none italic">{excusedCount}</p>
         </div>
       </div>
 
@@ -99,15 +99,15 @@ export default async function MemberAttendancePage() {
       <div className="space-y-10">
         <div className="flex flex-wrap items-center justify-between gap-6 px-4">
           <div className="flex items-center gap-6">
-            <div className="h-16 w-16 rounded-3xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/5 flex items-center justify-center text-slate-950 dark:text-white shadow-sm">
-               <History className="h-8 w-8" />
-            </div>
-            <div>
-              <h2 className="text-3xl font-black text-slate-950 dark:text-white font-montserrat uppercase tracking-tight">Kronolojik Takvim</h2>
-              <p className="text-[11px] text-slate-400 font-black uppercase tracking-[0.25em] mt-2">Dahil olduğunuz tüm kurumsal hareketler</p>
-            </div>
+             <div className="h-14 w-14 rounded-2xl bg-white border border-slate-200 flex items-center justify-center text-corporate-blue shadow-sm">
+                <History className="h-7 w-7" />
+             </div>
+             <div>
+                <h2 className="t3-heading text-3xl text-slate-950 tracking-tighter">Kronolojik Takvim</h2>
+                <p className="t3-label">DAHİL OLDUĞUNUZ TÜM KURUMSAL HAREKETLER</p>
+             </div>
           </div>
-          <div className="px-6 py-3 rounded-2xl bg-amber-500/5 border border-amber-500/10 text-amber-600 text-[10px] font-black uppercase tracking-widest flex items-center gap-3">
+          <div className="px-6 py-3 rounded-2xl bg-orange-50 border border-orange-100 text-corporate-orange text-[10px] font-black uppercase tracking-widest flex items-center gap-3">
              <Sparkles className="h-4 w-4 animate-pulse" /> SON 12 AY ANALİZİ
           </div>
         </div>
@@ -123,15 +123,15 @@ export default async function MemberAttendancePage() {
             {eventParticipants.map((ep) => {
               const event = ep.event;
               return (
-                <div key={ep.id} className="group relative rounded-[3rem] bg-white dark:bg-slate-900 p-8 border border-slate-100 dark:border-white/5 shadow-xl shadow-slate-200/30 dark:shadow-black/40 hover:border-indigo-500 transition-all">
+                <div key={ep.id} className="t3-panel p-8 group transition-all border-l-[16px] border-l-corporate-blue bg-white">
                   <div className="flex flex-wrap items-center justify-between gap-8 relative z-10">
                     <div className="flex flex-wrap items-center gap-8 flex-1">
                       {/* Date Icon Card */}
-                      <div className="h-20 w-20 shrink-0 rounded-[1.5rem] bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/5 flex flex-col items-center justify-center group-hover:bg-indigo-950 transition-all duration-500">
-                        <span className="text-[11px] font-black text-slate-400 group-hover:text-indigo-400 uppercase leading-none mb-1">
+                      <div className="h-16 w-16 shrink-0 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col items-center justify-center group-hover:bg-slate-950 transition-all duration-500 shadow-sm">
+                        <span className="text-[9px] font-black text-slate-400 group-hover:text-slate-500 uppercase leading-none mb-1">
                           {new Date(event.eventDate).toLocaleString("tr-TR", { month: "short" })}
                         </span>
-                        <span className="text-3xl font-black text-slate-950 dark:text-white group-hover:text-white leading-none italic font-montserrat">
+                        <span className="text-2xl font-black text-slate-950 group-hover:text-white leading-none italic">
                           {new Date(event.eventDate).getDate()}
                         </span>
                       </div>
@@ -139,15 +139,15 @@ export default async function MemberAttendancePage() {
                       {/* Info Area */}
                       <div className="flex-1 min-w-[240px]">
                         <div className="flex flex-wrap items-center gap-4 mb-4">
-                          <span className="px-4 py-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-300 text-[10px] font-black uppercase tracking-widest border border-indigo-100 dark:border-indigo-500/20">
+                          <span className="px-4 py-1.5 rounded-lg bg-blue-50 text-corporate-blue text-[9px] font-black uppercase tracking-widest border border-blue-100 shadow-sm">
                             {event.community.shortName}
                           </span>
-                          <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                          <span className="t3-label flex items-center gap-2">
                              <Calendar className="h-3.5 w-3.5" />
                              {new Date(event.eventDate).toLocaleDateString("tr-TR")}
                           </span>
                         </div>
-                        <h3 className="text-3xl font-black text-slate-950 dark:text-white uppercase tracking-tighter font-montserrat leading-none group-hover:text-indigo-600 transition-colors italic">
+                        <h3 className="text-2xl font-black text-slate-950 uppercase tracking-tighter leading-none group-hover:text-corporate-blue transition-colors italic">
                           {event.title}
                         </h3>
                       </div>
@@ -156,43 +156,41 @@ export default async function MemberAttendancePage() {
                     {/* Status Badge */}
                     <div className="flex items-center gap-10">
                        <div className={cn(
-                          "px-8 py-4 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] border shadow-sm transition-all flex items-center gap-3",
+                          "px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] border shadow-sm transition-all flex items-center gap-3",
                           ep.attendanceStatus === "ATTENDED" 
-                            ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" 
+                            ? "bg-emerald-50 text-emerald-600 border-emerald-100" 
                             : ep.attendanceStatus === "ABSENT" 
-                            ? "bg-rose-500/10 text-rose-600 border-rose-500/20"
+                            ? "bg-rose-50 text-rose-600 border-rose-100"
                             : ep.attendanceStatus === "EXCUSED"
-                            ? "bg-amber-500/10 text-amber-600 border-amber-500/20"
-                            : "bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 border-slate-200 dark:border-white/5"
+                            ? "bg-orange-50 text-corporate-orange border-orange-100"
+                            : "bg-slate-50 text-slate-400 border-slate-200"
                         )}>
                           {ep.attendanceStatus === "ATTENDED" ? (
-                            <><CheckCircle2 className="h-5 w-5" /> KATILDIM</>
+                            <><CheckCircle2 className="h-4 w-4" /> KATILDIM</>
                           ) : ep.attendanceStatus === "ABSENT" ? (
-                            <><XCircle className="h-5 w-5" /> KATILMADIM</>
+                            <><XCircle className="h-4 w-4" /> KATILMADIM</>
                           ) : ep.attendanceStatus === "EXCUSED" ? (
-                            <><AlertCircle className="h-5 w-5" /> MAZERETLİ</>
+                            <><AlertCircle className="h-4 w-4" /> MAZERETLİ</>
                           ) : (
-                            <><Clock className="h-5 w-5" /> BEKLEMEDE</>
+                            <><Clock className="h-4 w-4" /> BEKLEMEDE</>
                           )}
                        </div>
-                       <Link href="/uye" className="h-14 w-14 rounded-full border border-slate-200 dark:border-white/5 flex items-center justify-center text-slate-300 dark:text-slate-700 hover:text-indigo-600 hover:bg-slate-50 transition-all">
-                          <ChevronRight className="h-6 w-6" />
+                       <Link href="/uye" className="h-12 w-12 rounded-full border border-slate-200 flex items-center justify-center text-slate-300 hover:text-corporate-blue hover:bg-blue-50 transition-all shadow-sm">
+                          <ChevronRight className="h-5 w-5" />
                        </Link>
                     </div>
                   </div>
                   
                   {/* Excuse Note Overlay */}
                   {ep.excuseNote && (
-                    <div className="mt-8 pt-8 border-t border-slate-100 dark:border-white/5 flex items-start gap-4">
-                       <AlertCircle className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
-                       <p className="text-sm font-medium text-slate-500 dark:text-slate-400 italic">
-                          <span className="font-black text-[10px] text-amber-500 uppercase tracking-widest mr-3 non-italic font-outfit">İdari Mazeret Notu:</span>
+                    <div className="mt-8 pt-8 border-t border-slate-100 flex items-start gap-4">
+                       <AlertCircle className="h-4 w-4 text-corporate-orange shrink-0 mt-0.5" />
+                       <p className="text-xs font-medium text-slate-600 italic">
+                          <span className="t3-label mr-3 non-italic text-corporate-orange">İdari Mazeret Notu:</span>
                           {ep.excuseNote}
                        </p>
                     </div>
                   )}
-
-                  <div className="absolute bottom-0 right-12 h-1.5 w-0 bg-indigo-500 group-hover:w-32 transition-all duration-700 rounded-full" />
                 </div>
               );
             })}

@@ -152,15 +152,17 @@ export function PresidentDashboardClient({
 
         {/* Sağ: Kurumsal Karne + Hızlı Aksiyonlar */}
         <div className="flex flex-col gap-10">
-          {/* Kurumsal Karne - Tamamen Dinamik */}
-          <div className="t3-panel-elevated p-12 bg-slate-950 text-white relative overflow-hidden group/perf">
+          {/* Kurumsal Karne - Soft Executive Style */}
+          <div className="t3-panel p-10 relative overflow-hidden group/perf bg-white border-l-[16px] border-l-corporate-orange">
             <div className="relative z-10">
               <div className="flex items-center gap-4 mb-8">
-                <Trophy className="h-10 w-10 text-corporate-orange fill-corporate-orange/20" />
+                <div className="h-12 w-12 rounded-2xl bg-orange-50 border border-orange-100 flex items-center justify-center text-corporate-orange shadow-sm">
+                  <Trophy className="h-6 w-6" />
+                </div>
                 <div>
-                  <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.3em]">KURUMSAL KARNE</p>
+                  <p className="t3-label">KURUMSAL KARNE</p>
                   {rank > 0 && (
-                    <p className="text-xs font-black text-corporate-orange uppercase tracking-widest mt-1">
+                    <p className="text-[10px] font-black text-corporate-orange uppercase tracking-widest mt-1">
                       {rank}. SIRADASIN / {totalCommunities}
                     </p>
                   )}
@@ -171,33 +173,33 @@ export function PresidentDashboardClient({
                 {performanceScore}
                 <span className="text-2xl text-slate-400 not-italic ml-1">%</span>
               </h3>
-              <p className="mt-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+              <p className="mt-4 t3-label">
                 BAŞARI PERFORMANS ENDEKSİ
               </p>
 
-              <div className="mt-8 h-2.5 w-full bg-white/10 rounded-full overflow-hidden border border-white/5">
+              <div className="mt-8 h-2.5 w-full bg-slate-100 rounded-full overflow-hidden border border-slate-200 shadow-inner">
                 <div
                   className={cn("h-full rounded-full shadow-lg transition-all duration-1000", scoreBarColor)}
                   style={{ width: `${performanceScore}%` }}
                 />
               </div>
 
-              <div className="mt-10 grid grid-cols-2 gap-4 pt-8 border-t border-white/10">
+              <div className="mt-10 grid grid-cols-2 gap-4 pt-8 border-t border-slate-100">
                 <Link
                   href="/baskan/etkinlikler"
-                  className="flex items-center gap-2 text-[10px] font-black text-slate-400 hover:text-white transition-colors uppercase tracking-wider"
+                  className="flex items-center gap-2 text-[10px] font-black text-slate-400 hover:text-corporate-blue transition-colors uppercase tracking-wider"
                 >
                   <ArrowUpRight className="h-3 w-3" /> ETKİNLİKLER
                 </Link>
                 <Link
                   href="/baskan/raporlar"
-                  className="flex items-center gap-2 text-[10px] font-black text-slate-400 hover:text-white transition-colors uppercase tracking-wider"
+                  className="flex items-center gap-2 text-[10px] font-black text-slate-400 hover:text-corporate-blue transition-colors uppercase tracking-wider"
                 >
                   <ArrowUpRight className="h-3 w-3" /> RAPORLAR
                 </Link>
               </div>
             </div>
-            <TrendingUp className="absolute -right-10 -bottom-10 h-48 w-48 opacity-[0.05] rotate-12 group-hover/perf:rotate-0 transition-transform duration-1000" />
+            <TrendingUp className="absolute -right-10 -bottom-10 h-48 w-48 opacity-[0.02] rotate-12 group-hover/perf:rotate-0 transition-transform duration-1000" />
           </div>
 
           {/* Hızlı Aksiyonlar */}

@@ -266,82 +266,91 @@ export default async function PresidentMembersPage({ searchParams }: { searchPar
 
   return (
     <div className="space-y-12 animate-in fade-in slide-in-from-bottom-6 duration-1000 font-outfit pb-20">
-      {/* T3 Premium Hero Section */}
-      <div className="relative overflow-hidden rounded-[3.5rem] bg-indigo-950 p-12 md:p-16 text-white shadow-2xl group border border-white/5">
-        <div className="relative z-10">
-          <div className="inline-flex items-center gap-2 rounded-full bg-amber-500/20 border border-amber-500/30 px-5 py-2 text-[10px] font-black text-amber-500 uppercase tracking-[0.3em] mb-10 animate-pulse-subtle">
-            <Users className="h-4 w-4 fill-amber-500" /> İNSAN KAYNAKLARI
+      {/* Soft Executive Hero Section */}
+      <div className="relative overflow-hidden rounded-t3-xl bg-slate-100/50 p-12 md:p-16 border border-slate-200">
+        <div className="relative z-10 flex flex-wrap items-center justify-between gap-12">
+          <div className="max-w-2xl">
+            <div className="inline-flex items-center gap-2 rounded-lg bg-white border border-slate-200 px-5 py-2 text-[10px] font-black text-slate-950 uppercase tracking-[0.25em] mb-10 shadow-sm">
+              <Users className="h-4 w-4 text-corporate-blue" /> İNSAN KAYNAKLARI
+            </div>
+            <h1 className="text-5xl font-black tracking-tighter sm:text-7xl leading-[0.9] uppercase text-slate-950 italic">
+              ÜYE <br />
+              <span className="text-corporate-blue italic">EKOSİSTEMİ</span>
+            </h1>
+            <p className="mt-10 text-xl text-slate-600 font-medium leading-relaxed max-w-2xl">
+              {community?.name} ekosisteminin aktif üye tabanını <span className="text-slate-950 font-bold underline decoration-corporate-blue/30 decoration-4 underline-offset-4">kurumsal standartlarda</span> yönetin, yetki seviyelerini belirleyin ve operasyonel hiyerarşiyi kurgulayın.
+            </p>
           </div>
-          <h1 className="text-6xl font-black tracking-tighter sm:text-7xl font-montserrat leading-[0.9] uppercase">
-            ÜYE <br />
-            <span className="text-indigo-400 italic border-b-8 border-amber-500/30">EKOSİSTEMİ</span>
-          </h1>
-          <p className="mt-10 text-xl text-slate-300/80 font-medium max-w-2xl leading-relaxed">
-            {community?.name} ekosisteminin aktif üye tabanını kurumsal standartlarda yönetin, yetki seviyelerini belirleyin ve operasyonel hiyerarşiyi kurgulayın.
-          </p>
+          
+          <div className="flex gap-8">
+            <div className="group/stat rounded-2xl bg-white px-12 py-10 border border-slate-200 transition-all hover:-translate-y-2 text-center shadow-sm">
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">AKTİF BİLEŞEN</p>
+              <p className="text-5xl font-black text-slate-950 tracking-tighter leading-none italic">{members.length}</p>
+            </div>
+          </div>
         </div>
         
         {/* Background Patterns */}
-        <div className="absolute -right-20 -top-20 h-[600px] w-[600px] rounded-full bg-indigo-500/10 opacity-30 blur-[130px] pointer-events-none group-hover:bg-indigo-500/20 transition-all duration-1000" />
-        <div className="absolute bottom-10 right-10 flex items-center gap-2 opacity-5 scale-150 transform group-hover:rotate-12 transition-transform duration-1000">
-           <UserPlus className="h-40 w-40" />
+        <div className="absolute -right-20 -top-20 h-[500px] w-[500px] rounded-full bg-corporate-blue/5 blur-[120px] pointer-events-none" />
+        <div className="absolute bottom-10 right-10 flex items-center gap-2 opacity-[0.03] scale-150 transform">
+           <UserPlus className="h-32 w-32" />
         </div>
       </div>
 
       {/* Create Member Form */}
       {canManage && (
-        <div className="rounded-[4rem] border border-slate-100 dark:border-white/5 bg-white dark:bg-slate-900 p-12 md:p-16 shadow-2xl dark:shadow-black/40 relative overflow-hidden group/form border-t-[12px] border-t-indigo-600">
+        <div className="t3-panel p-10 md:p-12 bg-slate-50/30 border-l-[16px] border-l-corporate-blue">
           <div className="flex flex-wrap items-center justify-between gap-6 mb-12 relative z-10">
             <div className="flex items-center gap-6">
-              <div className="h-16 w-16 rounded-3xl bg-indigo-600 p-5 text-white shadow-xl shadow-indigo-600/20 group-hover/form:scale-110 transition-all duration-500">
-                 <UserPlus className="h-8 w-8" />
+              <div className="h-14 w-14 rounded-2xl bg-white border border-slate-200 flex items-center justify-center text-corporate-blue shadow-sm">
+                 <UserPlus className="h-7 w-7" />
               </div>
               <div>
-                <h3 className="text-3xl font-black text-indigo-950 dark:text-white font-montserrat uppercase tracking-tight leading-none">STRATEJİK KAYIT ÜSSÜ</h3>
-                <p className="text-[11px] text-slate-400 dark:text-slate-500 font-black uppercase tracking-[0.25em] mt-3">Yeni yetenekleri ekosisteme dahil edin.</p>
+                <h3 className="t3-heading text-2xl text-slate-950">Stratejik Kayıt Üssü</h3>
+                <p className="t3-label">YENİ YETENEKLERİ EKOSİSTEME DAHİL EDİN</p>
               </div>
             </div>
-            <div className="h-1 w-24 rounded-full bg-indigo-100 dark:bg-indigo-950/40" />
+            <div className="h-1.5 w-24 rounded-full bg-slate-200" />
           </div>
 
-          <form action={createMemberAction as any} className="grid gap-10 md:grid-cols-6 relative z-10">
-            <div className="md:col-span-3 space-y-4">
-               <label className="flex items-center gap-3 text-[11px] font-black text-indigo-950 dark:text-indigo-200 uppercase tracking-[0.3em] px-1 font-montserrat">
-                 <Fingerprint className="h-4 w-4 text-indigo-600" /> AD SOYAD
+          <form action={createMemberAction as any} className="grid gap-8 md:grid-cols-6 relative z-10">
+            <div className="md:col-span-3 space-y-3">
+               <label className="flex items-center gap-2 t3-label ml-1">
+                 <Fingerprint className="h-3.5 w-3.5 text-corporate-blue" /> AD SOYAD
                </label>
-               <input name="name" placeholder="Örn: Ahmet Yılmaz" className="w-full rounded-2xl border border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-slate-800/50 px-8 py-6 text-sm font-bold text-indigo-950 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:ring-8 focus:ring-indigo-500/5 focus:border-indigo-600 transition-all outline-none shadow-sm placeholder:text-slate-300 dark:placeholder:text-slate-600" required />
+               <input name="name" placeholder="Örn: Ahmet Yılmaz" className="w-full rounded-2xl border border-slate-200 bg-white px-6 py-4 text-sm font-bold text-slate-950 focus:ring-8 focus:ring-corporate-blue/5 focus:border-corporate-blue transition-all outline-none shadow-sm placeholder:text-slate-300" required />
             </div>
-            <div className="md:col-span-3 space-y-4">
-               <label className="flex items-center gap-3 text-[11px] font-black text-indigo-950 dark:text-indigo-200 uppercase tracking-[0.3em] px-1 font-montserrat">
-                 <MailCheck className="h-4 w-4 text-amber-500" /> KURUMSAL E-POSTA
+            <div className="md:col-span-3 space-y-3">
+               <label className="flex items-center gap-2 t3-label ml-1">
+                 <MailCheck className="h-3.5 w-3.5 text-corporate-orange" /> KURUMSAL E-POSTA
                </label>
-               <input name="email" type="email" placeholder="ahmet.yilmaz@edu.tr" className="w-full rounded-2xl border border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-slate-800/50 px-8 py-6 text-sm font-bold text-indigo-950 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:ring-8 focus:ring-amber-500/5 focus:border-amber-500 transition-all outline-none shadow-sm placeholder:text-slate-300 dark:placeholder:text-slate-600" required />
+               <input name="email" type="email" placeholder="ahmet.yilmaz@edu.tr" className="w-full rounded-2xl border border-slate-200 bg-white px-6 py-4 text-sm font-bold text-slate-950 focus:ring-8 focus:ring-corporate-orange/5 focus:border-corporate-orange transition-all outline-none shadow-sm placeholder:text-slate-300" required />
             </div>
-            <div className="md:col-span-2 space-y-4">
-               <label className="flex items-center gap-3 text-[11px] font-black text-indigo-950 dark:text-indigo-200 uppercase tracking-[0.3em] px-1 font-montserrat">
-                 <Lock className="h-4 w-4 text-indigo-600" /> ERİŞİM ŞİFRESİ
+            <div className="md:col-span-2 space-y-3">
+               <label className="flex items-center gap-2 t3-label ml-1">
+                 <Lock className="h-3.5 w-3.5 text-corporate-blue" /> ERİŞİM ŞİFRESİ
                </label>
-               <input name="password" type="password" placeholder="Min. 8 karakter" className="w-full rounded-2xl border border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-slate-800/50 px-8 py-6 text-sm font-bold text-indigo-950 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:ring-8 focus:ring-indigo-500/5 focus:border-indigo-600 transition-all outline-none shadow-sm placeholder:text-slate-300 dark:placeholder:text-slate-600" minLength={8} required />
+               <input name="password" type="password" placeholder="Min. 8 karakter" className="w-full rounded-2xl border border-slate-200 bg-white px-6 py-4 text-sm font-bold text-slate-950 focus:ring-8 focus:ring-corporate-blue/5 focus:border-corporate-blue transition-all outline-none shadow-sm placeholder:text-slate-300" minLength={8} required />
             </div>
-            <div className="md:col-span-2 space-y-4">
-               <label className="flex items-center gap-3 text-[11px] font-black text-indigo-950 dark:text-indigo-200 uppercase tracking-[0.3em] px-1 font-montserrat">
-                 <Building className="h-4 w-4 text-amber-500" /> AKADEMİK BÖLÜM
+            <div className="md:col-span-2 space-y-3">
+               <label className="flex items-center gap-2 t3-label ml-1">
+                 <Building className="h-3.5 w-3.5 text-corporate-orange" /> AKADEMİK BÖLÜM
                </label>
-               <input name="department" placeholder="Bilgisayar Mühendisliği" className="w-full rounded-2xl border border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-slate-800/50 px-8 py-6 text-sm font-bold text-indigo-950 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:ring-8 focus:ring-amber-500/5 focus:border-amber-500 transition-all outline-none shadow-sm placeholder:text-slate-300 dark:placeholder:text-slate-600" />
+               <input name="department" placeholder="Bilgisayar Mühendisliği" className="w-full rounded-2xl border border-slate-200 bg-white px-6 py-4 text-sm font-bold text-slate-950 focus:ring-8 focus:ring-corporate-orange/5 focus:border-corporate-orange transition-all outline-none shadow-sm placeholder:text-slate-300" />
             </div>
-            <div className="md:col-span-1 space-y-4">
-               <label className="flex items-center gap-3 text-[11px] font-black text-indigo-950 dark:text-indigo-200 uppercase tracking-[0.3em] px-1 font-montserrat">
-                 <GraduationCap className="h-4 w-4 text-indigo-600" /> SINIF
+            <div className="md:col-span-1 space-y-3">
+               <label className="flex items-center gap-2 t3-label ml-1">
+                 <GraduationCap className="h-3.5 w-3.5 text-corporate-blue" /> SINIF
                </label>
-               <input name="grade" type="number" placeholder="2" className="w-full rounded-2xl border border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-slate-800/50 px-8 py-6 text-sm font-bold text-indigo-950 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:ring-8 focus:ring-indigo-500/5 focus:border-indigo-600 transition-all outline-none shadow-sm placeholder:text-slate-300 dark:placeholder:text-slate-600" min={1} max={8} />
+               <input name="grade" type="number" placeholder="2" className="w-full rounded-2xl border border-slate-200 bg-white px-6 py-4 text-sm font-bold text-slate-950 focus:ring-8 focus:ring-corporate-blue/5 focus:border-corporate-blue transition-all outline-none shadow-sm placeholder:text-slate-300" min={1} max={8} />
             </div>
-            <div className="md:col-span-1 space-y-4">
-               <label className="flex items-center gap-3 text-[11px] font-black text-indigo-950 dark:text-indigo-200 uppercase tracking-[0.3em] px-1 font-montserrat">
-                 <IdCard className="h-4 w-4 text-amber-500" /> NO
+            <div className="md:col-span-1 space-y-3">
+               <label className="flex items-center gap-2 t3-label ml-1">
+                 <IdCard className="h-3.5 w-3.5 text-corporate-orange" /> NO
                </label>
-               <input name="studentNumber" placeholder="2024..." className="w-full rounded-2xl border border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-slate-800/50 px-6 py-6 text-sm font-bold text-indigo-950 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:ring-8 focus:ring-amber-500/5 focus:border-amber-500 transition-all outline-none shadow-sm placeholder:text-slate-300 dark:placeholder:text-slate-600" />
+               <input name="studentNumber" placeholder="2024..." className="w-full rounded-2xl border border-slate-200 bg-white px-6 py-4 text-sm font-bold text-slate-950 focus:ring-8 focus:ring-corporate-orange/5 focus:border-corporate-orange transition-all outline-none shadow-sm placeholder:text-slate-300" />
             </div>
-            <button className="md:col-span-6 h-20 rounded-[2rem] bg-indigo-950 dark:bg-indigo-600 text-base font-black text-white shadow-2xl dark:shadow-indigo-500/20 active:scale-95 transition-all uppercase tracking-[0.25em] hover:bg-indigo-900 border border-white/10">SİSTEME KAYDET VE YETKİLENDİR</button>
+            <button className="md:col-span-6 h-16 rounded-2xl bg-slate-950 text-xs font-black text-white shadow-xl shadow-slate-900/10 active:scale-95 transition-all uppercase tracking-widest hover:bg-corporate-blue">SİSTEME KAYDET VE YETKİLENDİR</button>
           </form>
         </div>
       )}

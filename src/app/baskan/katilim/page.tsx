@@ -130,25 +130,34 @@ export default async function AttendancePage({ searchParams }: { searchParams: P
 
   return (
     <div className="space-y-12 animate-in fade-in slide-in-from-bottom-6 duration-1000 font-outfit pb-20">
-      {/* T3 Premium Hero Section */}
-      <div className="relative overflow-hidden rounded-[3.5rem] bg-indigo-950 p-12 md:p-16 text-white shadow-2xl group border border-white/5">
-        <div className="relative z-10">
-          <div className="inline-flex items-center gap-2 rounded-full bg-amber-500/20 border border-amber-500/30 px-5 py-2 text-[10px] font-black text-amber-500 uppercase tracking-[0.3em] mb-10 animate-pulse-subtle">
-            <ClipboardList className="h-4 w-4 fill-amber-500" /> SAHA OPERASYONU
+      {/* Soft Executive Hero Section */}
+      <div className="relative overflow-hidden rounded-t3-xl bg-slate-100/50 p-12 md:p-16 border border-slate-200">
+        <div className="relative z-10 flex flex-wrap items-center justify-between gap-12">
+          <div className="max-w-2xl">
+            <div className="inline-flex items-center gap-2 rounded-lg bg-white border border-slate-200 px-5 py-2 text-[10px] font-black text-slate-950 uppercase tracking-[0.25em] mb-10 shadow-sm">
+              <ClipboardList className="h-4 w-4 text-corporate-blue" /> SAHA OPERASYONU
+            </div>
+            <h1 className="text-5xl font-black tracking-tighter sm:text-7xl leading-[0.9] uppercase text-slate-950 italic">
+              KATILIM & <br />
+              <span className="text-corporate-blue italic">DİJİTAL YOKLAMA</span>
+            </h1>
+            <p className="mt-10 text-xl text-slate-600 font-medium leading-relaxed max-w-2xl">
+              Onaylı operasyonların katılımcı hiyerarşisini yönetin, dijital yoklama protokollerini uygulayın ve üye mazeretlerini <span className="text-slate-950 font-bold underline decoration-corporate-blue/30 decoration-4 underline-offset-4">kurumsal standartlarda</span> denetleyin.
+            </p>
           </div>
-          <h1 className="text-6xl font-black tracking-tighter sm:text-7xl font-montserrat leading-[0.9] uppercase">
-            KATILIM & <br />
-            <span className="text-indigo-400 italic border-b-8 border-amber-500/30">DİJİTAL YOKLAMA</span>
-          </h1>
-          <p className="mt-10 text-xl text-slate-300/80 font-medium max-w-2xl leading-relaxed">
-            Onaylı operasyonların katılımcı hiyerarşisini yönetin, dijital yoklama protokollerini uygulayın ve üye mazeretlerini kurumsal standartlarda denetleyin.
-          </p>
+          
+          <div className="flex gap-8">
+            <div className="group/stat rounded-2xl bg-white px-12 py-10 border border-slate-200 transition-all hover:-translate-y-2 text-center shadow-sm">
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">AKTİF KAYIT</p>
+              <p className="text-5xl font-black text-slate-950 tracking-tighter leading-none italic">{events.length}</p>
+            </div>
+          </div>
         </div>
         
         {/* Background Patterns */}
-        <div className="absolute -right-20 -top-20 h-[600px] w-[600px] rounded-full bg-indigo-500/10 opacity-30 blur-[130px] pointer-events-none group-hover:bg-indigo-500/20 transition-all duration-1000" />
-        <div className="absolute bottom-10 right-10 flex items-center gap-2 opacity-5 scale-150 transform group-hover:rotate-12 transition-transform duration-1000">
-           <UserCheck className="h-40 w-40" />
+        <div className="absolute -right-20 -top-20 h-[500px] w-[500px] rounded-full bg-corporate-blue/5 blur-[120px] pointer-events-none" />
+        <div className="absolute bottom-10 right-10 flex items-center gap-2 opacity-[0.03] scale-150 transform">
+           <UserCheck className="h-32 w-32" />
         </div>
       </div>
 
@@ -187,7 +196,7 @@ export default async function AttendancePage({ searchParams }: { searchParams: P
             const excused = event.participants.filter((p) => p.attendanceStatus === "EXCUSED").length;
 
             return (
-              <section key={event.id} className="rounded-[4rem] border border-slate-100 dark:border-white/5 bg-white dark:bg-slate-900 p-12 md:p-16 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.05)] dark:shadow-black/40 border-t-[16px] border-t-indigo-600 group overflow-hidden relative">
+              <section key={event.id} className="t3-panel p-10 md:p-12 bg-slate-50/30 border-l-[16px] border-l-corporate-blue group overflow-hidden relative">
                 <div className="flex flex-wrap items-start justify-between gap-10 mb-12 relative z-10">
                   <div className="space-y-6">
                     <h2 className="text-4xl font-black text-indigo-950 dark:text-white tracking-tighter font-montserrat uppercase group-hover:text-indigo-600 transition-colors leading-[0.95]">{event.title}</h2>
@@ -209,16 +218,16 @@ export default async function AttendancePage({ searchParams }: { searchParams: P
                 </div>
 
                 {/* Invite Interface */}
-                <div className="p-10 rounded-[3rem] bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/40 mb-12 relative overflow-hidden group/invite shadow-inner">
+                <div className="p-10 rounded-3xl bg-slate-100/50 border border-slate-200 mb-12 relative overflow-hidden group/invite shadow-sm">
                   <div className="relative z-10 flex flex-wrap items-center gap-8">
-                     <div className="h-14 w-14 rounded-2xl bg-indigo-600 p-4 text-white shadow-xl shadow-indigo-600/20 group-hover/invite:scale-110 transition-transform">
-                        <UserPlus className="h-6 w-6" />
+                     <div className="h-14 w-14 rounded-2xl bg-white border border-slate-200 flex items-center justify-center text-corporate-blue shadow-sm group-hover/invite:scale-110 transition-transform">
+                        <UserPlus className="h-7 w-7" />
                      </div>
                      <div className="flex-1 min-w-[300px]">
-                        <p className="text-[10px] font-black text-indigo-950 dark:text-indigo-200 uppercase tracking-[0.3em] mb-4 font-montserrat">OPERASYONEL DAVET KANALI</p>
+                        <p className="t3-label mb-4">OPERASYONEL DAVET KANALI</p>
                         <form action={inviteMemberAction} className="flex gap-4">
                            <input type="hidden" name="eventId" value={event.id} />
-                           <select name="userId" className="flex-1 rounded-2xl border border-slate-200 dark:border-white/5 bg-white dark:bg-slate-800 px-8 py-5 text-sm font-bold text-indigo-950 dark:text-white focus:ring-8 focus:ring-indigo-500/5 focus:border-indigo-600 transition-all outline-none appearance-none cursor-pointer shadow-sm" required>
+                           <select name="userId" className="flex-1 rounded-2xl border border-slate-200 bg-white px-8 py-5 text-sm font-bold text-slate-950 focus:ring-8 focus:ring-corporate-blue/5 focus:border-corporate-blue transition-all outline-none appearance-none cursor-pointer shadow-sm" required>
                              <option value="">LİSTEDEN PERSONEL SEÇİN...</option>
                              {members.map((member) => (
                                <option key={`${event.id}-${member.userId}`} value={member.userId}>
@@ -226,7 +235,7 @@ export default async function AttendancePage({ searchParams }: { searchParams: P
                                </option>
                              ))}
                            </select>
-                           <button className="px-10 py-5 rounded-2xl bg-indigo-950 dark:bg-indigo-700 text-[11px] font-black text-white hover:scale-[1.02] active:scale-95 transition-all shadow-2xl shadow-indigo-950/20 uppercase tracking-[0.25em] border border-white/10">KATILIMCI EKLE</button>
+                           <button className="t3-button t3-button-primary px-10">KATILIMCI EKLE</button>
                         </form>
                      </div>
                   </div>
