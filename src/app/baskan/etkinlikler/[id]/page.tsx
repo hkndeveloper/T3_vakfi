@@ -137,7 +137,7 @@ export default async function PresidentEventDetailPage({ params }: PageProps) {
           <ArrowLeft className="h-5 w-5" />
         </Link>
         <div>
-          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">ETKİNLİK YÖNETİMİ / {event.community.shortName}</p>
+          <p className="t3-label">ETKİNLİK YÖNETİMİ / {event.community.shortName}</p>
           <h2 className="text-xl font-black text-slate-950 tracking-tighter uppercase italic leading-none mt-1">{event.title}</h2>
         </div>
       </div>
@@ -145,7 +145,7 @@ export default async function PresidentEventDetailPage({ params }: PageProps) {
       {event.reviewNote && (event.status === "DRAFT" || event.status === "REJECTED") && (
         <div className="mx-4 p-8 rounded-[2rem] bg-amber-50 border-2 border-amber-200 shadow-xl shadow-amber-500/5 animate-pulse-subtle">
            <div className="flex items-start gap-6">
-              <div className="h-14 w-14 rounded-2xl bg-amber-500 flex items-center justify-center text-white shadow-lg shrink-0">
+              <div className="h-14 w-14 rounded-2xl bg-corporate-orange flex items-center justify-center text-white shadow-lg shrink-0">
                  <AlertCircle className="h-7 w-7" />
               </div>
               <div className="space-y-2">
@@ -188,7 +188,7 @@ export default async function PresidentEventDetailPage({ params }: PageProps) {
                </div>
                <div className="flex items-center gap-3 bg-white px-5 py-3 rounded-xl border border-slate-200 shadow-sm">
                   <Clock className="h-5 w-5 text-corporate-orange" />
-                  <span className="text-[11px] font-black uppercase tracking-widest">{event.startTime || "BELÄ°RTÄ°LMEDÄ°"}</span>
+                  <span className="text-[11px] font-black uppercase tracking-widest">{event.startTime || "BELİRTİLMEDİ"}</span>
                </div>
                <div className="flex items-center gap-3 bg-white px-5 py-3 rounded-xl border border-slate-200 shadow-sm">
                   <MapPin className="h-5 w-5 text-corporate-blue" />
@@ -209,10 +209,10 @@ export default async function PresidentEventDetailPage({ params }: PageProps) {
                  <Users className="h-8 w-8" />
               </div>
               <h3 className="text-2xl font-black text-slate-950 tracking-tighter italic uppercase">KATILIM</h3>
-              <p className="t3-label mt-1">KayÄ±tlÄ± KatÄ±lÄ±mcÄ±</p>
+              <p className="t3-label mt-1">Kayıtlı Katılımcı</p>
               <div className="mt-8">
                  <span className="text-6xl font-black text-slate-950 tracking-tighter leading-none italic">{event._count.participants}</span>
-                 <p className="text-[10px] text-corporate-blue font-black mt-4 uppercase tracking-widest">ÃœYE Ä°ÅARETLENDÄ°</p>
+                 <p className="text-[10px] text-corporate-blue font-black mt-4 uppercase tracking-widest">ÜYE İŞARETLENDİ</p>
               </div>
            </div>
            <div className="absolute -right-10 -bottom-10 h-40 w-40 rounded-full bg-corporate-blue/5 blur-3xl pointer-events-none" />
@@ -223,13 +223,13 @@ export default async function PresidentEventDetailPage({ params }: PageProps) {
         {/* Management Controls */}
         <div className="lg:col-span-1 space-y-10">
            <div className="t3-panel p-10 bg-slate-50/30">
-              <h4 className="text-[11px] font-black text-slate-950 uppercase tracking-widest mb-8 border-l-4 border-corporate-orange pl-5 italic">YÃ¶netim Paketi</h4>
+              <h4 className="text-[11px] font-black text-slate-950 uppercase tracking-widest mb-8 border-l-4 border-corporate-orange pl-5 italic">Yönetim Paketi</h4>
               
               <div className="space-y-6">
                  <div className="p-7 rounded-2xl bg-white border border-slate-200 shadow-sm">
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 italic">// RAPOR DURUMU</p>
                     <div className="flex items-center justify-between">
-                       <span className="text-xs font-black text-slate-950 uppercase italic">{event._count.reports > 0 ? "RAPORLANDI" : "BEKLENÄ°YOR"}</span>
+                       <span className="text-xs font-black text-slate-950 uppercase italic">{event._count.reports > 0 ? "RAPORLANDI" : "BEKLENİYOR"}</span>
                        <Link 
                          href="/baskan/raporlar" 
                          className="h-12 w-12 rounded-xl bg-white shadow-sm border border-slate-200 flex items-center justify-center text-corporate-orange hover:bg-slate-950 hover:text-white transition-all"
@@ -246,14 +246,14 @@ export default async function PresidentEventDetailPage({ params }: PageProps) {
                       </p>
                       <form action={updateEventAction as any} className="space-y-3">
                         <input type="hidden" name="eventId" value={event.id} />
-                        <input name="title" defaultValue={event.title} placeholder="Başlık" className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-[11px] font-bold text-slate-950 outline-none focus:border-corporate-blue transition-all" required />
-                        <input name="location" defaultValue={event.location ?? ""} placeholder="Yer" className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-[11px] font-bold text-slate-950 outline-none focus:border-corporate-blue transition-all" />
+                        <input name="title" defaultValue={event.title} placeholder="Başlık" className="t3-input w-full px-4 py-3 text-[11px]" required />
+                        <input name="location" defaultValue={event.location ?? ""} placeholder="Yer" className="t3-input w-full px-4 py-3 text-[11px]" />
                         <div className="grid grid-cols-2 gap-2">
-                          <input name="startTime" defaultValue={event.startTime ?? ""} type="time" className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-3 text-[11px] font-bold text-slate-950 outline-none" />
-                          <input name="endTime" defaultValue={event.endTime ?? ""} type="time" className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-3 text-[11px] font-bold text-slate-950 outline-none" />
+                          <input name="startTime" defaultValue={event.startTime ?? ""} type="time" className="t3-input w-full px-3 py-3 text-[11px]" />
+                          <input name="endTime" defaultValue={event.endTime ?? ""} type="time" className="t3-input w-full px-3 py-3 text-[11px]" />
                         </div>
-                        <textarea name="description" defaultValue={event.description ?? ""} rows={2} placeholder="Açıklama..." className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-[11px] font-bold text-slate-950 outline-none resize-none" />
-                        <button className="w-full flex items-center justify-center gap-2 rounded-xl bg-corporate-blue text-white text-[10px] font-black uppercase tracking-widest py-3.5 hover:bg-blue-700 active:scale-95 transition-all">
+                        <textarea name="description" defaultValue={event.description ?? ""} rows={2} placeholder="Açıklama..." className="t3-input w-full px-4 py-3 text-[11px] resize-none" />
+                        <button className="w-full flex items-center justify-center gap-2 rounded-xl bg-slate-950 text-white text-[10px] font-black uppercase tracking-widest py-3.5 hover:bg-corporate-blue active:scale-95 transition-all">
                           <CheckCircle2 className="h-4 w-4" /> KAYDET
                         </button>
                       </form>
@@ -271,7 +271,7 @@ export default async function PresidentEventDetailPage({ params }: PageProps) {
 
                   <Link
                     href="/baskan/etkinlikler"
-                    className="w-full h-16 rounded-xl bg-slate-950 text-white text-[11px] font-black uppercase tracking-widest shadow-xl shadow-slate-200 active:scale-95 transition-all flex items-center justify-center"
+                    className="w-full h-16 rounded-xl bg-slate-100 text-slate-950 border border-slate-200 text-[11px] font-black uppercase tracking-widest shadow-sm active:scale-95 transition-all flex items-center justify-center hover:bg-slate-950 hover:text-white"
                   >
                      ETKİNLİKLERE DÖN
                   </Link>
@@ -289,7 +289,7 @@ export default async function PresidentEventDetailPage({ params }: PageProps) {
                  </div>
               </div>
               <p className="text-xs text-white/60 italic leading-relaxed border-t border-white/10 pt-6">
-                 {event.reviewNote || "Admin tarafÄ±ndan henÃ¼z bir inceleme notu bÄ±rakÄ±lmamÄ±ÅŸtÄ±r."}
+                 {event.reviewNote || "Admin tarafından henüz bir inceleme notu bırakılmamıştır."}
               </p>
               <Building2 className="absolute -right-6 -bottom-6 h-32 w-32 opacity-[0.05] -rotate-12 transition-transform duration-1000 group-hover:rotate-0" />
            </div>
@@ -298,10 +298,10 @@ export default async function PresidentEventDetailPage({ params }: PageProps) {
         {/* Attendance Area */}
         <div className="lg:col-span-2 space-y-10">
            <div className="flex flex-wrap items-center justify-between gap-6 px-4">
-              <h3 className="t3-heading text-3xl text-slate-950 tracking-tighter italic uppercase">Yoklama & KatÄ±lÄ±mcÄ±lar</h3>
+              <h3 className="t3-heading text-3xl text-slate-950 tracking-tighter italic uppercase">Yoklama & Katılımcılar</h3>
               <div className="flex items-center gap-3 bg-corporate-blue/5 px-5 py-2.5 rounded-xl border border-corporate-blue/10">
                  <UserCheck className="h-5 w-5 text-corporate-blue" />
-                 <span className="text-[11px] font-black text-corporate-blue uppercase tracking-widest">{memberAttendance.length} TOPLAM ÃœYE LÄ°STELENDÄ°</span>
+                 <span className="text-[11px] font-black text-corporate-blue uppercase tracking-widest">{memberAttendance.length} TOPLAM ÜYE LİSTELENDİ</span>
               </div>
            </div>
 

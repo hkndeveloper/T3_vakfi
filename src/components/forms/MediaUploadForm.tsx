@@ -67,18 +67,18 @@ export function MediaUploadForm({ communityId, reportId, eventId, communities, o
   };
 
   return (
-    <div className="rounded-[2.5rem] border border-slate-100 bg-slate-50/30 p-8 shadow-inner animate-in fade-in duration-700">
+    <div className="rounded-[2.5rem] border border-slate-100 bg-slate-50/30 p-8 shadow-inner animate-in fade-in duration-700 font-outfit">
       <div className="space-y-6">
         {/* Community Selection (if not fixed) */}
         {!communityId && communities && (
           <div className="space-y-3">
-            <label className="flex items-center gap-2 text-[10px] font-black text-slate-500 uppercase tracking-widest ml-4">
+            <label className="flex items-center gap-2 t3-label ml-4">
               <Building2 className="h-3 w-3" /> İLGİLİ TOPLULUK
             </label>
             <select 
               value={selectedCommunityId}
               onChange={(e) => setSelectedCommunityId(e.target.value)}
-              className="w-full h-14 pl-6 pr-10 bg-white border border-slate-200 rounded-2xl text-sm font-bold outline-none focus:ring-8 focus:ring-t3-navy/5 focus:border-t3-navy transition-all appearance-none cursor-pointer"
+              className="t3-input w-full h-14 pl-6 pr-10 appearance-none cursor-pointer"
             >
               <option value="">Topluluk Seçin...</option>
               {communities.map((c) => (
@@ -91,13 +91,13 @@ export function MediaUploadForm({ communityId, reportId, eventId, communities, o
         {/* Document Category (if document tab active) */}
         {activeTab === "document" && (
           <div className="space-y-3">
-            <label className="flex items-center gap-2 text-[10px] font-black text-slate-500 uppercase tracking-widest ml-4">
+            <label className="flex items-center gap-2 t3-label ml-4">
               <FileText className="h-3 w-3" /> BELGE KATEGORİSİ
             </label>
             <select 
               value={docCategory}
               onChange={(e) => setDocCategory(e.target.value)}
-              className="w-full h-14 pl-6 pr-10 bg-white border border-slate-200 rounded-2xl text-sm font-bold outline-none focus:ring-8 focus:ring-t3-navy/5 focus:border-t3-navy transition-all appearance-none cursor-pointer"
+              className="t3-input w-full h-14 pl-6 pr-10 appearance-none cursor-pointer"
             >
               <option value="Genel">Genel</option>
               <option value="Dilekçe">Dilekçe</option>
@@ -110,34 +110,34 @@ export function MediaUploadForm({ communityId, reportId, eventId, communities, o
 
         <div className="flex flex-wrap items-center justify-between gap-6 px-2">
            <div className="flex items-center gap-3">
-              <FolderPlus className="h-5 w-5 text-t3-navy" />
-              <h4 className="text-[11px] font-black text-t3-navy uppercase tracking-[0.25em] font-montserrat">Dosya Yükleme</h4>
+              <FolderPlus className="h-5 w-5 text-corporate-blue" />
+              <h4 className="t3-label text-corporate-blue">Dosya Yükleme</h4>
            </div>
            <div className="flex bg-white/80 backdrop-blur-sm p-1.5 rounded-2xl border border-slate-100 shadow-sm">
               <button 
                 type="button"
                 onClick={() => setActiveTab("media")}
                 className={cn(
-                  "flex items-center gap-2.5 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-500",
-                  activeTab === "media" 
-                    ? "bg-t3-navy text-white shadow-xl shadow-t3-navy/20" 
-                    : "text-slate-400 hover:text-t3-navy hover:bg-slate-50"
+                   "flex items-center gap-2.5 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-500",
+                   activeTab === "media" 
+                     ? "bg-slate-950 text-white shadow-xl shadow-slate-950/20" 
+                     : "text-slate-400 hover:text-corporate-blue hover:bg-slate-50"
                 )}
               >
-                <Image className={cn("h-4 w-4", activeTab === "media" ? "text-t3-cyan" : "text-slate-300")} /> 
+                <Image className={cn("h-4 w-4", activeTab === "media" ? "text-corporate-blue" : "text-slate-300")} /> 
                 MEDYA
               </button>
               <button 
                 type="button"
                 onClick={() => setActiveTab("document")}
                 className={cn(
-                  "flex items-center gap-2.5 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-500 ml-1",
-                  activeTab === "document" 
-                    ? "bg-t3-navy text-white shadow-xl shadow-t3-navy/20" 
-                    : "text-slate-400 hover:text-t3-navy hover:bg-slate-50"
+                   "flex items-center gap-2.5 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-500 ml-1",
+                   activeTab === "document" 
+                     ? "bg-slate-950 text-white shadow-xl shadow-slate-950/20" 
+                     : "text-slate-400 hover:text-corporate-blue hover:bg-slate-50"
                 )}
               >
-                <FileText className={cn("h-4 w-4", activeTab === "document" ? "text-t3-orange" : "text-slate-300")} /> 
+                <FileText className={cn("h-4 w-4", activeTab === "document" ? "text-corporate-orange" : "text-slate-300")} /> 
                 BELGE
               </button>
            </div>
@@ -160,7 +160,7 @@ export function MediaUploadForm({ communityId, reportId, eventId, communities, o
           
           {/* Decorative elements */}
           <div className="absolute top-0 right-0 p-4 opacity-10 group-hover/upload:opacity-30 transition-opacity">
-             <Sparkles className="h-8 w-8 text-t3-cyan" />
+             <Sparkles className="h-8 w-8 text-corporate-blue" />
           </div>
         </div>
       </div>

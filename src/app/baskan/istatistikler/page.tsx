@@ -270,23 +270,23 @@ export default async function PresidentStatsPage() {
 
 function MetricCard({ label, value, subValue, icon: Icon, theme, trend }: any) {
   const themes = {
-    indigo: "bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 border-indigo-100 dark:border-indigo-900/40 hover:border-indigo-600",
-    amber: "bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 border-amber-100 dark:border-amber-900/40 hover:border-amber-500",
+    blue: "bg-blue-50 text-corporate-blue border-blue-100 hover:border-corporate-blue",
+    orange: "bg-orange-50 text-corporate-orange border-orange-100 hover:border-corporate-orange",
   };
-  const selectedTheme = themes[theme as keyof typeof themes] || themes.indigo;
+  const selectedTheme = themes[theme as keyof typeof themes] || themes.blue;
 
   return (
-    <div className="rounded-[3rem] border border-slate-100 dark:border-white/5 bg-white dark:bg-slate-900 p-10 shadow-xl dark:shadow-black/20 group relative overflow-hidden transition-all hover:scale-[1.02]">
+    <div className="rounded-[3rem] border border-slate-100 bg-white p-10 shadow-sm group relative overflow-hidden transition-all hover:scale-[1.02]">
        <div className={cn("h-16 w-16 rounded-2xl flex items-center justify-center border transition-all duration-500 mb-10 group-hover:scale-110 shadow-sm", selectedTheme)}>
           <Icon className="h-8 w-8" />
        </div>
-       <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.3em] mb-4">{label}</p>
-       <h3 className="text-5xl font-black text-indigo-950 dark:text-white tracking-tighter font-montserrat leading-none italic">{value}</h3>
-       <div className="mt-8 flex items-center justify-between pt-6 border-t border-slate-50 dark:border-white/5">
-          <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">{subValue}</p>
+       <p className="t3-label text-slate-400 mb-4">{label}</p>
+       <h3 className="text-5xl font-black text-slate-950 tracking-tighter leading-none italic">{value}</h3>
+       <div className="mt-8 flex items-center justify-between pt-6 border-t border-slate-50">
+          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{subValue}</p>
           {trend && <span className="text-[10px] font-black text-emerald-500 bg-emerald-500/10 px-3 py-1.5 rounded-xl uppercase">{trend}</span>}
        </div>
-       <Icon className="absolute -right-6 -bottom-6 h-24 w-24 opacity-[0.03] dark:opacity-[0.07] rotate-12" />
+       <Icon className="absolute -right-6 -bottom-6 h-24 w-24 opacity-[0.03] rotate-12" />
     </div>
   );
 }
@@ -297,14 +297,14 @@ function ProgressBar({ label, value, total, color, icon: Icon }: any) {
     <div className="space-y-5 px-2">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-           <Icon className="h-5 w-5 text-slate-400 dark:text-slate-500" />
-           <span className="text-[11px] font-black text-indigo-950 dark:text-white uppercase tracking-[0.25em] font-montserrat">{label}</span>
+           <Icon className="h-5 w-5 text-slate-400" />
+           <span className="t3-label text-slate-950 tracking-[0.25em]">{label}</span>
         </div>
-        <span className="text-sm font-black text-indigo-600 dark:text-indigo-400 italic">
-          {value} <span className="text-slate-300 dark:text-slate-700 text-[10px] not-italic ml-1">/ {total}</span>
+        <span className="text-sm font-black text-corporate-blue italic">
+          {value} <span className="text-slate-300 text-[10px] not-italic ml-1">/ {total}</span>
         </span>
       </div>
-      <div className="h-4 w-full bg-slate-50 dark:bg-slate-800 rounded-full overflow-hidden p-1 shadow-inner border border-slate-100 dark:border-white/5">
+      <div className="h-4 w-full bg-slate-50 rounded-full overflow-hidden p-1 shadow-inner border border-slate-100">
          <div 
            className={cn("h-full rounded-full transition-all duration-1000 shadow-sm shadow-black/10", color)} 
            style={{ width: `${percentage}%` }} 
@@ -318,11 +318,11 @@ function InsightItem({ label, active }: { label: string; active: boolean }) {
   return (
     <div className={cn(
       "flex items-center gap-4 text-[10px] font-black uppercase tracking-[0.25em] transition-all",
-      active ? "text-white" : "text-white/30"
+      active ? "text-slate-950" : "text-slate-300"
     )}>
        <div className={cn(
          "h-2 w-2 rounded-full",
-         active ? "bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.8)]" : "bg-white/10"
+         active ? "bg-corporate-orange shadow-[0_0_8px_rgba(234,88,12,0.6)]" : "bg-slate-200"
        )} />
        {label}
     </div>
