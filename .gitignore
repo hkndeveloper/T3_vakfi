@@ -46,3 +46,7 @@ next-env.d.ts
 backup.sql
 scripts/deploy-data.ts
 *.sql
+
+TEST_KIMLIK_BILGILERI.md
+T3_YONETIM_SISTEMI_DENETIM_RAPORU.md
+SISTEM_DOKUMANTASYONU.*

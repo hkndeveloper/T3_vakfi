@@ -19,70 +19,25 @@ import {
   ChevronRight,
   Plus,
   History,
-  Target
+  Target,
+  PlusCircle
 } from "lucide-react";
+import { MediaUploadModal } from "@/components/forms/MediaUploadModal";
+import { deleteMediaAction, deleteDocumentAction } from "@/actions/media-actions";
 import { cn } from "@/lib/utils";
 
-async function deleteMediaFileAction(formData: FormData) {
+async function deleteMediaFileFormAction(formData: FormData) {
   "use server";
-  const session = await requireCommunityManager();
-  const communityId = session.user.communityIds[0];
-
   const fileId = String(formData.get("fileId") ?? "").trim();
   if (!fileId) return;
-
-  const mediaFile = await prisma.mediaFile.findFirst({
-    where: { 
-      id: fileId,
-      report: { communityId }
-    }
-  });
-
-  if (mediaFile) {
-    await prisma.mediaFile.delete({ where: { id: fileId } });
-    
-    await prisma.activityLog.create({
-      data: {
-        userId: session.user.id,
-        action: "media.delete",
-        modelType: "MediaFile",
-        modelId: fileId,
-      },
-    });
-  }
-
-  revalidatePath("/baskan/gorseller-belgeler");
+  await deleteMediaAction(fileId);
 }
 
-async function deleteDocumentAction(formData: FormData) {
+async function deleteDocumentFormAction(formData: FormData) {
   "use server";
-  const session = await requireCommunityManager();
-  const communityId = session.user.communityIds[0];
-
   const docId = String(formData.get("docId") ?? "").trim();
   if (!docId) return;
-
-  const document = await prisma.document.findFirst({
-    where: { 
-      id: docId,
-      report: { communityId }
-    }
-  });
-
-  if (document) {
-    await prisma.document.delete({ where: { id: docId } });
-    
-    await prisma.activityLog.create({
-      data: {
-        userId: session.user.id,
-        action: "document.delete",
-        modelType: "Document",
-        modelId: docId,
-      },
-    });
-  }
-
-  revalidatePath("/baskan/gorseller-belgeler");
+  await deleteDocumentAction(docId);
 }
 
 export default async function PresidentMediaDocumentsPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
@@ -138,8 +93,19 @@ export default async function PresidentMediaDocumentsPage({ searchParams }: { se
         
         {/* Background Patterns */}
         <div className="absolute -right-20 -top-20 h-[600px] w-[600px] rounded-full bg-indigo-500/10 opacity-30 blur-[130px] pointer-events-none group-hover:bg-indigo-500/20 transition-all duration-1000" />
-        <div className="absolute bottom-10 right-10 flex items-center gap-2 opacity-5 scale-150 transform group-hover:rotate-12 transition-transform duration-1000">
-           <ImageIcon className="h-40 w-40" />
+        <div className="absolute bottom-10 right-10 flex flex-col items-end gap-6 z-20">
+           <MediaUploadModal 
+             communityId={communityId}
+             trigger={
+               <button className="flex items-center gap-3 px-10 py-5 bg-white text-indigo-950 rounded-3xl text-sm font-black hover:bg-indigo-50 transition-all shadow-2xl shadow-black/20 group/btn active:scale-95 uppercase tracking-widest italic">
+                 <PlusCircle className="h-6 w-6 text-indigo-600 group-hover/btn:rotate-90 transition-transform duration-500" /> 
+                 YENİ DOSYA YÜKLE
+               </button>
+             }
+           />
+           <div className="flex items-center gap-2 opacity-10 scale-150 transform group-hover:rotate-12 transition-transform duration-1000">
+              <ImageIcon className="h-40 w-40" />
+           </div>
         </div>
       </div>
 
@@ -234,7 +200,7 @@ export default async function PresidentMediaDocumentsPage({ searchParams }: { se
                     <a href={media.filePath} download className="h-12 w-12 rounded-xl bg-indigo-600 flex items-center justify-center text-white hover:bg-indigo-700 transition-all shadow-xl">
                       <Download className="h-5 w-5" />
                     </a>
-                    <form action={deleteMediaFileAction}>
+                    <form action={deleteMediaFileFormAction}>
                       <input type="hidden" name="fileId" value={media.id} />
                       <button type="submit" className="h-12 w-12 rounded-xl bg-rose-600 flex items-center justify-center text-white hover:bg-rose-700 transition-all shadow-xl">
                         <Trash2 className="h-5 w-5" />
@@ -312,7 +278,7 @@ export default async function PresidentMediaDocumentsPage({ searchParams }: { se
                           <a href={doc.filePath} download className="h-12 w-12 rounded-xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-white/5 flex items-center justify-center text-indigo-950 dark:text-white hover:bg-amber-500 hover:text-white transition-all shadow-sm">
                              <Download className="h-5 w-5" />
                           </a>
-                          <form action={deleteDocumentAction}>
+                          <form action={deleteDocumentFormAction}>
                              <input type="hidden" name="docId" value={doc.id} />
                              <button type="submit" className="h-12 w-12 rounded-xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-white/5 flex items-center justify-center text-rose-600 hover:bg-rose-600 hover:text-white transition-all shadow-sm">
                                 <Trash2 className="h-5 w-5" />

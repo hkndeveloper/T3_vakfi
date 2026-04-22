@@ -19,13 +19,28 @@ import {
   ChevronRight
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { MediaUploadModal } from "@/components/forms/MediaUploadModal";
+import { deleteMediaAction, deleteDocumentAction } from "@/actions/media-actions";
+import { revalidatePath } from "next/cache";
+
+async function deleteMediaFormAction(formData: FormData) {
+  "use server";
+  const id = String(formData.get("id") ?? "").trim();
+  if (id) await deleteMediaAction(id);
+}
+
+async function deleteDocumentFormAction(formData: FormData) {
+  "use server";
+  const id = String(formData.get("id") ?? "").trim();
+  if (id) await deleteDocumentAction(id);
+}
 
 export default async function AdminMediaDocumentsPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
   await requirePermission("media.view");
   const { q: search } = await searchParams;
 
-  // Fetch media files and documents from database
-  const [mediaFiles, documents] = await Promise.all([
+  // Fetch media files, documents and communities
+  const [mediaFiles, documents, communities] = await Promise.all([
     prisma.mediaFile.findMany({
       where: search ? { fileName: { contains: search, mode: "insensitive" } } : undefined,
       orderBy: { createdAt: "desc" },
@@ -43,6 +58,10 @@ export default async function AdminMediaDocumentsPage({ searchParams }: { search
         community: true,
         report: true
       }
+    }),
+    prisma.community.findMany({
+      select: { id: true, name: true, shortName: true },
+      orderBy: { name: "asc" }
     })
   ]);
 
@@ -115,12 +134,17 @@ export default async function AdminMediaDocumentsPage({ searchParams }: { search
             )}
           </div>
           <div className="flex gap-4">
-             <button className="h-16 px-8 rounded-xl bg-slate-50 border border-slate-200 text-[11px] font-black text-slate-950 hover:bg-white transition-all shadow-sm flex items-center gap-3">
+             <button className="h-16 px-8 rounded-xl bg-slate-50 border border-slate-200 text-[11px] font-black text-slate-950 hover:bg-white transition-all shadow-sm flex items-center gap-3 uppercase tracking-widest">
                <Filter className="h-5 w-5" /> FİLTRELE
              </button>
-             <button className="h-16 px-8 rounded-xl bg-slate-950 text-[11px] font-black text-white hover:bg-corporate-blue transition-all shadow-xl shadow-slate-900/10 flex items-center gap-3">
-               <Upload className="h-5 w-5 text-corporate-orange" /> SİSTEME YÜKLE
-             </button>
+             <MediaUploadModal 
+               communities={communities}
+               trigger={
+                 <button className="h-16 px-8 rounded-xl bg-slate-950 text-[11px] font-black text-white hover:bg-corporate-blue transition-all shadow-xl shadow-slate-900/10 flex items-center gap-3 uppercase tracking-widest">
+                   <Upload className="h-5 w-5 text-corporate-orange" /> SİSTEME YÜKLE
+                 </button>
+               }
+             />
           </div>
         </div>
 
@@ -154,6 +178,12 @@ export default async function AdminMediaDocumentsPage({ searchParams }: { search
                   >
                     <Download className="h-5 w-5" />
                   </a>
+                  <form action={deleteMediaFormAction}>
+                    <input type="hidden" name="id" value={media.id} />
+                    <button className="h-12 w-12 rounded-xl bg-white flex items-center justify-center text-rose-600 hover:bg-rose-600 hover:text-white transition-all shadow-xl">
+                      <Trash2 className="h-5 w-5" />
+                    </button>
+                  </form>
                 </div>
               </div>
               <div className="space-y-4">
@@ -252,6 +282,12 @@ export default async function AdminMediaDocumentsPage({ searchParams }: { search
                         >
                           <Download className="h-5 w-5 group-hover/btn:scale-110 transition-transform" />
                         </a>
+                        <form action={deleteDocumentFormAction}>
+                          <input type="hidden" name="id" value={doc.id} />
+                          <button className="h-12 w-12 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-rose-600 hover:bg-rose-600 hover:text-white transition-all shadow-sm">
+                            <Trash2 className="h-5 w-5" />
+                          </button>
+                        </form>
                       </div>
                     </td>
                   </tr>

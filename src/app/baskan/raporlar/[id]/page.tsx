@@ -259,7 +259,7 @@ export default async function PresidentReportDetailPage({ params }: PageProps) {
                  <SubmitReportButton reportId={report.id} />
                </div>
                <div className="pt-2">
-                 <MediaUploadForm reportId={report.id} />
+                 <MediaUploadForm reportId={report.id} communityId={report.communityId} />
                </div>
              </div>
            )}

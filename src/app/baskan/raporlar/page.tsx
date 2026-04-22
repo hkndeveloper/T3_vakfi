@@ -261,7 +261,7 @@ export default async function PresidentReportsPage({ searchParams }: { searchPar
                          <span className="text-[11px] font-black text-slate-950 uppercase tracking-[0.3em]">Ek Kanıt Yükleme Terminali</span>
                        </div>
                       <div className="t3-panel bg-slate-50/50 p-10 border-dashed">
-                        <MediaUploadForm reportId={report.id} />
+                        <MediaUploadForm reportId={report.id} communityId={communityId} />
                       </div>
                     </div>
                   )}
