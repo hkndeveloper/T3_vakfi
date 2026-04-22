@@ -3,6 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { getCurrentSession, hasPermission } from "@/lib/permissions";
+import { r2Client, R2_BUCKET_NAME } from "@/lib/r2";
+import { DeleteObjectCommand } from "@aws-sdk/client-s3";
 
 export async function uploadMediaAction(params: {
   communityId: string;
@@ -124,6 +126,19 @@ export async function deleteMediaAction(id: string) {
       return { success: false, error: "Bu dosyayı silme yetkiniz yok." };
     }
 
+    // Delete from R2 if possible
+    try {
+      const fileKey = media.filePath.split("/").pop();
+      if (fileKey) {
+        await r2Client.send(new DeleteObjectCommand({
+          Bucket: R2_BUCKET_NAME,
+          Key: fileKey,
+        }));
+      }
+    } catch (err) {
+      console.error("R2 Delete error (Media):", err);
+    }
+
     await prisma.mediaFile.delete({ where: { id } });
 
     await prisma.activityLog.create({
@@ -156,6 +171,19 @@ export async function deleteDocumentAction(id: string) {
 
     if (!isSuperAdmin && !isManagerOfCommunity) {
       return { success: false, error: "Bu belgeyi silme yetkiniz yok." };
+    }
+
+    // Delete from R2 if possible
+    try {
+      const fileKey = doc.filePath.split("/").pop();
+      if (fileKey) {
+        await r2Client.send(new DeleteObjectCommand({
+          Bucket: R2_BUCKET_NAME,
+          Key: fileKey,
+        }));
+      }
+    } catch (err) {
+      console.error("R2 Delete error (Document):", err);
     }
 
     await prisma.document.delete({ where: { id } });
