@@ -1,3 +1,4 @@
+import React from "react";
 import bcrypt from "bcryptjs";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
@@ -358,21 +359,21 @@ export default async function PresidentMembersPage({ searchParams }: { searchPar
       <div className="space-y-10">
         <div className="flex flex-wrap items-center justify-between gap-6 px-10">
           <div>
-            <h2 className="text-3xl font-black text-indigo-950 dark:text-white tracking-tight font-montserrat uppercase leading-none">Ekosistem Kaynakları</h2>
+            <h2 className="t3-heading text-3xl text-slate-950">Ekosistem Kaynakları</h2>
             <div className="flex items-center gap-3 mt-4">
-               <div className="h-1.5 w-16 rounded-full bg-amber-500" />
-               <p className="text-[11px] text-slate-400 dark:text-slate-500 font-black uppercase tracking-[0.25em]">{members.length} AKTİF BİLEŞEN LİSTELENİYOR</p>
+               <div className="h-1.5 w-16 rounded-full bg-corporate-orange" />
+               <p className="t3-label">{members.length} AKTİF BİLEŞEN LİSTELENİYOR</p>
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-4">
             <form className="relative group">
-              <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-indigo-400 dark:text-indigo-600 group-focus-within:text-indigo-600 transition-colors" />
+              <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within:text-corporate-blue transition-colors" />
               <input 
                 name="q"
                 type="text" 
                 defaultValue={search}
                 placeholder="İsim veya E-posta ara..." 
-                className="pl-14 pr-8 py-5 bg-white dark:bg-slate-900 border border-slate-100 dark:border-white/5 rounded-3xl text-sm font-bold outline-none focus:ring-8 focus:ring-indigo-500/10 focus:border-indigo-500/30 transition-all w-72 shadow-xl shadow-slate-200/50 dark:shadow-black/20 text-indigo-950 dark:text-white" 
+                className="pl-14 pr-8 py-5 bg-slate-50 border border-slate-200 rounded-3xl text-sm font-bold outline-none focus:ring-8 focus:ring-corporate-blue/5 focus:border-corporate-blue transition-all w-72 shadow-sm text-slate-950" 
               />
             </form>
             {(search) && (
@@ -383,29 +384,29 @@ export default async function PresidentMembersPage({ searchParams }: { searchPar
           </div>
         </div>
 
-        <div className="rounded-[4rem] border border-slate-100 dark:border-white/5 bg-white dark:bg-slate-900 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.05)] dark:shadow-black/40 overflow-hidden relative">
+        <div className="t3-panel overflow-hidden bg-slate-50/30">
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-slate-50 dark:divide-white/5">
-              <thead className="bg-slate-50/50 dark:bg-slate-800/30">
+            <table className="min-w-full divide-y divide-slate-200">
+              <thead className="bg-slate-100/50">
                 <tr>
-                  <th className="px-12 py-8 text-left text-[11px] font-black text-indigo-950 dark:text-white uppercase tracking-[0.3em] font-montserrat">KİMLİK BİLGİSİ</th>
-                  <th className="px-12 py-8 text-center text-[11px] font-black text-indigo-950 dark:text-white uppercase tracking-[0.3em] font-montserrat">HİYERARŞİ</th>
-                  <th className="px-12 py-8 text-center text-[11px] font-black text-indigo-950 dark:text-white uppercase tracking-[0.3em] font-montserrat">DURUM</th>
-                  <th className="px-12 py-8 text-right text-[11px] font-black text-indigo-950 dark:text-white uppercase tracking-[0.3em] font-montserrat">KONTROLAKSİYONU</th>
+                  <th className="px-12 py-8 text-left t3-label">KİMLİK BİLGİSİ</th>
+                  <th className="px-12 py-8 text-center t3-label">HİYERARŞİ</th>
+                  <th className="px-12 py-8 text-center t3-label">DURUM</th>
+                  <th className="px-12 py-8 text-right t3-label">KONTROLAKSİYONU</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-50 dark:divide-white/5 bg-white dark:bg-slate-900">
+              <tbody className="divide-y divide-slate-100">
                 {members.map((member) => (
-                  <>
-                    <tr key={member.id} className="hover:bg-indigo-500/[0.02] dark:hover:bg-white/[0.02] transition-all group">
+                  <React.Fragment key={member.id}>
+                    <tr className="hover:bg-white transition-all group">
                       <td className="px-12 py-10">
                         <div className="flex items-center gap-6">
-                          <div className="h-16 w-16 rounded-2xl bg-indigo-50 dark:bg-indigo-950/50 flex items-center justify-center text-indigo-600 font-black text-xl border border-indigo-100 dark:border-indigo-900/40 group-hover:scale-110 transition-transform">
+                          <div className="h-16 w-16 rounded-2xl bg-blue-50 flex items-center justify-center text-corporate-blue font-black text-xl border border-blue-100 group-hover:bg-slate-950 group-hover:text-white transition-all shadow-sm">
                             {member.user.name.charAt(0).toUpperCase()}
                           </div>
                           <div className="flex flex-col gap-2">
-                            <span className="font-black text-indigo-950 dark:text-white text-xl tracking-tight font-montserrat uppercase group-hover:text-indigo-600 transition-colors leading-none">{member.user.name}</span>
-                            <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">{member.user.email}</span>
+                            <span className="font-black text-slate-950 text-xl tracking-tight uppercase group-hover:text-corporate-blue transition-colors leading-none italic">{member.user.name}</span>
+                            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">{member.user.email}</span>
                             {(member.user.department || member.user.grade) && (
                               <span className="text-[10px] font-bold text-slate-300 uppercase tracking-wider">
                                 {member.user.department}{member.user.department && member.user.grade ? " · " : ""}{member.user.grade ? `${member.user.grade}. Sınıf` : ""}
@@ -416,24 +417,24 @@ export default async function PresidentMembersPage({ searchParams }: { searchPar
                       </td>
                       <td className="px-12 py-10 text-center">
                          <span className={cn(
-                           "inline-flex items-center gap-3 px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] border shadow-sm transition-all",
+                           "inline-flex items-center gap-3 px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] border shadow-sm transition-all bg-white",
                            member.membershipType === "MANAGEMENT" 
-                             ? "bg-amber-500/10 text-amber-600 border-amber-500/20" 
-                             : "bg-indigo-50 dark:bg-indigo-950/30 text-indigo-950 dark:text-indigo-200 border-indigo-100 dark:border-indigo-900/40"
+                             ? "bg-orange-50 text-corporate-orange border-orange-100" 
+                             : "bg-slate-50 text-slate-600 border-slate-200"
                          )}>
-                           {member.membershipType === "MANAGEMENT" && <Star className="h-4 w-4 fill-amber-500" />}
+                           {member.membershipType === "MANAGEMENT" && <Star className="h-4 w-4 fill-corporate-orange" />}
                            {member.membershipType === "MANAGEMENT" ? "YÖNETİM KURULU" : "OPERASYONEL ÜYE"}
                          </span>
                       </td>
                       <td className="px-12 py-10 text-center">
                          <div className="flex justify-center">
                            <span className={cn(
-                             "flex items-center gap-3 px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.25em] border transition-all shadow-sm",
+                             "flex items-center gap-3 px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.25em] border transition-all shadow-sm bg-white",
                              member.status === "ACTIVE" 
-                               ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" 
-                               : "bg-slate-50 dark:bg-slate-800 text-slate-400 border-slate-200 dark:border-white/5"
+                               ? "bg-emerald-50 text-emerald-600 border-emerald-100" 
+                               : "bg-slate-50 text-slate-400 border-slate-200"
                            )}>
-                             <span className={cn("h-2 w-2 rounded-full", member.status === "ACTIVE" ? "bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.6)]" : "bg-slate-300 dark:bg-slate-700")} />
+                             <span className={cn("h-2 w-2 rounded-full", member.status === "ACTIVE" ? "bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.4)]" : "bg-slate-300")} />
                              {member.status === "ACTIVE" ? "AKTİF" : "PASİF"}
                            </span>
                          </div>
@@ -455,38 +456,38 @@ export default async function PresidentMembersPage({ searchParams }: { searchPar
                     </tr>
                     {/* Satır İçi Düzenleme Formu */}
                     {canManage && (
-                      <tr key={`edit-${member.id}`} className="bg-slate-50/50 dark:bg-slate-800/20 border-b border-slate-100">
+                      <tr className="bg-slate-50/50 border-b border-slate-100">
                         <td colSpan={4} className="px-12 py-6">
                           <form action={updateMemberAction as any} className="flex flex-wrap items-end gap-6">
                             <input type="hidden" name="userId" value={member.userId} />
                             <div className="flex flex-col gap-2 min-w-[180px]">
-                              <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Ad Soyad</label>
-                              <input name="name" defaultValue={member.user.name} className="rounded-xl border border-slate-200 bg-white px-5 py-3 text-[11px] font-bold text-slate-950 outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-400 transition-all shadow-sm" required />
+                              <label className="t3-label text-slate-400">Ad Soyad</label>
+                              <input name="name" defaultValue={member.user.name} className="t3-input px-5 py-3 text-[11px] bg-white" required />
                             </div>
                             <div className="flex flex-col gap-2 min-w-[160px]">
-                              <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Telefon</label>
-                              <input name="phone" defaultValue={member.user.phone ?? ""} placeholder="+90..." className="rounded-xl border border-slate-200 bg-white px-5 py-3 text-[11px] font-bold text-slate-950 outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-400 transition-all shadow-sm" />
+                              <label className="t3-label text-slate-400">Telefon</label>
+                              <input name="phone" defaultValue={member.user.phone ?? ""} placeholder="+90..." className="t3-input px-5 py-3 text-[11px] bg-white" />
                             </div>
                             <div className="flex flex-col gap-2 min-w-[160px]">
-                              <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Bölüm</label>
-                              <input name="department" defaultValue={member.user.department ?? ""} placeholder="Bilg. Müh." className="rounded-xl border border-slate-200 bg-white px-5 py-3 text-[11px] font-bold text-slate-950 outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-400 transition-all shadow-sm" />
+                              <label className="t3-label text-slate-400">Bölüm</label>
+                              <input name="department" defaultValue={member.user.department ?? ""} placeholder="Bilg. Müh." className="t3-input px-5 py-3 text-[11px] bg-white" />
                             </div>
                             <div className="flex flex-col gap-2 w-24">
-                              <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Sınıf</label>
-                              <input name="grade" type="number" defaultValue={member.user.grade ?? ""} min={1} max={8} className="rounded-xl border border-slate-200 bg-white px-5 py-3 text-[11px] font-bold text-slate-950 outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-400 transition-all shadow-sm" />
+                              <label className="t3-label text-slate-400">Sınıf</label>
+                              <input name="grade" type="number" defaultValue={member.user.grade ?? ""} min={1} max={8} className="t3-input px-5 py-3 text-[11px] bg-white" />
                             </div>
                             <div className="flex flex-col gap-2 min-w-[130px]">
-                              <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Öğrenci No</label>
-                              <input name="studentNumber" defaultValue={member.user.studentNumber ?? ""} placeholder="2024..." className="rounded-xl border border-slate-200 bg-white px-5 py-3 text-[11px] font-bold text-slate-950 outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-400 transition-all shadow-sm" />
+                              <label className="t3-label text-slate-400">Öğrenci No</label>
+                              <input name="studentNumber" defaultValue={member.user.studentNumber ?? ""} placeholder="2024..." className="t3-input px-5 py-3 text-[11px] bg-white" />
                             </div>
-                            <button className="flex items-center gap-3 px-8 py-4 rounded-xl bg-indigo-600 text-white text-[10px] font-black uppercase tracking-widest hover:bg-indigo-700 active:scale-95 transition-all shadow-lg shadow-indigo-500/20 whitespace-nowrap">
-                              <UserCog className="h-4 w-4" /> Güncelle
+                            <button className="t3-button t3-button-primary px-8 py-4 text-[10px] shadow-lg shadow-corporate-blue/20">
+                              <UserCog className="h-4 w-4" /> GÜNCELLE
                             </button>
                           </form>
                         </td>
                       </tr>
                     )}
-                  </>
+                  </React.Fragment>
                 ))}
               </tbody>
             </table>

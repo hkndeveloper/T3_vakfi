@@ -64,26 +64,26 @@ export default async function PresidentStatsPage() {
   const successScore = totalEvents > 0 ? Math.min(100, Math.round((approvedEvents / totalEvents) * 80 + (approvedReports / Math.max(1, totalReports)) * 20)) : 0;
 
   return (
-    <div className="space-y-12 animate-in fade-in slide-in-from-bottom-6 duration-1000 font-outfit pb-20">
-      {/* T3 Premium Hero Section */}
-      <div className="relative overflow-hidden rounded-[3.5rem] bg-indigo-950 p-12 md:p-16 text-white shadow-2xl group border border-white/5">
+    <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-1000 font-outfit pb-20 bg-white min-h-screen">
+      {/* Soft Executive Hero Section */}
+      <div className="relative overflow-hidden rounded-t3-xl bg-slate-100/50 p-12 md:p-16 border border-slate-200 group">
         <div className="relative z-10">
-          <div className="inline-flex items-center gap-2 rounded-full bg-amber-500/20 border border-amber-500/30 px-5 py-2 text-[10px] font-black text-amber-500 uppercase tracking-[0.3em] mb-10 animate-pulse-subtle">
-            <BarChart4 className="h-4 w-4 fill-amber-500" /> PERFORMANS ANALİTİĞİ
+          <div className="inline-flex items-center gap-2 rounded-lg bg-white border border-slate-200 px-5 py-2 text-[10px] font-black text-slate-950 uppercase tracking-[0.25em] mb-10 shadow-sm">
+            <BarChart4 className="h-4 w-4 text-corporate-blue" /> PERFORMANS ANALİTİĞİ
           </div>
-          <h1 className="text-6xl font-black tracking-tighter sm:text-7xl font-montserrat leading-[0.9] uppercase">
+          <h1 className="text-5xl font-black tracking-tighter sm:text-7xl leading-[0.9] uppercase text-slate-950 italic">
             STRATEJİK <br />
-            <span className="text-indigo-400 italic border-b-8 border-amber-500/30">VERİ ÜSSÜ</span>
+            <span className="text-corporate-blue italic">VERİ ÜSSÜ</span>
           </h1>
-          <p className="mt-10 text-xl text-slate-300/80 font-medium max-w-2xl leading-relaxed">
+          <p className="mt-10 text-xl text-slate-600 font-medium leading-relaxed max-w-2xl">
             {community?.name} ekosisteminin operasyonel verimliliğini, üye performansını ve faaliyet başarı skorlarını gerçek zamanlı olarak denetleyin.
           </p>
         </div>
         
         {/* Background Patterns */}
-        <div className="absolute -right-20 -top-20 h-[600px] w-[600px] rounded-full bg-indigo-500/10 opacity-30 blur-[130px] pointer-events-none group-hover:bg-indigo-500/20 transition-all duration-1000" />
-        <div className="absolute bottom-10 right-10 flex items-center gap-2 opacity-5 scale-150 transform group-hover:rotate-12 transition-transform duration-1000">
-           <TrendingUp className="h-40 w-40" />
+        <div className="absolute -right-20 -top-20 h-[500px] w-[500px] rounded-full bg-corporate-blue/5 blur-[120px] pointer-events-none" />
+        <div className="absolute bottom-10 right-10 flex items-center gap-2 opacity-[0.03] scale-150 transform group-hover:rotate-12 transition-transform duration-1000">
+           <TrendingUp className="h-32 w-32" />
         </div>
       </div>
 
@@ -94,7 +94,7 @@ export default async function PresidentStatsPage() {
           value={totalMembers} 
           subValue={`${activeMembers} AKTİF`} 
           icon={Users} 
-          theme="indigo" 
+          theme="blue" 
           trend="+14%"
         />
         <MetricCard 
@@ -102,7 +102,7 @@ export default async function PresidentStatsPage() {
           value={totalEvents} 
           subValue={`${approvedEvents} ONAYLI`} 
           icon={Calendar} 
-          theme="amber" 
+          theme="orange" 
           trend="BU DÖNEM"
         />
         <MetricCard 
@@ -110,7 +110,7 @@ export default async function PresidentStatsPage() {
           value={thisMonthEvents} 
           subValue="YENİ FAALİYET" 
           icon={Activity} 
-          theme="indigo" 
+          theme="blue" 
           trend="CANLI"
         />
         <MetricCard 
@@ -118,7 +118,7 @@ export default async function PresidentStatsPage() {
           value={approvedReports} 
           subValue={`${totalReports} RAPORDAN`} 
           icon={ShieldCheck} 
-          theme="amber" 
+          theme="orange" 
           trend="GÜVENLİ"
         />
       </div>
@@ -126,16 +126,16 @@ export default async function PresidentStatsPage() {
       {/* Main Analysis Section */}
       <div className="grid gap-10 lg:grid-cols-3">
         {/* Performance Visualization */}
-        <div className="lg:col-span-2 rounded-[4rem] border border-slate-100 dark:border-white/5 bg-white dark:bg-slate-900 p-12 md:p-16 shadow-2xl dark:shadow-black/40 border-t-[16px] border-t-indigo-600">
+        <div className="lg:col-span-2 t3-panel p-12 md:p-16 bg-white border-l-[16px] border-l-corporate-blue">
           <div className="flex flex-wrap items-center justify-between gap-8 mb-16 px-2">
             <div>
-              <h2 className="text-4xl font-black text-indigo-950 dark:text-white font-montserrat uppercase tracking-tight leading-none">Verimlilik Matrisi</h2>
+              <h2 className="t3-heading text-4xl">Verimlilik Matrisi</h2>
               <div className="flex items-center gap-3 mt-6">
-                 <div className="h-1.5 w-16 rounded-full bg-amber-500" />
-                 <p className="text-[11px] text-slate-400 dark:text-slate-500 font-black uppercase tracking-[0.25em]">OPERASYONEL BAŞARI GÖSTERGELERİ</p>
+                 <div className="h-1.5 w-16 rounded-full bg-corporate-orange" />
+                 <p className="t3-label">OPERASYONEL BAŞARI GÖSTERGELERİ</p>
               </div>
             </div>
-            <div className="h-16 w-16 rounded-3xl bg-indigo-50 dark:bg-indigo-950/50 flex items-center justify-center text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-900/40 shadow-sm">
+            <div className="h-16 w-16 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-center text-corporate-blue shadow-sm">
                <Activity className="h-8 w-8" />
             </div>
           </div>
@@ -145,21 +145,21 @@ export default async function PresidentStatsPage() {
               label="ONAYLANAN OPERASYONLAR" 
               value={approvedEvents} 
               total={totalEvents} 
-              color="bg-indigo-600" 
+              color="bg-corporate-blue" 
               icon={TargetIcon}
             />
             <ProgressBar 
               label="KABUL EDİLEN RAPORLAR" 
               value={approvedReports} 
               total={totalReports} 
-              color="bg-amber-500" 
+              color="bg-corporate-orange" 
               icon={ShieldCheck}
             />
             <ProgressBar 
               label="AKTİF ÜYE KATILIM SEGMENTİ" 
               value={activeMembers} 
               total={totalMembers} 
-              color="bg-indigo-950" 
+              color="bg-slate-950" 
               icon={Users}
             />
           </div>
@@ -167,47 +167,47 @@ export default async function PresidentStatsPage() {
 
         {/* Success Score & Insights */}
         <div className="flex flex-col gap-10">
-          <div className="rounded-[3.5rem] p-12 bg-indigo-950 text-white relative overflow-hidden shadow-2xl group/score border border-white/5 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] bg-fixed">
+          <div className="t3-panel-elevated p-12 relative overflow-hidden group/score bg-white border-l-[16px] border-l-corporate-orange">
             <div className="relative z-10">
               <div className="flex items-center gap-4 mb-10">
-                 <div className="h-14 w-14 rounded-2xl bg-white/10 flex items-center justify-center backdrop-blur-xl border border-white/10">
-                    <Award className="h-7 w-7 text-amber-500" />
+                 <div className="h-14 w-14 rounded-2xl bg-orange-50 border border-orange-100 flex items-center justify-center text-corporate-orange shadow-sm">
+                    <Award className="h-7 w-7" />
                  </div>
-                 <h3 className="font-black text-[12px] font-montserrat uppercase tracking-[0.3em]">BAŞARI SKORU</h3>
+                 <h3 className="t3-label">BAŞARI SKORU</h3>
               </div>
               
               <div className="mb-10">
-                 <h3 className="text-8xl font-black font-montserrat tracking-tighter leading-none italic">
+                 <h3 className="text-8xl font-black text-slate-950 tracking-tighter leading-none italic">
                    {successScore}
-                   <span className="text-3xl text-indigo-400 not-italic ml-2">%</span>
+                   <span className="text-3xl text-slate-400 not-italic ml-2">%</span>
                  </h3>
-                 <p className="text-[12px] text-slate-400 font-bold uppercase tracking-[0.2em] mt-6">TOPLULUK GENEL PERFORMANS ENDEKSİ</p>
+                 <p className="mt-6 t3-label">TOPLULUK GENEL PERFORMANS ENDEKSİ</p>
               </div>
 
-              <div className="h-3 w-full bg-white/10 rounded-full overflow-hidden mb-12">
+              <div className="h-3 w-full bg-slate-100 rounded-full overflow-hidden mb-12 border border-slate-200">
                  <div 
-                   className="h-full bg-amber-500 rounded-full shadow-[0_0_20px_rgba(245,158,11,0.6)] animate-in slide-in-from-left duration-1000" 
+                   className="h-full bg-corporate-orange rounded-full shadow-lg transition-all duration-1000" 
                    style={{ width: `${successScore}%` }} 
                  />
               </div>
 
-              <div className="space-y-4">
-                 <p className="text-[10px] text-white/40 font-black uppercase tracking-[0.3em] mb-6">KRİTİK GÖSTERGELER</p>
+              <div className="space-y-4 pt-8 border-t border-slate-100">
+                 <p className="t3-label mb-6 text-slate-400">KRİTİK GÖSTERGELER</p>
                  <InsightItem label="YÜKSEK ETKİNLİK ONAYI" active={approvedEvents > totalEvents * 0.7} />
                  <InsightItem label="DÜZENLİ RAPORLAMA REJİMİ" active={approvedReports > totalReports * 0.8} />
                  <InsightItem label="AKTİF ÜYE MOBİLİZASYONU" active={activeMembers > totalMembers * 0.5} />
               </div>
             </div>
-            <Zap className="absolute -right-10 -bottom-10 h-48 w-48 opacity-10 rotate-12 group-hover/score:rotate-0 transition-transform duration-1000" />
+            <Zap className="absolute -right-10 -bottom-10 h-48 w-48 opacity-[0.02] rotate-12 group-hover/score:rotate-0 transition-transform duration-1000" />
           </div>
 
           {/* Quick Stats Summary */}
-          <div className="rounded-[3rem] border border-slate-100 dark:border-white/5 bg-white dark:bg-slate-900 p-10 shadow-xl dark:shadow-black/20 group">
+          <div className="t3-panel p-10 bg-slate-50/50 group">
              <div className="flex items-center gap-4 mb-8">
-                <Sparkles className="h-6 w-6 text-indigo-600" />
-                <h3 className="text-[11px] font-black text-indigo-950 dark:text-white uppercase tracking-[0.25em] font-montserrat">Sistem Notu</h3>
+                <Sparkles className="h-6 w-6 text-corporate-blue" />
+                <h3 className="t3-label text-slate-950">Sistem Notu</h3>
              </div>
-             <p className="text-sm font-bold text-slate-500 dark:text-slate-400 leading-relaxed uppercase tracking-wider">
+             <p className="text-sm font-bold text-slate-600 leading-relaxed uppercase tracking-wider">
                Topluluğunuzun verisel büyümesi geçen döneme göre %22 artış gösterdi. Stratejik odak noktanızı üye katılımına çevirerek skoru yükseltebilirsiniz.
              </p>
           </div>
@@ -215,27 +215,27 @@ export default async function PresidentStatsPage() {
       </div>
 
       {/* Recent Activity Timeline */}
-      <div className="rounded-[4rem] border border-slate-100 dark:border-white/5 bg-white dark:bg-slate-900 p-12 md:p-16 shadow-2xl dark:shadow-black/40">
+      <div className="t3-panel p-12 md:p-16 bg-white border-l-[16px] border-l-slate-950">
         <div className="flex flex-wrap items-center justify-between gap-8 mb-12 px-2">
             <div className="flex items-center gap-6">
-               <div className="h-16 w-16 rounded-3xl bg-indigo-600 p-5 text-white shadow-xl shadow-indigo-600/20">
-                  <Activity className="h-8 w-8" />
+               <div className="h-16 w-16 rounded-2xl bg-slate-950 flex items-center justify-center text-white shadow-xl">
+                  <Activity className="h-8 w-8 text-corporate-orange" />
                </div>
-               <h3 className="text-3xl font-black text-indigo-950 dark:text-white font-montserrat uppercase tracking-tight leading-none">FAALİYET LOGLARI</h3>
+               <h3 className="t3-heading text-3xl">FAALİYET LOGLARI</h3>
             </div>
-            <Link href="/baskan/etkinlikler" className="flex items-center gap-3 text-[11px] font-black text-indigo-600 dark:text-amber-500 uppercase tracking-[0.25em] hover:gap-5 transition-all">
+            <Link href="/baskan/etkinlikler" className="t3-label hover:text-corporate-blue transition-all flex items-center gap-3">
                TÜMÜNÜ İNCELE <ArrowRight className="h-4 w-4" />
             </Link>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2">
           {events.slice(0, 6).map((event) => (
-            <div key={event.id} className="flex items-center gap-6 p-6 rounded-3xl bg-slate-50 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-800 hover:shadow-2xl hover:shadow-indigo-500/10 transition-all group border border-transparent hover:border-indigo-100 dark:hover:border-indigo-900/40">
-               <div className="h-16 w-16 shrink-0 rounded-2xl bg-white dark:bg-slate-800 flex flex-col items-center justify-center border border-slate-200/60 dark:border-white/5 group-hover:bg-indigo-950 dark:group-hover:bg-indigo-600 group-hover:border-indigo-950 transition-all shadow-sm">
-                  <span className="text-[10px] font-black text-slate-400 dark:text-slate-500 group-hover:text-indigo-400 uppercase leading-none mb-2">
+            <div key={event.id} className="flex items-center gap-6 p-6 rounded-2xl bg-slate-50 hover:bg-white hover:shadow-xl transition-all group border border-slate-200/50">
+               <div className="h-16 w-16 shrink-0 rounded-xl bg-white flex flex-col items-center justify-center border border-slate-200 group-hover:bg-slate-950 group-hover:border-slate-950 transition-all shadow-sm">
+                  <span className="text-[10px] font-black text-slate-400 group-hover:text-corporate-blue uppercase leading-none mb-2">
                      {new Date(event.eventDate).toLocaleString("tr-TR", { month: "short" }).toUpperCase()}
                   </span>
-                  <span className="text-2xl font-black text-indigo-950 dark:text-white group-hover:text-white leading-none font-montserrat">
+                  <span className="text-2xl font-black text-slate-950 group-hover:text-white leading-none">
                      {new Date(event.eventDate).getDate()}
                   </span>
                </div>
@@ -243,23 +243,23 @@ export default async function PresidentStatsPage() {
                <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-3 mb-3">
                      <span className={cn(
-                       "px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-[0.15em] border shadow-sm",
+                       "t3-badge",
                        event.status === "APPROVED" || event.status === "COMPLETED" 
-                         ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" 
-                         : "bg-amber-500/10 text-amber-600 border-amber-500/20"
+                         ? "bg-emerald-50 text-emerald-600 border-emerald-100" 
+                         : "bg-orange-50 text-corporate-orange border-orange-100"
                      )}>
                        {event.status === "APPROVED" || event.status === "COMPLETED" ? "TAMAMLANDI" : "İŞLEMDE"}
                      </span>
                   </div>
-                  <h4 className="text-lg font-black text-indigo-950 dark:text-white font-montserrat tracking-tight uppercase group-hover:text-indigo-600 transition-colors truncate leading-none">{event.title}</h4>
+                  <h4 className="text-lg font-black text-slate-950 tracking-tight uppercase group-hover:text-corporate-blue transition-colors truncate leading-none italic">{event.title}</h4>
                </div>
             </div>
           ))}
           
           {events.length === 0 && (
-            <div className="md:col-span-2 text-center py-20 bg-slate-50 dark:bg-slate-800/30 rounded-3xl border-2 border-dashed border-slate-100 dark:border-white/5">
-                <LayoutDashboard className="h-16 w-16 text-slate-200 dark:text-slate-700 mx-auto mb-6" />
-                <p className="text-slate-400 dark:text-slate-500 font-black uppercase tracking-[0.2em] text-sm">HENÜZ VERİ GİRİŞİ YAPILMADI</p>
+            <div className="md:col-span-2 text-center py-20 bg-slate-50/50 rounded-3xl border-2 border-dashed border-slate-200">
+                <LayoutDashboard className="h-16 w-16 text-slate-200 mx-auto mb-6" />
+                <p className="t3-label">HENÜZ VERİ GİRİŞİ YAPILMADI</p>
             </div>
           )}
         </div>

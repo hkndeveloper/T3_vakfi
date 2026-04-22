@@ -48,7 +48,7 @@ export default async function MyCommunityPage() {
     if (!community) return null;
 
   return (
-    <div className="space-y-12 animate-in fade-in slide-in-from-bottom-6 duration-1000 font-outfit pb-20">
+    <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-1000 font-outfit pb-20 bg-white min-h-screen">
       {/* Soft Executive Hero Section */}
       <div className="relative overflow-hidden rounded-t3-xl bg-slate-100/50 p-12 md:p-16 border border-slate-200">
         <div className="relative z-10">
@@ -81,17 +81,17 @@ export default async function MyCommunityPage() {
 
       <div className="grid gap-10">
         <div className="grid gap-8 md:grid-cols-2">
-          <InfoCard icon={Target} label="STRATEJİK İSİMLENDİRME" value={community?.name ?? "-"} color="indigo" />
-          <InfoCard icon={Zap} label="OPERASYONEL KOD" value={community?.shortName ?? "-"} color="amber" />
-          <InfoCard icon={GraduationCap} label="AKADEMİK MERKEZ" value={community?.university.name ?? "-"} color="indigo" />
-          <InfoCard icon={UserCircle} label="AKADEMİK DANIŞMAN" value={community?.advisorName ?? "-"} color="amber" />
+          <InfoCard icon={Target} label="STRATEJİK İSİMLENDİRME" value={community?.name ?? "-"} color="blue" />
+          <InfoCard icon={Zap} label="OPERASYONEL KOD" value={community?.shortName ?? "-"} color="orange" />
+          <InfoCard icon={GraduationCap} label="AKADEMİK MERKEZ" value={community?.university.name ?? "-"} color="blue" />
+          <InfoCard icon={UserCircle} label="AKADEMİK DANIŞMAN" value={community?.advisorName ?? "-"} color="orange" />
         </div>
 
         {/* Dynamic Metric Cards */}
         <div className="grid gap-8 md:grid-cols-3 pt-6">
-          <StatCard icon={Users} label="AKTİF EKOSİSTEM KAYNAĞI" value={String(community._count.members ?? 0)} color="indigo" trend="+12%" />
-          <StatCard icon={Trophy} label="OPERASYONEL HACİM" value={String(community._count.createdEvents ?? 0)} color="amber" trend="BU DÖNEM" />
-          <StatCard icon={FileText} label="BELGELENMİŞ ÇIKTILAR" value={String(community._count.reports ?? 0)} color="indigo" trend="ONAYLI" />
+          <StatCard icon={Users} label="AKTİF EKOSİSTEM KAYNAĞI" value={String(community._count.members ?? 0)} color="blue" trend="+12%" />
+          <StatCard icon={Trophy} label="OPERASYONEL HACİM" value={String(community._count.createdEvents ?? 0)} color="orange" trend="BU DÖNEM" />
+          <StatCard icon={FileText} label="BELGELENMİŞ ÇIKTILAR" value={String(community._count.reports ?? 0)} color="blue" trend="ONAYLI" />
         </div>
 
         {/* Social & Contact Grid */}
@@ -104,24 +104,24 @@ export default async function MyCommunityPage() {
       </div>
       
       {/* Footer Insight Section */}
-      <div className="rounded-[4rem] bg-slate-50 dark:bg-slate-800/30 border border-slate-100 dark:border-white/5 p-12 flex flex-col items-center text-center gap-8 relative overflow-hidden group/footer shadow-inner">
+      <div className="t3-panel bg-slate-50/50 p-12 flex flex-col items-center text-center gap-8 relative overflow-hidden group/footer shadow-inner">
          <div className="relative z-10 space-y-4 max-w-2xl">
-            <div className="inline-flex items-center gap-3 bg-indigo-600/10 px-6 py-2 rounded-full border border-indigo-600/20 mb-4 animate-bounce">
-               <ShieldCheck className="h-5 w-5 text-indigo-600" />
-               <span className="text-[10px] font-black text-indigo-600 uppercase tracking-[0.2em] font-montserrat">KURUMSAL DENETİM SEVİYESİ: AKTİF</span>
+            <div className="inline-flex items-center gap-3 bg-blue-600/10 px-6 py-2 rounded-full border border-blue-600/20 mb-4 animate-bounce">
+               <ShieldCheck className="h-5 w-5 text-corporate-blue" />
+               <span className="text-[10px] font-black text-corporate-blue uppercase tracking-[0.2em]">KURUMSAL DENETİM SEVİYESİ: AKTİF</span>
             </div>
-            <h4 className="text-2xl font-black text-indigo-950 dark:text-white uppercase tracking-tight font-montserrat leading-none">PROFESYONEL STANDARTLAR</h4>
-            <p className="text-sm text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest leading-relaxed">
+            <h4 className="text-2xl font-black text-slate-950 uppercase tracking-tight leading-none italic">PROFESYONEL STANDARTLAR</h4>
+            <p className="t3-label mt-4">
               Topluluk verileri ve istatistiksel segmentasyon T3 Vakfı denetim protokollerine göre anlık olarak optimize edilerek raporlanmaya hazırdır.
             </p>
          </div>
-         <div className="flex items-center gap-2 text-indigo-400 dark:text-indigo-600 opacity-20">
+         <div className="flex items-center gap-2 text-corporate-blue opacity-20">
             <Sparkles className="h-10 w-10 animate-pulse" />
             <Sparkles className="h-6 w-6 animate-pulse delay-75" />
             <Sparkles className="h-8 w-8 animate-pulse delay-150" />
          </div>
          
-         <div className="absolute -left-10 -bottom-10 h-40 w-40 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none" />
+         <div className="absolute -left-10 -bottom-10 h-40 w-40 bg-corporate-blue/5 rounded-full blur-3xl pointer-events-none" />
       </div>
     </div>
   );
@@ -129,14 +129,14 @@ export default async function MyCommunityPage() {
 
 function LinkCard({ icon: Icon, label, value, href }: { icon: any; label: string; value: string; href?: string }) {
   const content = (
-    <div className="rounded-3xl border border-slate-100 dark:border-white/5 bg-white dark:bg-slate-900/50 p-8 transition-all hover:scale-[1.05] hover:shadow-xl group">
+    <div className="rounded-3xl border border-slate-100 bg-white p-8 transition-all hover:scale-[1.05] hover:shadow-xl group">
       <div className="flex flex-col items-center text-center gap-4">
-        <div className="h-12 w-12 rounded-2xl bg-indigo-50 dark:bg-slate-800 flex items-center justify-center text-indigo-600 dark:text-indigo-400 group-hover:bg-indigo-600 group-hover:text-white transition-all">
+        <div className="h-12 w-12 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-slate-950 group-hover:text-white transition-all shadow-sm">
           <Icon className="h-6 w-6" />
         </div>
         <div>
-          <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">{label}</p>
-          <p className="text-xs font-bold text-indigo-950 dark:text-white truncate max-w-[150px]">{value}</p>
+          <p className="t3-label text-[9px] mb-1">{label}</p>
+          <p className="text-xs font-bold text-slate-950 truncate max-w-[150px]">{value}</p>
         </div>
       </div>
     </div>
@@ -149,15 +149,15 @@ function LinkCard({ icon: Icon, label, value, href }: { icon: any; label: string
   return content;
 }
 
-function InfoCard({ icon: Icon, label, value, color }: { icon: any; label: string; value: string; color: "indigo" | "amber" }) {
+function InfoCard({ icon: Icon, label, value, color }: { icon: any; label: string; value: string; color: "blue" | "orange" }) {
   return (
     <div className={cn(
-      "t3-panel p-10 flex items-center gap-8 group transition-all hover:translate-x-3",
-      color === "indigo" ? "border-l-[12px] border-l-corporate-blue" : "border-l-[12px] border-l-corporate-orange"
+      "t3-panel p-10 flex items-center gap-8 group transition-all hover:translate-x-3 bg-white",
+      color === "blue" ? "border-l-[12px] border-l-corporate-blue" : "border-l-[12px] border-l-corporate-orange"
     )}>
       <div className={cn(
         "h-14 w-14 rounded-2xl flex items-center justify-center border shadow-sm transition-transform duration-500 group-hover:scale-110",
-        color === "indigo" ? "bg-blue-50 text-corporate-blue border-blue-100" : "bg-orange-50 text-corporate-orange border-orange-100"
+        color === "blue" ? "bg-blue-50 text-corporate-blue border-blue-100" : "bg-orange-50 text-corporate-orange border-orange-100"
       )}>
          <Icon className="h-7 w-7" />
       </div>
@@ -169,13 +169,13 @@ function InfoCard({ icon: Icon, label, value, color }: { icon: any; label: strin
   );
 }
 
-function StatCard({ icon: Icon, label, value, color, trend }: { icon: any; label: string; value: string; color: "indigo" | "amber", trend?: string }) {
+function StatCard({ icon: Icon, label, value, color, trend }: { icon: any; label: string; value: string; color: "blue" | "orange", trend?: string }) {
   return (
     <div className="t3-panel p-12 flex flex-col items-center justify-center text-center group relative overflow-hidden bg-white">
       <div className="relative z-10 flex flex-col items-center">
         <div className={cn(
           "h-16 w-16 rounded-2xl flex items-center justify-center border shadow-sm mb-8 transition-transform duration-500 group-hover:-translate-y-2",
-          color === "indigo" ? "bg-blue-50 text-corporate-blue border-blue-100" : "bg-orange-50 text-corporate-orange border-orange-100"
+          color === "blue" ? "bg-blue-50 text-corporate-blue border-blue-100" : "bg-orange-50 text-corporate-orange border-orange-100"
         )}>
            <Icon className="h-8 w-8" />
         </div>

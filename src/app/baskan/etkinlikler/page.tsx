@@ -189,19 +189,19 @@ export default async function PresidentEventsPage({ searchParams }: { searchPara
 
 function StatusBadge({ status }: { status: string }) {
   const configs: Record<string, { label: string; icon: any; color: string; dot: string }> = {
-    DRAFT: { label: "TASLAK", icon: Clock3, color: "bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border-slate-100 dark:border-white/5", dot: "bg-slate-300 dark:bg-slate-600" },
-    PENDING_APPROVAL: { label: "DENETİMDE", icon: Clock, color: "bg-amber-500/10 text-amber-600 border-amber-500/20", dot: "bg-amber-500 animate-pulse shadow-[0_0_12px_rgba(245,158,11,0.5)]" },
-    APPROVED: { label: "ONAYLANDI", icon: CheckCircle2, color: "bg-indigo-500/10 text-indigo-600 border-indigo-500/20", dot: "bg-indigo-600 shadow-[0_0_12px_rgba(79,70,229,0.5)]" },
-    REJECTED: { label: "REVİZYON", icon: XCircle, color: "bg-red-500/10 text-red-600 border-red-500/20", dot: "bg-red-600" },
-    COMPLETED: { label: "TAMAMLANDI", icon: Trophy, color: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20", dot: "bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.5)]" },
-    CANCELED: { label: "İPTAL", icon: XCircle, color: "bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400 border-slate-300 dark:border-white/5", dot: "bg-slate-400" },
+    DRAFT: { label: "TASLAK", icon: Clock3, color: "bg-slate-50 text-slate-500 border-slate-100", dot: "bg-slate-300" },
+    PENDING_APPROVAL: { label: "DENETİMDE", icon: Clock, color: "bg-orange-50 text-corporate-orange border-orange-100", dot: "bg-corporate-orange animate-pulse shadow-[0_0_12px_rgba(234,88,12,0.4)]" },
+    APPROVED: { label: "ONAYLANDI", icon: CheckCircle2, color: "bg-blue-50 text-corporate-blue border-blue-100", dot: "bg-corporate-blue shadow-[0_0_12px_rgba(37,99,235,0.4)]" },
+    REJECTED: { label: "REVİZYON", icon: XCircle, color: "bg-rose-50 text-rose-600 border-rose-100", dot: "bg-rose-600" },
+    COMPLETED: { label: "TAMAMLANDI", icon: Trophy, color: "bg-emerald-50 text-emerald-600 border-emerald-100", dot: "bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.4)]" },
+    CANCELED: { label: "İPTAL", icon: XCircle, color: "bg-slate-100 text-slate-500 border-slate-200", dot: "bg-slate-400" },
   };
 
   const config = configs[status] || configs.DRAFT;
 
   return (
     <span className={cn(
-      "inline-flex items-center gap-3 rounded-2xl border px-6 py-3 text-[10px] font-black uppercase tracking-[0.2em] transition-all shadow-sm",
+      "inline-flex items-center gap-3 rounded-2xl border px-6 py-3 text-[10px] font-black uppercase tracking-[0.2em] transition-all shadow-sm font-outfit bg-white",
       config.color
     )}>
       <span className={cn("h-2 w-2 rounded-full", config.dot)} />

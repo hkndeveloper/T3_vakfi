@@ -277,14 +277,14 @@ export default async function PresidentReportsPage({ searchParams }: { searchPar
 
 function ReportTypeBadge({ type }: { type: string }) {
   const types: Record<string, { label: string; color: string; indicator: string }> = {
-    EVENT: { label: "ETKİNLİK", color: "bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 border-indigo-100 dark:border-indigo-900/40", indicator: "bg-indigo-600 shadow-[0_0_10px_rgba(79,70,229,0.5)]" },
-    MONTHLY: { label: "AYLIK", color: "bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 border-amber-100 dark:border-amber-900/40", indicator: "bg-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.5)]" },
-    TERM: { label: "DÖNEM", color: "bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-white/5", indicator: "bg-slate-500" },
+    EVENT: { label: "ETKİNLİK", color: "bg-blue-50 text-corporate-blue border-blue-100", indicator: "bg-corporate-blue shadow-[0_0_10px_rgba(37,99,235,0.3)]" },
+    MONTHLY: { label: "AYLIK", color: "bg-orange-50 text-corporate-orange border-orange-100", indicator: "bg-corporate-orange shadow-[0_0_10px_rgba(234,88,12,0.3)]" },
+    TERM: { label: "DÖNEM", color: "bg-slate-50 text-slate-700 border-slate-200", indicator: "bg-slate-500" },
   };
   const config = types[type] || { label: type, color: "bg-slate-100 text-slate-700 border-slate-100", indicator: "bg-slate-500" };
   return (
     <span className={cn(
-      "flex items-center gap-3 px-5 py-2.5 rounded-full border text-[9px] font-black uppercase tracking-[0.2em] transition-all shadow-sm",
+      "flex items-center gap-3 px-5 py-2.5 rounded-full border text-[9px] font-black uppercase tracking-[0.2em] transition-all shadow-sm bg-white",
       config.color
     )}>
       <span className={cn("h-1.5 w-1.5 rounded-full", config.indicator)} />
@@ -295,18 +295,18 @@ function ReportTypeBadge({ type }: { type: string }) {
 
 function ReportStatusBadge({ status }: { status: string }) {
   const configs: Record<string, { label: string; icon: any; color: string; dot: string }> = {
-    DRAFT: { label: "TASLAK", icon: Clock, color: "bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border-slate-100 dark:border-white/5", dot: "bg-slate-300 dark:bg-slate-600" },
-    SUBMITTED: { label: "DENETİMDE", icon: Clock, color: "bg-amber-500/10 text-amber-600 border-amber-500/20", dot: "bg-amber-500 animate-pulse shadow-[0_0_12px_rgba(245,158,11,0.5)]" },
-    APPROVED: { label: "ONAYLANDI", icon: CheckCircle2, color: "bg-indigo-500/10 text-indigo-600 border-indigo-500/20", dot: "bg-indigo-600 shadow-[0_0_12px_rgba(79,70,229,0.5)]" },
-    REJECTED: { label: "REDDEDİLDİ", icon: AlertCircle, color: "bg-red-500/10 text-red-600 border-red-500/20", dot: "bg-red-600" },
-    REVISION_REQUESTED: { label: "REVİZYON", icon: AlertCircle, color: "bg-amber-500/10 text-amber-600 border-amber-500/20", dot: "bg-amber-500 animate-bounce shadow-[0_0_15px_rgba(245,158,11,0.7)]" },
+    DRAFT: { label: "TASLAK", icon: Clock, color: "bg-slate-50 text-slate-500 border-slate-100", dot: "bg-slate-300" },
+    SUBMITTED: { label: "DENETİMDE", icon: Clock, color: "bg-orange-50 text-corporate-orange border-orange-100", dot: "bg-corporate-orange animate-pulse shadow-[0_0_12px_rgba(234,88,12,0.4)]" },
+    APPROVED: { label: "ONAYLANDI", icon: CheckCircle2, color: "bg-emerald-50 text-emerald-600 border-emerald-100", dot: "bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.4)]" },
+    REJECTED: { label: "REDDEDİLDİ", icon: AlertCircle, color: "bg-rose-50 text-rose-600 border-rose-100", dot: "bg-rose-600" },
+    REVISION_REQUESTED: { label: "REVİZYON", icon: AlertCircle, color: "bg-orange-50 text-corporate-orange border-orange-100", dot: "bg-corporate-orange animate-bounce shadow-[0_0_15px_rgba(234,88,12,0.5)]" },
   };
 
   const config = configs[status] || configs.DRAFT;
 
   return (
     <span className={cn(
-      "inline-flex items-center gap-4 rounded-2xl border px-8 py-4 text-[10px] font-black uppercase tracking-[0.25em] transition-all shadow-xl dark:shadow-black/20 font-montserrat",
+      "inline-flex items-center gap-4 rounded-2xl border px-8 py-4 text-[10px] font-black uppercase tracking-[0.25em] transition-all shadow-sm font-outfit",
       config.color
     )}>
       <span className={cn("h-2.5 w-2.5 rounded-full", config.dot)} />
