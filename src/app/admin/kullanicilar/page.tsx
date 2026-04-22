@@ -1,8 +1,5 @@
-import bcrypt from "bcryptjs";
-import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requirePermission } from "@/lib/permissions";
-import { SubmitButton } from "@/components/ui/SubmitButton";
 import { 
   Users as UsersIcon, 
   UserPlus, 
@@ -26,81 +23,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-
-async function createUserAction(formData: FormData) {
-  "use server";
-  await requirePermission("user.create");
-
-  const name = String(formData.get("name") ?? "").trim();
-  const email = String(formData.get("email") ?? "").trim().toLowerCase();
-  const password = String(formData.get("password") ?? "");
-
-  if (!name || !email || password.length < 8) {
-    return;
-  }
-
-  const passwordHash = await bcrypt.hash(password, 12);
-
-  await prisma.user.create({
-    data: {
-      name,
-      email,
-      passwordHash,
-      isActive: true,
-    },
-  });
-
-  await prisma.activityLog.create({
-    data: {
-      action: "user.create",
-    },
-  });
-
-  revalidatePath("/admin/kullanicilar");
-}
-
-async function assignRoleAction(formData: FormData) {
-  "use server";
-  await requirePermission("role.assign");
-
-  const userId = String(formData.get("userId") ?? "").trim();
-  const roleId = String(formData.get("roleId") ?? "").trim();
-  const communityIdValue = String(formData.get("communityId") ?? "").trim();
-  const communityId = communityIdValue || null;
-
-  if (!userId || !roleId) {
-    return;
-  }
-
-  const existing = await prisma.userRole.findFirst({
-    where: {
-      userId,
-      roleId,
-      communityId,
-    },
-  });
-
-  if (!existing) {
-    await prisma.userRole.create({
-      data: {
-        userId,
-        roleId,
-        communityId,
-      },
-    });
-  }
-
-  await prisma.activityLog.create({
-    data: {
-      userId,
-      action: "role.assign",
-      modelType: "UserRole",
-      modelId: `${userId}:${roleId}`,
-    },
-  });
-
-  revalidatePath("/admin/kullanicilar");
-}
+import { UserCreationForm, RoleAssignmentForm } from "@/components/admin/UserManagementForms";
 
 export default async function AdminUsersPage({
   searchParams,
@@ -132,197 +55,83 @@ export default async function AdminUsersPage({
   ]);
 
   return (
-    <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-1000 font-outfit pb-20 bg-white min-h-screen">
-      {/* Soft Executive Hero Section - FIXED LIGHT */}
-      <div className="relative overflow-hidden rounded-t3-xl bg-slate-100/50 p-12 md:p-16 border border-slate-200">
-        <div className="relative z-10 flex flex-wrap items-center justify-between gap-12">
+    <div className="space-y-8 md:space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-1000 font-outfit pb-20 bg-white min-h-screen">
+      {/* Soft Executive Hero Section - RESPONSIVE */}
+      <div className="relative overflow-hidden rounded-xl md:rounded-t3-xl bg-slate-100/50 p-6 md:p-16 border border-slate-200">
+        <div className="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8 md:gap-12">
           <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 rounded-lg bg-white border border-slate-200 px-5 py-2 text-[10px] font-black text-slate-950 uppercase tracking-[0.25em] mb-10 shadow-sm">
-              <Fingerprint className="h-4 w-4 text-corporate-blue" /> KİMLİK & ERİŞİM YÖNETİMİ
+            <div className="inline-flex items-center gap-2 rounded-lg bg-white border border-slate-200 px-4 py-1.5 md:px-5 md:py-2 text-[9px] md:text-[10px] font-black text-slate-950 uppercase tracking-[0.25em] mb-6 md:mb-10 shadow-sm">
+              <Fingerprint className="h-3.5 w-3.5 md:h-4 md:w-4 text-corporate-blue" /> KİMLİK & ERİŞİM YÖNETİMİ
             </div>
-            <h1 className="text-6xl font-black tracking-tighter sm:text-7xl leading-[0.9] uppercase text-slate-950 italic">
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-black tracking-tighter leading-[0.9] uppercase text-slate-950 italic">
               YÖNETİM <br />
               <span className="text-corporate-blue">KADROSU</span>
             </h1>
-            <p className="mt-10 text-xl text-slate-600 font-medium leading-relaxed max-w-2xl">
-              Platform hiyerarşisini, topluluk yetkilerini ve yönetici erişimlerini <span className="text-slate-950 font-bold underline decoration-corporate-blue/30 underline-offset-4 decoration-4">kurumsal güvenlik</span> standartlarında merkezi olarak denetleyin.
+            <p className="mt-6 md:mt-10 text-base md:text-xl text-slate-600 font-medium leading-relaxed max-w-2xl">
+              Platform hiyerarşisini, topluluk yetkilerini ve yönetici erişimlerini <span className="text-slate-950 font-bold underline decoration-corporate-blue/30 underline-offset-4 decoration-4">kurumsal güvenlik</span> standartlarında denetleyin.
             </p>
           </div>
 
-          <div className="flex gap-8">
-            <div className="group/stat rounded-2xl bg-white px-12 py-10 border border-slate-200 transition-all hover:-translate-y-2 text-center shadow-sm">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-4">AKTİF OTURUM</p>
-              <p className="text-6xl font-black tracking-tighter text-slate-950 leading-none">{activeUserCount}</p>
+          <div className="flex flex-row lg:flex-col xl:flex-row gap-4 md:gap-8 w-full lg:w-auto">
+            <div className="flex-1 group/stat rounded-xl md:rounded-2xl bg-white px-6 py-6 md:px-12 md:py-10 border border-slate-200 transition-all hover:-translate-y-2 text-center shadow-sm">
+              <p className="text-[8px] md:text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-2 md:mb-4">AKTİF OTURUM</p>
+              <p className="text-3xl md:text-6xl font-black tracking-tighter text-slate-950 leading-none">{activeUserCount}</p>
             </div>
-            <div className="group/stat rounded-2xl bg-white px-12 py-10 border border-slate-200 transition-all hover:-translate-y-2 text-center shadow-sm">
-              <p className="text-[10px] font-black text-corporate-blue uppercase tracking-[0.3em] mb-4">TOPLAM KAYIT</p>
-              <p className="text-6xl font-black text-corporate-blue tracking-tighter leading-none">{users.length}</p>
+            <div className="flex-1 group/stat rounded-xl md:rounded-2xl bg-white px-6 py-6 md:px-12 md:py-10 border border-slate-200 transition-all hover:-translate-y-2 text-center shadow-sm">
+              <p className="text-[8px] md:text-[10px] font-black text-corporate-blue uppercase tracking-[0.3em] mb-2 md:mb-4">TOPLAM KAYIT</p>
+              <p className="text-3xl md:text-6xl font-black text-corporate-blue tracking-tighter leading-none">{users.length}</p>
             </div>
           </div>
         </div>
         
         {/* Background Patterns */}
-        <div className="absolute -right-20 -top-20 h-[500px] w-[500px] rounded-full bg-corporate-blue/5 blur-[120px] pointer-events-none" />
-        <div className="absolute bottom-10 right-10 flex items-center gap-2 opacity-[0.03] scale-150 transform">
+        <div className="absolute -right-20 -top-20 h-64 md:h-[500px] w-64 md:w-[500px] rounded-full bg-corporate-blue/5 blur-[80px] md:blur-[120px] pointer-events-none" />
+        <div className="absolute bottom-10 right-10 hidden md:flex items-center gap-2 opacity-[0.03] scale-150 transform">
            <UsersIcon className="h-32 w-32" />
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-12">
+      <div className="grid lg:grid-cols-2 gap-6 md:gap-12 px-4 md:px-0">
         {/* User Creation Form */}
-        <div className="t3-panel-elevated p-12 bg-slate-50/50 relative overflow-hidden group/card border-l-[12px] border-l-corporate-blue">
-          <div className="flex items-center gap-7 mb-12">
-            <div className="h-16 w-16 rounded-2xl bg-corporate-blue flex items-center justify-center text-white shadow-lg shadow-corporate-blue/20 group-hover/card:scale-110 transition-all duration-500">
-              <UserPlus className="h-8 w-8" />
-            </div>
-            <div>
-              <h2 className="t3-heading text-2xl text-slate-950">Profil Oluştur</h2>
-              <p className="t3-label mt-3">Yeni bir kurumsal kullanıcı tanımlayın.</p>
-            </div>
-          </div>
-          <form action={createUserAction as any} className="grid gap-8">
-            <div className="space-y-3">
-               <label className="text-[10px] font-black text-slate-950 uppercase tracking-[0.2em] ml-2">Tam İsim Soyisim</label>
-               <div className="relative group/input">
-                 <UserCircle2 className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within/input:text-corporate-blue transition-colors" />
-                 <input
-                   name="name"
-                   placeholder="Örn: Mehmet Emin Özdemir"
-                   className="w-full rounded-2xl border border-slate-200 bg-white pl-14 pr-6 py-5 text-sm font-bold text-slate-950 focus:ring-8 focus:ring-corporate-blue/5 focus:border-corporate-blue transition-all outline-none"
-                   required
-                 />
-               </div>
-            </div>
-            <div className="space-y-3">
-               <label className="text-[10px] font-black text-slate-950 uppercase tracking-[0.2em] ml-2">Kurumsal E-Posta</label>
-               <div className="relative group/input">
-                 <Mail className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within/input:text-corporate-blue transition-colors" />
-                 <input
-                   name="email"
-                   type="email"
-                   placeholder="ad.soyad@t3vakfi.org"
-                   className="w-full rounded-2xl border border-slate-200 bg-white pl-14 pr-6 py-5 text-sm font-bold text-slate-950 focus:ring-8 focus:ring-corporate-blue/5 focus:border-corporate-blue transition-all outline-none"
-                   required
-                 />
-               </div>
-            </div>
-            <div className="space-y-3">
-               <label className="text-[10px] font-black text-slate-950 uppercase tracking-[0.2em] ml-2">Geçici Erişim Anahtarı</label>
-               <div className="relative group/input">
-                 <Lock className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within/input:text-corporate-blue transition-colors" />
-                 <input
-                   name="password"
-                   type="password"
-                   placeholder="••••••••"
-                   className="w-full rounded-2xl border border-slate-200 bg-white pl-14 pr-6 py-5 text-sm font-bold text-slate-950 focus:ring-8 focus:ring-corporate-blue/5 focus:border-corporate-blue transition-all outline-none"
-                   minLength={8}
-                   required
-                 />
-               </div>
-            </div>
-            <SubmitButton label="HESABI SİSTEME TANIMLA" className="t3-button t3-button-primary w-full py-6" />
-          </form>
-        </div>
+        <UserCreationForm />
 
         {/* Authorization Panel */}
-        <div className="t3-panel-elevated p-12 bg-orange-50/30 relative overflow-hidden group/card border-l-[12px] border-l-corporate-orange">
-          <div className="flex items-center gap-7 mb-12">
-            <div className="h-16 w-16 rounded-2xl bg-corporate-orange flex items-center justify-center text-white shadow-lg shadow-corporate-orange/20 group-hover/card:scale-110 transition-all duration-500">
-              <ShieldAlert className="h-8 w-8" />
-            </div>
-            <div>
-              <h2 className="t3-heading text-2xl text-slate-950">Yetki Delegasyonu</h2>
-              <p className="t3-label mt-3">Hiyerarşik rol ve birim ataması yapın.</p>
-            </div>
-          </div>
-          <form action={assignRoleAction} className="grid gap-8">
-            <div className="space-y-3">
-               <label className="text-[10px] font-black text-slate-950 uppercase tracking-[0.2em] ml-2">Hedef Kullanıcı</label>
-               <div className="relative group/input">
-                 <UserCircle2 className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within/input:text-corporate-orange transition-colors" />
-                 <select
-                   name="userId"
-                   className="w-full rounded-2xl border border-slate-200 bg-white pl-14 pr-10 py-5 text-sm font-bold text-slate-950 focus:ring-8 focus:ring-corporate-orange/5 focus:border-corporate-orange transition-all outline-none appearance-none cursor-pointer"
-                   required
-                 >
-                   <option value="">Kullanıcı Listesi...</option>
-                   {users.map((user) => (
-                     <option key={user.id} value={user.id}>
-                       {user.name} ({user.email.split('@')[0]})
-                     </option>
-                   ))}
-                 </select>
-               </div>
-            </div>
-            <div className="space-y-3">
-               <label className="text-[10px] font-black text-slate-950 uppercase tracking-[0.2em] ml-2">Kurumsal Rol</label>
-               <div className="relative group/input">
-                 <ShieldCheck className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within/input:text-corporate-orange transition-colors" />
-                 <select
-                   name="roleId"
-                   className="w-full rounded-2xl border border-slate-200 bg-white pl-14 pr-10 py-5 text-sm font-bold text-slate-950 focus:ring-8 focus:ring-corporate-orange/5 focus:border-corporate-orange transition-all outline-none appearance-none cursor-pointer"
-                   required
-                 >
-                   <option value="">Yetki Seviyesi...</option>
-                   {roles.map((role) => (
-                     <option key={role.id} value={role.id}>
-                       {role.name}
-                     </option>
-                   ))}
-                 </select>
-               </div>
-            </div>
-            <div className="space-y-3">
-               <label className="text-[10px] font-black text-slate-950 uppercase tracking-[0.2em] ml-2">Operasyonel Birim</label>
-               <div className="relative group/input">
-                 <Building2 className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within/input:text-corporate-orange transition-colors" />
-                 <select name="communityId" className="w-full rounded-2xl border border-slate-200 bg-white pl-14 pr-10 py-5 text-sm font-bold text-slate-950 focus:ring-8 focus:ring-corporate-orange/5 focus:border-corporate-orange transition-all outline-none appearance-none cursor-pointer">
-                   <option value="">Global Yetki (Tüm Sistem)</option>
-                   {communities.map((community) => (
-                     <option key={community.id} value={community.id}>
-                       {community.name}
-                     </option>
-                   ))}
-                 </select>
-               </div>
-            </div>
-            <SubmitButton label="DELAGASYONU TAMAMLA" className="t3-button t3-button-accent w-full py-6" />
-          </form>
-        </div>
+        <RoleAssignmentForm users={users} roles={roles} communities={communities} />
       </div>
 
-      <div className="space-y-10">
-        <div className="flex flex-wrap items-center justify-between gap-6 px-10">
+      <div className="space-y-6 md:space-y-10">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 px-4 md:px-10">
           <div>
-            <h2 className="t3-heading text-4xl text-slate-950 tracking-tighter">Veri Matrisi</h2>
-            <div className="flex items-center gap-3 mt-4">
-               <div className="h-1.5 w-16 rounded-full bg-corporate-blue" />
-               <p className="t3-label">{users.length} PROFIL LİSTELENİYOR{search ? ` — "${search}" araması` : ""}</p>
+            <h2 className="t3-heading text-2xl md:text-4xl text-slate-950 tracking-tighter">Veri Matrisi</h2>
+            <div className="flex items-center gap-3 mt-2 md:mt-4">
+               <div className="h-1 w-12 md:h-1.5 md:w-16 rounded-full bg-corporate-blue" />
+               <p className="t3-label text-[8px] md:text-[10px]">{users.length} PROFIL LİSTELENİYOR{search ? ` — "${search}" araması` : ""}</p>
             </div>
           </div>
-          <form className="flex items-center gap-4">
-             <div className="relative group/search">
-                <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within/search:text-corporate-blue transition-colors" />
+          <form className="flex items-center gap-3 md:gap-4 w-full md:w-auto">
+             <div className="relative group/search flex-1 md:flex-none">
+                <Search className="absolute left-4 md:left-5 top-1/2 -translate-y-1/2 h-4 w-4 md:h-5 md:w-5 text-slate-400 group-focus-within/search:text-corporate-blue transition-colors" />
                 <input 
                   type="text"
                   name="q"
                   defaultValue={search ?? ""}
-                  placeholder="Ad, e-posta ara..." 
-                  className="pl-14 pr-8 py-5 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-bold outline-none focus:ring-8 focus:ring-corporate-blue/5 focus:border-corporate-blue/30 transition-all w-80 shadow-sm" 
+                  placeholder="Ad, e-posta..." 
+                  className="pl-11 md:pl-14 pr-4 md:pr-8 py-3.5 md:py-5 bg-slate-50 border border-slate-200 rounded-xl md:rounded-2xl text-sm font-bold outline-none focus:ring-8 focus:ring-corporate-blue/5 focus:border-corporate-blue/30 transition-all w-full md:w-80 shadow-sm" 
                 />
              </div>
-             <button type="submit" className="h-16 w-16 rounded-2xl bg-corporate-blue text-white hover:bg-blue-700 transition-all flex items-center justify-center shadow-sm">
-                <Search className="h-6 w-6" />
+             <button type="submit" className="h-12 w-12 md:h-16 md:w-16 rounded-xl md:rounded-2xl bg-corporate-blue text-white hover:bg-blue-700 transition-all flex items-center justify-center shadow-sm shrink-0">
+                <Search className="h-5 w-5 md:h-6 md:w-6" />
              </button>
              {search && (
-               <a href="/admin/kullanicilar" className="h-16 w-16 rounded-2xl bg-slate-100 text-slate-950 hover:bg-white transition-all flex items-center justify-center shadow-sm border border-slate-200 text-xs font-black">
+               <a href="/admin/kullanicilar" className="h-12 w-12 md:h-16 md:w-16 rounded-xl md:rounded-2xl bg-slate-100 text-slate-950 hover:bg-white transition-all flex items-center justify-center shadow-sm border border-slate-200 text-[10px] md:text-xs font-black shrink-0">
                  ✕
                </a>
              )}
           </form>
         </div>
 
-        <div className="t3-panel overflow-hidden bg-slate-50/30">
+        {/* Desktop Table View */}
+        <div className="hidden md:block t3-panel overflow-hidden bg-slate-50/30">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-slate-200">
               <thead className="bg-slate-100/50">
@@ -390,6 +199,58 @@ export default async function AdminUsersPage({
               </tbody>
             </table>
           </div>
+        </div>
+
+        {/* Mobile Card List View */}
+        <div className="md:hidden space-y-4 px-4 overflow-x-hidden">
+          {users.map((user) => (
+            <div key={user.id} className="bg-white border border-slate-200 rounded-2xl p-5 space-y-5 shadow-sm">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="h-12 w-12 rounded-xl bg-slate-100 flex items-center justify-center text-corporate-blue font-black text-lg border border-slate-200">
+                    {user.name.charAt(0)}
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="font-black text-slate-950 text-sm uppercase tracking-tight">{user.name}</span>
+                    <span className="text-[10px] text-slate-500 font-bold">{user.email}</span>
+                  </div>
+                </div>
+                <Link 
+                  href={`/admin/kullanicilar/${user.id}`}
+                  className="h-10 w-10 rounded-full bg-slate-50 flex items-center justify-center border border-slate-200"
+                >
+                  <ChevronRight className="h-5 w-5 text-slate-400" />
+                </Link>
+              </div>
+              
+              <div className="flex flex-wrap gap-2">
+                <div className={cn(
+                  "inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[9px] font-black uppercase tracking-widest border",
+                  user.isActive 
+                    ? "bg-emerald-50 text-emerald-700 border-emerald-100" 
+                    : "bg-rose-50 text-rose-700 border-rose-100"
+                )}>
+                  <div className={cn("h-1.5 w-1.5 rounded-full", user.isActive ? "bg-emerald-500" : "bg-rose-500")} />
+                  {user.isActive ? "AKTİF" : "ENGELİ"}
+                </div>
+                
+                {user.userRoles.map((userRole) => (
+                  <span key={`${userRole.userId}-${userRole.roleId}`} className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-50 text-slate-950 text-[9px] font-black border border-slate-200 uppercase">
+                    {userRole.role.name}
+                  </span>
+                ))}
+                {user.userRoles.length === 0 && (
+                  <span className="text-[9px] font-black text-slate-400 uppercase italic">YETKİSİZ</span>
+                )}
+              </div>
+            </div>
+          ))}
+          {users.length === 0 && (
+            <div className="py-20 text-center text-slate-400 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200">
+               <UsersIcon className="h-12 w-12 mx-auto mb-4 opacity-20" />
+               <p className="text-[10px] font-black uppercase tracking-widest">Kayıt bulunamadı</p>
+            </div>
+          )}
         </div>
       </div>
     </div>

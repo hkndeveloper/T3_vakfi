@@ -79,41 +79,38 @@ export default async function AdminAuditLogsPage({
         </div>
       </div>
 
-      <div className="space-y-10">
-        <div className="flex flex-wrap items-center justify-between gap-6 px-4">
-          <div className="flex items-center gap-5">
-            <div className="h-14 w-14 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-950 shadow-sm">
-               <History className="h-7 w-7" />
+      <div className="space-y-8 md:space-y-10 px-4 md:px-0">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 px-2 md:px-4">
+          <div className="flex items-center gap-4 md:gap-5">
+            <div className="h-12 w-12 md:h-14 md:w-14 rounded-xl md:rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-950 shadow-sm">
+               <History className="h-6 w-6 md:h-7 md:w-7" />
             </div>
             <div>
-              <h2 className="t3-heading text-3xl text-slate-950 tracking-tighter">İşlem Kayıtları</h2>
-              <p className="t3-label">SİSTEM ÜZERİNDEKİ SON HAREKETLER</p>
+              <h2 className="t3-heading text-2xl md:text-3xl text-slate-950 tracking-tighter">İşlem Kayıtları</h2>
+              <p className="t3-label text-[9px] md:text-[10px]">SİSTEM ÜZERİNDEKİ SON HAREKETLER</p>
             </div>
           </div>
-          <form className="flex items-center gap-4">
-             <div className="relative group/search">
-                <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within/search:text-corporate-blue transition-colors" />
-                <input 
-                  type="text"
-                  name="q"
-                  defaultValue={search ?? ""}
-                  placeholder="İşlem veya kullanıcı ara..." 
-                  className="pl-14 pr-8 py-5 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-bold outline-none focus:ring-8 focus:ring-corporate-blue/5 focus:border-corporate-blue/30 transition-all w-80 shadow-sm" 
-                />
-             </div>
-             <button type="submit" className="h-16 w-16 rounded-2xl bg-corporate-blue text-white hover:bg-blue-700 transition-all flex items-center justify-center shadow-sm">
-                <Search className="h-6 w-6" />
-             </button>
-             {search && (
-               <a href="/admin/sistem-loglari" className="h-16 w-16 rounded-2xl bg-slate-100 text-slate-950 hover:bg-white transition-all flex items-center justify-center shadow-sm border border-slate-200 text-xs font-black">
-                 ✕
-               </a>
-             )}
-          </form>
-          <p className="t3-label">{logs.length} KAYIT GÖSTERILIYOR{search ? ` — "${search}" filtresi` : ""}</p>
+          <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
+            <form className="relative group/search w-full md:w-80">
+              <Search className="absolute left-4 md:left-5 top-1/2 -translate-y-1/2 h-4 w-4 md:h-5 md:w-5 text-slate-400 group-focus-within/search:text-corporate-blue transition-colors" />
+              <input 
+                type="text"
+                name="q"
+                defaultValue={search ?? ""}
+                placeholder="İşlem veya kullanıcı ara..." 
+                className="pl-11 md:pl-14 pr-4 md:pr-8 py-3.5 md:py-5 bg-slate-50 border border-slate-200 rounded-xl md:rounded-2xl text-sm font-bold outline-none focus:ring-8 focus:ring-corporate-blue/5 focus:border-corporate-blue/30 transition-all w-full shadow-sm" 
+              />
+            </form>
+            {search && (
+              <a href="/admin/sistem-loglari" className="text-[10px] font-black text-rose-600 uppercase tracking-widest hover:underline px-2 shrink-0">
+                Temizle
+              </a>
+            )}
+          </div>
         </div>
 
-        <div className="t3-panel overflow-hidden bg-slate-50/30">
+        {/* Desktop Table View */}
+        <div className="hidden md:block t3-panel overflow-hidden bg-slate-50/30">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-slate-200">
               <thead className="bg-slate-100/50">
@@ -165,20 +162,57 @@ export default async function AdminAuditLogsPage({
               </tbody>
             </table>
           </div>
-          
-          <div className="p-10 bg-slate-100/50 border-t border-slate-200 flex flex-wrap items-center justify-between gap-6">
-             <p className="text-[11px] font-black text-slate-400 uppercase tracking-[0.3em]">SİSTEM DENETİM MATRİSİ V1.0</p>
-             <div className="flex items-center gap-8">
-                <div className="flex items-center gap-3 text-[10px] font-black text-slate-950 uppercase tracking-widest">
-                   <ShieldCheck className="h-4 w-4 text-emerald-500" /> 
-                   VERİ GÜVENLİĞİ AKTİF
+        </div>
+
+        {/* Mobile View - Cards */}
+        <div className="md:hidden space-y-4 px-4">
+          {logs.map((log) => (
+            <div key={log.id} className="bg-white border border-slate-200 rounded-2xl p-5 space-y-5 shadow-sm">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-400">
+                    <User className="h-5 w-5" />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="font-black text-slate-950 text-xs uppercase">{log.user?.name || "LOG_SİSTEM"}</span>
+                    <span className="text-[9px] text-slate-500 font-bold uppercase">{new Date(log.createdAt).toLocaleTimeString("tr-TR")}</span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-3 text-[10px] font-black text-slate-950 uppercase tracking-widest border-l border-slate-300 pl-8">
-                   <Cpu className="h-4 w-4 text-corporate-blue" /> 
-                   GERÇEK ZAMANLI İZLEME
+                <div className="px-3 py-1.5 rounded-lg bg-corporate-blue/10 text-corporate-blue text-[8px] font-black uppercase tracking-widest">
+                  {log.action.split(".").pop()}
                 </div>
-             </div>
-          </div>
+              </div>
+
+              <div className="space-y-3">
+                <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between">
+                   <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">DETAY</span>
+                   <span className="text-[9px] font-bold text-slate-900 truncate max-w-[200px]">{log.modelType || "GENEL"} - {log.modelId || "N/A"}</span>
+                </div>
+                <div className="flex items-center gap-4 text-[9px] font-black text-slate-400 uppercase px-1">
+                   <div className="flex items-center gap-1.5">
+                      <Globe className="h-3 w-3 text-corporate-orange" /> {log.ipAddress || "127.0.0.1"}
+                   </div>
+                   <div className="flex items-center gap-1.5 ml-auto italic">
+                      <Clock className="h-3 w-3 text-corporate-blue" /> {new Date(log.createdAt).toLocaleDateString("tr-TR")}
+                   </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="p-6 md:p-10 bg-slate-100/50 rounded-xl md:rounded-t3-xl border border-slate-200 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mx-2 md:mx-0">
+           <p className="text-[9px] md:text-[11px] font-black text-slate-400 uppercase tracking-[0.3em]">SİSTEM DENETİM MATRİSİ V1.0</p>
+           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 md:gap-8 w-full sm:w-auto">
+              <div className="flex items-center gap-3 text-[9px] md:text-[10px] font-black text-slate-950 uppercase tracking-widest">
+                 <ShieldCheck className="h-3.5 w-3.5 md:h-4 md:w-4 text-emerald-500" /> 
+                 GÜVENLİK AKTİF
+              </div>
+              <div className="flex items-center gap-3 text-[9px] md:text-[10px] font-black text-slate-950 uppercase tracking-widest sm:border-l border-slate-300 sm:pl-8">
+                 <Cpu className="h-3.5 w-3.5 md:h-4 md:w-4 text-corporate-blue" /> 
+                 CANLI İZLEME
+              </div>
+           </div>
         </div>
       </div>
     </div>

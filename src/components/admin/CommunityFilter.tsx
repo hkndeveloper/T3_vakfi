@@ -34,38 +34,40 @@ export function CommunityFilter({ universities, initialQuery, initialUniversityI
   };
 
   return (
-    <div className="flex flex-wrap items-center gap-4">
-      <form onSubmit={handleSearch} className="relative group">
-        <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within:text-corporate-orange transition-colors" />
+    <div className="flex flex-col md:flex-row items-stretch md:items-center gap-4 w-full md:w-auto">
+      <form onSubmit={handleSearch} className="relative group w-full md:w-80">
+        <Search className="absolute left-4 md:left-5 top-1/2 -translate-y-1/2 h-4 w-4 md:h-5 md:w-5 text-slate-400 group-focus-within:text-corporate-orange transition-colors" />
         <input 
           name="q"
           type="text" 
           defaultValue={initialQuery}
           placeholder="Birim veya üniversite ara..." 
-          className="pl-14 pr-8 py-4.5 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-bold outline-none focus:ring-8 focus:ring-corporate-orange/5 focus:border-corporate-orange/30 transition-all w-80 shadow-sm text-slate-950" 
+          className="pl-11 md:pl-14 pr-4 md:pr-8 py-3.5 md:py-4.5 bg-slate-50 border border-slate-200 rounded-xl md:rounded-2xl text-sm font-bold outline-none focus:ring-8 focus:ring-corporate-orange/5 focus:border-corporate-orange/30 transition-all w-full shadow-sm text-slate-950" 
         />
       </form>
-      <div className="flex items-center gap-4">
-        <select 
-          name="universityId"
-          defaultValue={initialUniversityId}
-          onChange={(e) => handleUniversityChange(e.target.value)}
-          className="h-14 pl-6 pr-12 rounded-2xl border border-slate-200 bg-slate-50 text-[11px] font-black uppercase tracking-widest outline-none focus:ring-8 focus:ring-corporate-blue/5 transition-all appearance-none cursor-pointer shadow-sm text-slate-950"
-        >
-          <option value="">TÜM ÜNİVERSİTELER</option>
-          {universities.map(u => (
-            <option key={u.id} value={u.id}>{u.name}</option>
-          ))}
-        </select>
-        <div className="h-14 w-14 rounded-2xl border border-slate-200 bg-slate-50 text-slate-950 flex items-center justify-center shadow-sm">
-          <Filter className="h-6 w-6" />
+      <div className="flex items-center gap-3 md:gap-4">
+        <div className="relative flex-1 md:flex-none">
+          <select 
+            name="universityId"
+            defaultValue={initialUniversityId}
+            onChange={(e) => handleUniversityChange(e.target.value)}
+            className="h-12 md:h-14 w-full md:w-auto pl-4 md:pl-6 pr-10 md:pr-12 rounded-xl md:rounded-2xl border border-slate-200 bg-slate-50 text-[10px] md:text-[11px] font-black uppercase tracking-widest outline-none focus:ring-8 focus:ring-corporate-blue/5 transition-all appearance-none cursor-pointer shadow-sm text-slate-950"
+          >
+            <option value="">TÜM ÜNİVERSİTELER</option>
+            {universities.map(u => (
+              <option key={u.id} value={u.id}>{u.name}</option>
+            ))}
+          </select>
+          <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+            <Filter className="h-4 w-4 text-slate-400" />
+          </div>
         </div>
+        {(initialQuery || initialUniversityId) && (
+          <Link href="/admin/topluluklar" className="text-[10px] font-black text-rose-600 uppercase tracking-widest hover:underline px-2 shrink-0">
+            Temizle
+          </Link>
+        )}
       </div>
-      {(initialQuery || initialUniversityId) && (
-        <Link href="/admin/topluluklar" className="text-[10px] font-black text-rose-600 uppercase tracking-widest hover:underline px-2">
-          Temizle
-        </Link>
-      )}
     </div>
   );
 }

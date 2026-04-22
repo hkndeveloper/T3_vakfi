@@ -2,8 +2,9 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
-import { requirePermission } from "@/lib/permissions";
+import { requirePermission, requireSuperAdmin } from "@/lib/permissions";
 import { createNotification } from "@/lib/notifications";
+import bcrypt from "bcryptjs";
 
 export async function reviewEventAction(formData: FormData) {
   const session = await requirePermission("event.approve");
@@ -89,4 +90,98 @@ export async function reviewReportAction(formData: FormData) {
   revalidatePath("/admin/rapor-onaylari");
   revalidatePath("/baskan/raporlar");
   return { success: true };
+}
+
+export async function adminCreateUserAction(formData: FormData) {
+  try {
+    await requirePermission("user.create");
+
+    const name = String(formData.get("name") ?? "").trim();
+    const email = String(formData.get("email") ?? "").trim().toLowerCase();
+    const password = String(formData.get("password") ?? "");
+
+    if (!name || !email || password.length < 8) {
+      return { success: false, error: "Tüm alanları doğru doldurun. Şifre en az 8 karakter olmalıdır." };
+    }
+
+    const existingUser = await prisma.user.findUnique({ where: { email } });
+    if (existingUser) {
+      return { success: false, error: "Bu e-posta adresi zaten kullanımda." };
+    }
+
+    const passwordHash = await bcrypt.hash(password, 12);
+
+    const user = await prisma.user.create({
+      data: {
+        name,
+        email,
+        passwordHash,
+        isActive: true,
+      },
+    });
+
+    await prisma.activityLog.create({
+      data: {
+        action: "user.create",
+        modelType: "User",
+        modelId: user.id
+      },
+    });
+
+    revalidatePath("/admin/kullanicilar");
+    return { success: true, message: "Kullanıcı başarıyla oluşturuldu." };
+  } catch (error) {
+    console.error("User creation error:", error);
+    return { success: false, error: "Kullanıcı oluşturulurken bir hata oluştu." };
+  }
+}
+
+export async function adminAssignRoleAction(formData: FormData) {
+  try {
+    await requirePermission("role.assign");
+
+    const userId = String(formData.get("userId") ?? "").trim();
+    const roleId = String(formData.get("roleId") ?? "").trim();
+    const communityIdValue = String(formData.get("communityId") ?? "").trim();
+    const communityId = communityIdValue || null;
+
+    if (!userId || !roleId) {
+      return { success: false, error: "Kullanıcı ve rol seçimi zorunludur." };
+    }
+
+    const existing = await prisma.userRole.findFirst({
+      where: {
+        userId,
+        roleId,
+        communityId,
+      },
+    });
+
+    if (existing) {
+      return { success: false, error: "Bu kullanıcı zaten bu yetkiye sahip." };
+    }
+
+    await prisma.userRole.create({
+      data: {
+        userId,
+        roleId,
+        communityId,
+      },
+    });
+
+    await prisma.activityLog.create({
+      data: {
+        userId,
+        action: "role.assign",
+        modelType: "UserRole",
+        modelId: `${userId}:${roleId}`,
+      },
+    });
+
+    revalidatePath("/admin/kullanicilar");
+    return { success: true, message: "Yetki başarıyla atandı." };
+  } catch (error) {
+    console.error("Role assignment error:", error);
+    return { success: false, error: "Yetki atanırken bir hata oluştu." };
+  }
 }
