@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import {
   BarChart,
   Bar,
@@ -8,7 +9,6 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Cell,
 } from "recharts";
 
 interface AttendanceChartProps {
@@ -19,8 +19,20 @@ interface AttendanceChartProps {
 }
 
 export function AttendanceChart({ data }: AttendanceChartProps) {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) {
+    return (
+      <div className="h-full w-full bg-slate-50/50 animate-pulse rounded-2xl border border-slate-100" />
+    );
+  }
+
   return (
-    <div className="h-full w-full font-source-sans">
+    <div className="h-full w-full font-source-sans min-h-[300px]">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
           data={data}
@@ -50,19 +62,19 @@ export function AttendanceChart({ data }: AttendanceChartProps) {
           <Tooltip 
             cursor={{ fill: "rgba(37, 99, 235, 0.05)" }}
             contentStyle={{ 
-              backgroundColor: "var(--background)",
+              backgroundColor: "white",
               borderRadius: "12px", 
-              border: "1px solid var(--border)", 
+              border: "1px solid #e2e8f0", 
               boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1)",
               padding: "12px"
             }}
             itemStyle={{
-              color: "var(--foreground)",
+              color: "#0f172a",
               fontSize: "12px",
               fontWeight: "900"
             }}
             labelStyle={{
-              color: "var(--muted-foreground)",
+              color: "#64748b",
               fontSize: "10px",
               fontWeight: "bold",
               textTransform: "uppercase",
