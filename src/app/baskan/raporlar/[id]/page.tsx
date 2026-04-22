@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { SubmitReportButton } from "@/components/reports/SubmitReportButton";
+import { SubmitReportButton } from "@/components/forms/SubmitReportButton";
 import { MediaUploadForm } from "@/components/forms/MediaUploadForm";
 
 async function updateReportAction(formData: FormData) {
