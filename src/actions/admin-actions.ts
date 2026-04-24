@@ -1,8 +1,9 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { EventStatus, EventType, ReportStatus } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
-import { requirePermission, requireSuperAdmin } from "@/lib/permissions";
+import { requirePermission } from "@/lib/permissions";
 import { createNotification } from "@/lib/notifications";
 import bcrypt from "bcryptjs";
 
@@ -20,7 +21,7 @@ export async function reviewEventAction(formData: FormData) {
   const event = await prisma.event.update({
     where: { id: eventId },
     data: {
-      status: decision as any,
+      status: decision as EventStatus,
       approvedBy: decision === "APPROVED" ? session.user.id : null,
       approvedAt: decision === "APPROVED" ? new Date() : null,
       reviewNote: reviewNote || null,
@@ -49,6 +50,61 @@ export async function reviewEventAction(formData: FormData) {
   return { success: true };
 }
 
+export async function createGlobalEventAction(formData: FormData) {
+  try {
+    const session = await requirePermission("event.approve");
+
+    const title = String(formData.get("title") ?? "").trim();
+    const type = String(formData.get("type") ?? "").trim();
+    const description = String(formData.get("description") ?? "").trim();
+    const eventDateRaw = String(formData.get("eventDate") ?? "").trim();
+    const startTime = String(formData.get("startTime") ?? "").trim();
+    const endTime = String(formData.get("endTime") ?? "").trim();
+    const location = String(formData.get("location") ?? "").trim();
+
+    if (!title || !type || !eventDateRaw) {
+      return { success: false, error: "Lütfen zorunlu alanları doldurun." };
+    }
+
+    const event = await prisma.event.create({
+      data: {
+        scope: "GLOBAL",
+        communityId: null,
+        title,
+        type: type as EventType,
+        description: description || null,
+        eventDate: new Date(eventDateRaw),
+        startTime: startTime || null,
+        endTime: endTime || null,
+        location: location || null,
+        createdBy: session.user.id,
+        approvedBy: session.user.id,
+        approvedAt: new Date(),
+        status: "APPROVED",
+      },
+    });
+
+    await prisma.activityLog.create({
+      data: {
+        userId: session.user.id,
+        action: "event.create.global",
+        modelType: "Event",
+        modelId: event.id,
+      },
+    });
+
+    revalidatePath("/admin/etkinlik-onaylari");
+    revalidatePath("/admin/katilim-izleme");
+    revalidatePath("/baskan/etkinlikler");
+    revalidatePath("/baskan/katilim");
+
+    return { success: true, message: "Global etkinlik başarıyla oluşturuldu." };
+  } catch (error) {
+    console.error("Global event creation error:", error);
+    return { success: false, error: "Global etkinlik oluşturulurken bir hata oluştu." };
+  }
+}
+
 export async function reviewReportAction(formData: FormData) {
   const session = await requirePermission("report.approve");
 
@@ -63,7 +119,7 @@ export async function reviewReportAction(formData: FormData) {
   const report = await prisma.report.update({
     where: { id: reportId },
     data: {
-      status: decision as any,
+      status: decision as ReportStatus,
       approvedBy: decision === "APPROVED" ? session.user.id : null,
       approvedAt: decision === "APPROVED" ? new Date() : null,
       adminNote: adminNote || null,

@@ -40,6 +40,7 @@ model Community {
   members         CommunityMember[]
   userRoles       UserRole[]
   createdEvents   Event[]           @relation("EventCommunity")
+  eventParticipants EventParticipant[]
   reports         Report[]
   mediaFiles      MediaFile[]
   documents       Document[]
@@ -132,7 +133,8 @@ model CommunityMember {
 
 model Event {
   id                String      @id @default(cuid())
-  communityId       String
+  communityId       String?
+  scope             EventScope  @default(COMMUNITY)
   title             String
   type              EventType
   description       String?
@@ -146,7 +148,7 @@ model Event {
   approvedBy        String?
   approvedAt        DateTime?
   reviewNote        String?
-  community         Community   @relation("EventCommunity", fields: [communityId], references: [id], onDelete: Cascade)
+  community         Community?  @relation("EventCommunity", fields: [communityId], references: [id], onDelete: SetNull)
   creator           User        @relation("EventCreator", fields: [createdBy], references: [id], onDelete: Restrict)
   approver          User?       @relation("EventApprover", fields: [approvedBy], references: [id], onDelete: SetNull)
   reports           Report[]
@@ -161,6 +163,7 @@ model EventParticipant {
   id               String           @id @default(cuid())
   eventId          String
   userId           String
+  communityId      String?
   inviteStatus     AttendanceStatus @default(INVITED)
   attendanceStatus AttendanceStatus @default(PENDING)
   excuseNote       String?
@@ -168,6 +171,7 @@ model EventParticipant {
   markedAt         DateTime?
   event            Event            @relation(fields: [eventId], references: [id], onDelete: Cascade)
   user             User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  community        Community?       @relation(fields: [communityId], references: [id], onDelete: SetNull)
 
   @@unique([eventId, userId])
 }
@@ -292,6 +296,11 @@ enum EventType {
   SOCIAL
   BOOTH
   TECHNICAL_TRIP
+}
+
+enum EventScope {
+  COMMUNITY
+  GLOBAL
 }
 
 enum EventStatus {

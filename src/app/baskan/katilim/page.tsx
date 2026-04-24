@@ -36,16 +36,28 @@ async function inviteMemberAction(formData: FormData) {
   if (!eventId || !userId) return;
 
   const event = await prisma.event.findFirst({
-    where: { id: eventId, communityId },
+    where: {
+      id: eventId,
+      OR: [
+        { communityId },
+        { scope: "GLOBAL", status: { in: ["APPROVED", "COMPLETED"] } },
+      ],
+    },
   });
   if (!event) return;
 
+  const membership = await prisma.communityMember.findFirst({
+    where: { communityId, userId, status: "ACTIVE" },
+  });
+  if (!membership) return;
+
   await prisma.eventParticipant.upsert({
     where: { eventId_userId: { eventId, userId } },
-    update: { inviteStatus: "INVITED" },
+    update: { inviteStatus: "INVITED", communityId },
     create: {
       eventId,
       userId,
+      communityId,
       inviteStatus: "INVITED",
       attendanceStatus: "PENDING",
     },
@@ -77,7 +89,17 @@ async function markAttendanceAction(formData: FormData) {
     where: { id: participantId },
     include: { event: true },
   });
-  if (!participant || participant.event.communityId !== communityId) return;
+  if (!participant) return;
+
+  const canManageParticipant =
+    participant.communityId === communityId ||
+    (participant.communityId === null && participant.event.communityId === communityId);
+
+  const canManageEvent =
+    participant.event.communityId === communityId ||
+    participant.event.scope === "GLOBAL";
+
+  if (!canManageEvent || !canManageParticipant) return;
 
   await prisma.eventParticipant.update({
     where: { id: participantId },
@@ -109,7 +131,10 @@ export default async function AttendancePage({ searchParams }: { searchParams: P
   const [events, members] = await Promise.all([
     prisma.event.findMany({
       where: {
-        communityId,
+        OR: [
+          { communityId },
+          { scope: "GLOBAL", status: { in: ["APPROVED", "COMPLETED"] } },
+        ],
         status: { in: ["APPROVED", "COMPLETED"] },
         ...(search ? { title: { contains: search, mode: "insensitive" } } : {})
       },
@@ -190,16 +215,26 @@ export default async function AttendancePage({ searchParams }: { searchParams: P
           </div>
         ) : (
           events.map((event) => {
-            const invited = event.participants.length;
-            const attended = event.participants.filter((p) => p.attendanceStatus === "ATTENDED").length;
-            const absent = event.participants.filter((p) => p.attendanceStatus === "ABSENT").length;
-            const excused = event.participants.filter((p) => p.attendanceStatus === "EXCUSED").length;
+            const visibleParticipants = event.scope === "GLOBAL"
+              ? event.participants.filter((p) => p.communityId === communityId)
+              : event.participants;
+            const invited = visibleParticipants.length;
+            const attended = visibleParticipants.filter((p) => p.attendanceStatus === "ATTENDED").length;
+            const absent = visibleParticipants.filter((p) => p.attendanceStatus === "ABSENT").length;
+            const excused = visibleParticipants.filter((p) => p.attendanceStatus === "EXCUSED").length;
 
             return (
               <section key={event.id} className="t3-panel p-10 md:p-12 bg-white border-l-[16px] border-l-corporate-blue group overflow-hidden relative">
                 <div className="flex flex-wrap items-start justify-between gap-10 mb-12 relative z-10">
                   <div className="space-y-6">
-                    <h2 className="text-4xl font-black text-slate-950 tracking-tighter uppercase group-hover:text-corporate-blue transition-colors leading-[0.95] italic">{event.title}</h2>
+                    <div className="flex flex-wrap items-center gap-3">
+                      <h2 className="text-4xl font-black text-slate-950 tracking-tighter uppercase group-hover:text-corporate-blue transition-colors leading-[0.95] italic">{event.title}</h2>
+                      {event.scope === "GLOBAL" && (
+                        <span className="rounded-lg border border-blue-100 bg-blue-50 px-3 py-1 text-[9px] font-black uppercase tracking-[0.18em] text-corporate-blue">
+                          GLOBAL
+                        </span>
+                      )}
+                    </div>
                     <div className="flex flex-wrap items-center gap-6">
                        <span className="flex items-center gap-3 t3-label bg-slate-50 px-5 py-2.5 rounded-2xl border border-slate-100">
                           <Calendar className="h-4 w-4 text-corporate-orange" /> {new Date(event.eventDate).toLocaleDateString("tr-TR")}
@@ -223,9 +258,9 @@ export default async function AttendancePage({ searchParams }: { searchParams: P
                      <div className="h-14 w-14 rounded-2xl bg-white border border-slate-200 flex items-center justify-center text-corporate-blue shadow-sm group-hover/invite:scale-110 transition-transform">
                         <UserPlus className="h-7 w-7" />
                      </div>
-                     <div className="flex-1 min-w-[300px]">
+                     <div className="flex-1 min-w-0">
                         <p className="t3-label mb-4">OPERASYONEL DAVET KANALI</p>
-                        <form action={inviteMemberAction} className="flex gap-4">
+                        <form action={inviteMemberAction} className="flex flex-col gap-4 sm:flex-row">
                            <input type="hidden" name="eventId" value={event.id} />
                            <select name="userId" className="t3-input flex-1 px-8 py-5 text-sm bg-white" required>
                              <option value="">LİSTEDEN PERSONEL SEÇİN...</option>
@@ -235,7 +270,7 @@ export default async function AttendancePage({ searchParams }: { searchParams: P
                                </option>
                              ))}
                            </select>
-                           <button className="t3-button t3-button-primary px-10">KATILIMCI EKLE</button>
+                           <button className="t3-button t3-button-primary w-full px-10 sm:w-auto">KATILIMCI EKLE</button>
                         </form>
                      </div>
                   </div>
@@ -253,7 +288,7 @@ export default async function AttendancePage({ searchParams }: { searchParams: P
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-50 bg-white">
-                        {event.participants.map((p) => (
+                        {visibleParticipants.map((p) => (
                           <tr key={p.id} className="hover:bg-slate-50/50 transition-all group/row">
                             <td className="px-10 py-8">
                               <div className="flex items-center gap-4">
@@ -298,7 +333,7 @@ export default async function AttendancePage({ searchParams }: { searchParams: P
                             </td>
                           </tr>
                         ))}
-                        {event.participants.length === 0 && (
+                        {visibleParticipants.length === 0 && (
                           <tr>
                             <td colSpan={4} className="px-10 py-20 text-center t3-label">SİSTEMDE KAYITLI KATILIMCI BULUNAMADI</td>
                           </tr>
@@ -342,7 +377,7 @@ function StatBadge({ label, value, theme }: { label: string; value: number; them
      orange: "bg-orange-50 text-corporate-orange border-orange-100",
   };
   return (
-    <div className={cn("rounded-2xl border px-8 py-4 transition-all hover:scale-105 flex flex-col items-center justify-center min-w-[110px] shadow-sm bg-white", themes[theme])}>
+    <div className={cn("flex w-full flex-col items-center justify-center rounded-2xl border bg-white px-4 py-4 text-center shadow-sm transition-all hover:scale-105 sm:min-w-[110px] sm:px-8", themes[theme])}>
       <span className="t3-label mb-2 opacity-60">{label}</span>
       <span className="text-3xl font-black leading-none tracking-tighter italic font-outfit">{value}</span>
     </div>

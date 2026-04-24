@@ -53,7 +53,7 @@ export default async function AdminLayout({
           subtitle="Sistem Merkezi" 
         />
         
-        <main className="flex-1 min-w-0 p-6 pt-28 lg:pt-6">
+        <main className="flex-1 min-w-0 p-4 pt-24 sm:p-6 sm:pt-28 lg:pt-6">
           {children}
         </main>
       </div>

@@ -106,15 +106,8 @@ export default async function AdminCommunitiesPage({
         </div>
       </div>
 
-      <div className="grid gap-8 lg:grid-cols-3 px-4 md:px-0">
-        <div className="lg:col-span-1">
-          <div className="t3-panel-elevated p-6 md:p-8 bg-slate-50/50">
-             <h3 className="t3-heading text-lg md:text-xl mb-6 md:mb-8 text-slate-950">Yeni Birim Tanımla</h3>
-             <CommunityForm universities={universities} />
-          </div>
-        </div>
-
-        <div className="lg:col-span-2 space-y-8 md:space-y-10">
+      <div className="space-y-10 px-4 md:px-0">
+        <div className="space-y-8 md:space-y-10">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 px-2 md:px-4">
             <div>
               <h2 className="t3-heading text-2xl md:text-3xl text-slate-950 tracking-tighter">Kayıtlı Birimler</h2>
@@ -254,8 +247,44 @@ export default async function AdminCommunitiesPage({
             )}
           </div>
         </div>
+
+        <section className="relative overflow-hidden rounded-2xl md:rounded-[2rem] border border-slate-200 bg-slate-100/60 p-6 md:p-10 shadow-sm">
+          <div className="absolute -right-20 -top-20 h-56 w-56 rounded-full bg-corporate-orange/8 blur-[90px] pointer-events-none" />
+          <div className="absolute left-0 right-0 top-0 h-px bg-gradient-to-r from-transparent via-white/80 to-transparent pointer-events-none" />
+
+          <div className="relative z-10 grid gap-8 xl:grid-cols-[minmax(280px,360px)_minmax(0,1fr)] xl:items-start">
+            <div className="rounded-2xl border border-slate-200 bg-white/80 p-6 md:p-8 shadow-sm">
+              <div className="inline-flex items-center gap-2 rounded-full border border-orange-200 bg-orange-50 px-4 py-2 text-[9px] font-black uppercase tracking-[0.24em] text-corporate-orange">
+                <Building2 className="h-3.5 w-3.5" />
+                Yeni Birim Akışı
+              </div>
+              <h3 className="mt-5 text-2xl md:text-3xl font-black tracking-tighter uppercase italic text-slate-950">
+                Topluluk Ekleme
+                <br />
+                <span className="text-corporate-orange">Alanını Genişlettik</span>
+              </h3>
+              <p className="mt-5 text-sm md:text-base font-medium leading-relaxed text-slate-600">
+                Form artık yan sütunda sıkışmıyor. Üniversite bağlantısı, iletişim alanları ve kurumsal tanımı tek bakışta daha rahat doldurabileceğiniz yatay bir akışta yer alıyor.
+              </p>
+
+              <div className="mt-8 grid grid-cols-2 gap-4">
+                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                  <p className="t3-label text-[8px] md:text-[9px]">AKTİF BİRİM</p>
+                  <p className="mt-2 text-3xl font-black tracking-tighter text-slate-950">{activeComm}</p>
+                </div>
+                <div className="rounded-2xl border border-slate-200 bg-white p-4">
+                  <p className="t3-label text-[8px] md:text-[9px]">TOPLAM AĞ</p>
+                  <p className="mt-2 text-3xl font-black tracking-tighter text-corporate-blue">{totalComm}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="min-w-0">
+              <CommunityForm universities={universities} />
+            </div>
+          </div>
+        </section>
       </div>
     </div>
   );
 }
-

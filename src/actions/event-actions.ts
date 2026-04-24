@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { EventType } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { requireCommunityManager } from "@/lib/permissions";
 
@@ -25,7 +26,7 @@ export async function createEventAction(formData: FormData) {
       data: {
         communityId,
         title,
-        type: type as any,
+        type: type as EventType,
         description: description || null,
         eventDate: new Date(eventDateRaw),
         startTime: startTime || null,
@@ -94,22 +95,37 @@ export async function assignMemberToEventAction(eventId: string, userId: string)
     const session = await requireCommunityManager();
     const communityId = session.user.communityIds[0];
 
-    // Verify event belongs to community
-    const event = await prisma.event.findFirst({ where: { id: eventId, communityId } });
-    if (!event) return { success: false, error: "Etkinlik bulunamadı." };
+    const [event, membership] = await Promise.all([
+      prisma.event.findFirst({
+        where: {
+          id: eventId,
+          OR: [
+            { communityId },
+            { scope: "GLOBAL", status: { in: ["APPROVED", "COMPLETED"] } },
+          ],
+        },
+      }),
+      prisma.communityMember.findFirst({
+        where: { communityId, userId, status: "ACTIVE" },
+      }),
+    ]);
 
-    // Create participant entry
+    if (!event) return { success: false, error: "Etkinlik bulunamadı." };
+    if (!membership) return { success: false, error: "Yalnızca kendi topluluğunuzdaki aktif üyeleri ekleyebilirsiniz." };
+
     await prisma.eventParticipant.upsert({
       where: {
         eventId_userId: { eventId, userId }
       },
       update: {
+        communityId,
         inviteStatus: "INVITED",
         attendanceStatus: "PENDING"
       },
       create: {
         eventId,
         userId,
+        communityId,
         inviteStatus: "INVITED",
         attendanceStatus: "PENDING"
       }

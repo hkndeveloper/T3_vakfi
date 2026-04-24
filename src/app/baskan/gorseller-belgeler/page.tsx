@@ -45,7 +45,7 @@ export default async function PresidentMediaDocumentsPage({ searchParams }: { se
   const communityId = session.user.communityIds[0];
   const { q: search } = await searchParams;
 
-  const [community, mediaFiles, documents] = await Promise.all([
+  const [community, mediaFiles, documents, events] = await Promise.all([
     prisma.community.findUnique({
       where: { id: communityId },
       select: { id: true, name: true, shortName: true },
@@ -59,7 +59,8 @@ export default async function PresidentMediaDocumentsPage({ searchParams }: { se
       take: 100,
       include: {
         community: true,
-        report: true
+        report: true,
+        event: true,
       }
     }),
     prisma.document.findMany({
@@ -71,8 +72,20 @@ export default async function PresidentMediaDocumentsPage({ searchParams }: { se
       take: 100,
       include: {
         community: true,
-        report: true
+        report: true,
+        event: true,
       }
+    }),
+    prisma.event.findMany({
+      where: {
+        OR: [
+          { communityId },
+          { scope: "GLOBAL", status: { in: ["APPROVED", "COMPLETED"] } },
+        ],
+      },
+      orderBy: { eventDate: "desc" },
+      select: { id: true, title: true, scope: true },
+      take: 100,
     })
   ]);
 
@@ -97,6 +110,7 @@ export default async function PresidentMediaDocumentsPage({ searchParams }: { se
           <div className="flex flex-col items-end gap-6">
             <MediaUploadModal 
               communityId={communityId}
+              events={events}
               trigger={
                 <button className="t3-button t3-button-primary px-10 py-5 shadow-xl shadow-corporate-blue/20">
                   <PlusCircle className="h-6 w-6 text-corporate-orange" /> YENİ DOSYA YÜKLE
@@ -229,6 +243,11 @@ export default async function PresidentMediaDocumentsPage({ searchParams }: { se
                   {media.report && (
                     <p className="text-[9px] text-slate-500 font-bold uppercase tracking-wider truncate mt-2 italic">{media.report.title}</p>
                   )}
+                  {media.event && (
+                    <p className="text-[9px] text-corporate-blue font-black uppercase tracking-wider truncate mt-1">
+                      {media.event.scope === "GLOBAL" ? `[GLOBAL] ${media.event.title}` : media.event.title}
+                    </p>
+                  )}
                 </div>
               </div>
             ))}
@@ -271,6 +290,11 @@ export default async function PresidentMediaDocumentsPage({ searchParams }: { se
                           <div>
                             <p className="font-black text-slate-950 text-base uppercase tracking-tight group-hover:text-corporate-orange transition-colors italic leading-none">{doc.title}</p>
                             <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-2">{new Date(doc.createdAt).toLocaleString("tr-TR")}</p>
+                            {doc.event && (
+                              <p className="text-[9px] text-corporate-blue font-black uppercase tracking-wider mt-2">
+                                {doc.event.scope === "GLOBAL" ? `[GLOBAL] ${doc.event.title}` : doc.event.title}
+                              </p>
+                            )}
                           </div>
                        </div>
                     </td>

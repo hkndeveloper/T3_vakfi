@@ -1,4 +1,3 @@
-import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requirePermission } from "@/lib/permissions";
 import { 
@@ -16,6 +15,7 @@ import {
 import { cn } from "@/lib/utils";
 
 import { EventReviewForm } from "@/components/admin/EventReviewForm";
+import { AdminGlobalEventForm } from "@/components/admin/AdminGlobalEventForm";
 
 export default async function AdminEventApprovalsPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
   await requirePermission("event.approve");
@@ -76,6 +76,10 @@ export default async function AdminEventApprovalsPage({ searchParams }: { search
       </div>
 
       <div className="space-y-8 md:space-y-10 px-4 md:px-0">
+        <div className="t3-panel p-6 md:p-8 bg-slate-50/40">
+          <AdminGlobalEventForm />
+        </div>
+
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 px-2 md:px-4">
           <div>
             <h2 className="t3-heading text-2xl md:text-3xl text-slate-950 tracking-tighter">İnceleme Havuzu</h2>
@@ -126,7 +130,9 @@ export default async function AdminEventApprovalsPage({ searchParams }: { search
                      <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-8 text-[9px] md:text-[11px] font-bold uppercase tracking-widest text-slate-500">
                         <div className="flex items-center gap-3 bg-white px-3 py-1.5 md:px-4 md:py-2 rounded-lg md:rounded-xl border border-slate-200 shadow-sm w-fit">
                           <Building2 className="h-3.5 w-3.5 md:h-4 md:w-4 text-corporate-blue" />
-                          <span className="text-slate-950 truncate max-w-[200px] md:max-w-none">{event.community.university.name} / {event.community.name}</span>
+                          <span className="text-slate-950 truncate max-w-[200px] md:max-w-none">
+                            {event.community ? `${event.community.university.name} / ${event.community.name}` : "GLOBAL ETKİNLİK"}
+                          </span>
                         </div>
                         <div className="flex items-center gap-3 bg-white px-3 py-1.5 md:px-4 md:py-2 rounded-lg md:rounded-xl border border-slate-200 shadow-sm w-fit">
                            <User className="h-3.5 w-3.5 md:h-4 md:w-4 text-corporate-orange" />

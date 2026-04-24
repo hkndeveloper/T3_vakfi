@@ -35,7 +35,10 @@ export default async function PresidentEventsPage({ searchParams }: { searchPara
     }),
     prisma.event.findMany({
       where: { 
-        communityId,
+        OR: [
+          { communityId },
+          { scope: "GLOBAL", status: { in: ["APPROVED", "COMPLETED"] } },
+        ],
         ...(search ? {
           title: { contains: search, mode: "insensitive" }
         } : {}),
@@ -129,7 +132,14 @@ export default async function PresidentEventsPage({ searchParams }: { searchPara
                     <tr key={event.id} className="hover:bg-white transition-all group">
                       <td className="px-10 py-9">
                         <div className="flex flex-col gap-4">
-                          <span className="font-black text-slate-950 text-xl tracking-tight leading-none group-hover:text-corporate-blue transition-colors uppercase italic">{event.title}</span>
+                          <div className="flex flex-wrap items-center gap-3">
+                            <span className="font-black text-slate-950 text-xl tracking-tight leading-none group-hover:text-corporate-blue transition-colors uppercase italic">{event.title}</span>
+                            {event.scope === "GLOBAL" && (
+                              <span className="rounded-lg border border-blue-100 bg-blue-50 px-3 py-1 text-[9px] font-black uppercase tracking-[0.18em] text-corporate-blue">
+                                GLOBAL
+                              </span>
+                            )}
+                          </div>
                           {event.reviewNote && (
                             <div className="flex items-start gap-3 p-4 rounded-xl bg-orange-50 border border-orange-100 max-w-sm">
                               <AlertCircle className="h-4 w-4 text-corporate-orange mt-0.5 shrink-0" />

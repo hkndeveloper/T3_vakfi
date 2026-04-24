@@ -31,9 +31,14 @@ export default async function PresidentReportsPage({ searchParams }: { searchPar
 
   const [events, reports] = await Promise.all([
     prisma.event.findMany({
-      where: { communityId },
+      where: {
+        OR: [
+          { communityId },
+          { scope: "GLOBAL", status: { in: ["APPROVED", "COMPLETED"] } },
+        ],
+      },
       orderBy: { eventDate: "desc" },
-      select: { id: true, title: true },
+      select: { id: true, title: true, scope: true },
       take: 100,
     }),
     prisma.report.findMany({

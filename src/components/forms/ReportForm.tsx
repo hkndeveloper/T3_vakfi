@@ -18,7 +18,7 @@ import {
 import { motion } from "framer-motion";
 
 interface ReportFormProps {
-  events: { id: string; title: string }[];
+  events: { id: string; title: string; scope?: string }[];
 }
 
 export function ReportForm({ events }: ReportFormProps) {
@@ -92,7 +92,7 @@ export function ReportForm({ events }: ReportFormProps) {
               <option value="">FAALİYETTEN BAĞIMSIZ RAPOR</option>
               {events.map((event) => (
                 <option key={event.id} value={event.id}>
-                  {event.title.toUpperCase()}
+                  {event.scope === "GLOBAL" ? `[GLOBAL] ${event.title.toUpperCase()}` : event.title.toUpperCase()}
                 </option>
               ))}
             </select>

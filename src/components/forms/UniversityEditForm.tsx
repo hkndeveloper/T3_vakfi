@@ -37,9 +37,9 @@ export function UniversityEditForm({ university }: UniversityEditFormProps) {
         ? "border-indigo-600 bg-white dark:bg-slate-900 shadow-2xl shadow-indigo-500/10 ring-8 ring-indigo-500/5" 
         : "border-slate-100 dark:border-white/5 bg-slate-50/30 dark:bg-slate-800/20"
     )}>
-      <div className="p-10 md:p-12">
-        <div className="flex flex-wrap items-center justify-between gap-6 mb-12">
-          <div className="flex items-center gap-6">
+      <div className="grid gap-8 p-10 md:p-12 xl:grid-cols-[minmax(280px,360px)_minmax(0,1fr)] xl:items-start">
+        <div className="rounded-[2rem] border border-slate-200 bg-slate-50/80 p-6 md:p-8 shadow-sm">
+          <div className="flex items-start gap-6">
             <div className={cn(
               "h-16 w-16 rounded-[1.5rem] flex items-center justify-center transition-all duration-700 shadow-lg",
               isEditing 
@@ -49,15 +49,33 @@ export function UniversityEditForm({ university }: UniversityEditFormProps) {
               {isEditing ? <PenTool className="h-8 w-8" /> : <School className="h-8 w-8" />}
             </div>
             <div>
-              <h2 className="text-2xl font-black text-indigo-950 dark:text-white tracking-tight font-montserrat uppercase leading-none">Kurumsal Kimlik</h2>
-              <p className="text-[10px] text-slate-400 dark:text-slate-500 font-black uppercase tracking-[0.25em] mt-3">Veri setini ve operasyonel statüyü düzenleyin.</p>
+              <div className="inline-flex items-center gap-2 rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-[9px] font-black uppercase tracking-[0.22em] text-corporate-blue">
+                Kurumsal Kimlik
+              </div>
+              <h2 className="mt-4 text-3xl font-black tracking-tighter font-montserrat uppercase italic leading-none text-indigo-950 dark:text-white">
+                Üniversite Künyesi
+              </h2>
+              <p className="mt-4 text-sm font-medium leading-relaxed text-slate-600 dark:text-slate-300">
+                Kurumu daha geniş bir yatay düzende güncelleyin; temel kimlik ve statü alanları tek bakışta erişilebilir kalsın.
+              </p>
             </div>
           </div>
-          
+
+          <div className="mt-8 grid grid-cols-2 gap-4">
+            <div className="rounded-2xl border border-slate-200 bg-white p-4">
+              <p className="t3-label text-[8px]">ŞEHİR</p>
+              <p className="mt-2 text-lg font-black uppercase tracking-tight text-slate-950">{university.city}</p>
+            </div>
+            <div className="rounded-2xl border border-slate-200 bg-white p-4">
+              <p className="t3-label text-[8px]">DURUM</p>
+              <p className="mt-2 text-lg font-black uppercase tracking-tight text-corporate-blue">{university.status}</p>
+            </div>
+          </div>
+
           <button
             onClick={() => setIsEditing(!isEditing)}
             className={cn(
-              "px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all active:scale-95 shadow-lg",
+              "mt-8 w-full rounded-2xl px-8 py-4 text-[10px] font-black uppercase tracking-[0.2em] transition-all active:scale-95 shadow-lg",
               isEditing 
                 ? "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200" 
                 : "bg-indigo-950 dark:bg-indigo-600 text-white hover:bg-indigo-700 hover:shadow-indigo-500/20"
@@ -70,7 +88,7 @@ export function UniversityEditForm({ university }: UniversityEditFormProps) {
         <form action={clientAction} className="space-y-10">
           <div className="grid md:grid-cols-2 gap-10">
             <div className="space-y-3">
-              <label className="text-[10px] font-black text-indigo-950 dark:text-slate-400 uppercase tracking-[0.25em] ml-2 flex items-center gap-2">
+              <label className="text-[10px] font-black text-indigo-950 dark:text-slate-200 uppercase tracking-[0.25em] ml-2 flex items-center gap-2">
                  <div className="h-1.5 w-1.5 rounded-full bg-indigo-500" />
                  Üniversite Resmi Adı
               </label>
@@ -88,7 +106,7 @@ export function UniversityEditForm({ university }: UniversityEditFormProps) {
             </div>
 
             <div className="space-y-3">
-              <label className="text-[10px] font-black text-indigo-950 dark:text-slate-400 uppercase tracking-[0.25em] ml-2 flex items-center gap-2">
+              <label className="text-[10px] font-black text-indigo-950 dark:text-slate-200 uppercase tracking-[0.25em] ml-2 flex items-center gap-2">
                  <div className="h-1.5 w-1.5 rounded-full bg-amber-500" />
                  Yerleşke Şehri
               </label>
@@ -106,7 +124,7 @@ export function UniversityEditForm({ university }: UniversityEditFormProps) {
             </div>
 
             <div className="md:col-span-2 space-y-3">
-              <label className="text-[10px] font-black text-indigo-950 dark:text-slate-400 uppercase tracking-[0.25em] ml-2 flex items-center gap-2">
+              <label className="text-[10px] font-black text-indigo-950 dark:text-slate-200 uppercase tracking-[0.25em] ml-2 flex items-center gap-2">
                  <ShieldCheck className="h-3.5 w-3.5 text-indigo-500" />
                  Kurumsal Operasyon Statüsü
               </label>
@@ -160,4 +178,3 @@ export function UniversityEditForm({ university }: UniversityEditFormProps) {
     </div>
   );
 }
-

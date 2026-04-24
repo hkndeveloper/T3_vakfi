@@ -88,16 +88,22 @@ interface PageProps {
 
 export default async function PresidentEventDetailPage({ params }: PageProps) {
   const session = await requireCommunityManager();
+  const communityId = session.user.communityIds[0];
   const { id } = await params;
 
   const event = await prisma.event.findFirst({
     where: { 
-      id, 
-      communityId: { in: session.user.communityIds } 
+      id,
+      OR: [
+        { communityId: { in: session.user.communityIds } },
+        { scope: "GLOBAL", status: { in: ["APPROVED", "COMPLETED"] } },
+      ],
     },
     include: {
       community: true,
-      participants: true,
+      participants: {
+        include: { user: true },
+      },
       _count: {
         select: { reports: true, participants: true }
       }
@@ -106,9 +112,10 @@ export default async function PresidentEventDetailPage({ params }: PageProps) {
 
   if (!event) notFound();
 
-  // Topluluk Ã¼yelerini getir (yoklama listesi iÃ§in)
+  const isGlobalEvent = event.scope === "GLOBAL";
+
   const members = await prisma.communityMember.findMany({
-    where: { communityId: event.communityId },
+    where: { communityId, status: "ACTIVE" },
     include: {
       user: {
         select: {
@@ -121,10 +128,16 @@ export default async function PresidentEventDetailPage({ params }: PageProps) {
     }
   });
 
+  const visibleParticipants = isGlobalEvent
+    ? event.participants.filter((participant) => participant.communityId === communityId)
+    : event.participants;
+
   const memberAttendance = members.map(m => ({
     ...m.user,
-    attendanceStatus: event.participants.find(p => p.userId === m.user.id)?.attendanceStatus
+    attendanceStatus: visibleParticipants.find(p => p.userId === m.user.id)?.attendanceStatus
   }));
+
+  const canEditEvent = !isGlobalEvent && event.communityId === communityId;
 
   return (
     <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-1000 font-outfit pb-20 bg-white min-h-screen">
@@ -137,7 +150,7 @@ export default async function PresidentEventDetailPage({ params }: PageProps) {
           <ArrowLeft className="h-5 w-5" />
         </Link>
         <div>
-          <p className="t3-label">ETKİNLİK YÖNETİMİ / {event.community.shortName}</p>
+          <p className="t3-label">ETKİNLİK YÖNETİMİ / {event.community?.shortName ?? "GLOBAL"}</p>
           <h2 className="text-xl font-black text-slate-950 tracking-tighter uppercase italic leading-none mt-1">{event.title}</h2>
         </div>
       </div>
@@ -172,6 +185,11 @@ export default async function PresidentEventDetailPage({ params }: PageProps) {
                )}>
                  <ShieldCheck className="inline-block h-4 w-4 mr-2" /> {event.status}
                </span>
+               {isGlobalEvent && (
+                 <span className="px-4 py-2 rounded-lg bg-blue-50 border border-blue-100 text-[10px] font-black uppercase tracking-widest text-corporate-blue shadow-sm">
+                   GLOBAL ETKİNLİK
+                 </span>
+               )}
                <span className="px-4 py-2 rounded-lg bg-white border border-slate-200 text-[10px] font-black uppercase tracking-widest text-slate-950 shadow-sm">
                   {event.type}
                </span>
@@ -211,8 +229,10 @@ export default async function PresidentEventDetailPage({ params }: PageProps) {
               <h3 className="text-2xl font-black text-slate-950 tracking-tighter italic uppercase">KATILIM</h3>
               <p className="t3-label mt-1">Kayıtlı Katılımcı</p>
               <div className="mt-8">
-                 <span className="text-6xl font-black text-slate-950 tracking-tighter leading-none italic">{event._count.participants}</span>
-                 <p className="text-[10px] text-corporate-blue font-black mt-4 uppercase tracking-widest">ÜYE İŞARETLENDİ</p>
+                 <span className="text-6xl font-black text-slate-950 tracking-tighter leading-none italic">{visibleParticipants.length}</span>
+                 <p className="text-[10px] text-corporate-blue font-black mt-4 uppercase tracking-widest">
+                   {isGlobalEvent ? "TOPLULUĞUNUZDAN EKLENDİ" : "ÜYE İŞARETLENDİ"}
+                 </p>
               </div>
            </div>
            <div className="absolute -right-10 -bottom-10 h-40 w-40 rounded-full bg-corporate-blue/5 blur-3xl pointer-events-none" />
@@ -239,7 +259,7 @@ export default async function PresidentEventDetailPage({ params }: PageProps) {
                     </div>
                   </div>
 
-                  {(event.status === "DRAFT" || event.status === "REJECTED") && (
+                  {canEditEvent && (event.status === "DRAFT" || event.status === "REJECTED") && (
                     <div className="p-6 rounded-2xl bg-white border border-corporate-blue/20 shadow-sm space-y-4">
                       <p className="text-[9px] font-black text-corporate-blue uppercase tracking-widest flex items-center gap-1.5">
                         <Pencil className="h-3 w-3" /> ETKİNLİĞİ DÜZENLE
@@ -260,7 +280,7 @@ export default async function PresidentEventDetailPage({ params }: PageProps) {
                     </div>
                   )}
 
-                  {!["CANCELED", "COMPLETED"].includes(event.status) && (
+                  {canEditEvent && !["CANCELED", "COMPLETED"].includes(event.status) && (
                     <form action={cancelEventAction}>
                       <input type="hidden" name="eventId" value={event.id} />
                       <button className="w-full flex items-center justify-center gap-2 rounded-xl bg-white border border-rose-200 text-rose-600 text-[10px] font-black uppercase tracking-widest py-4 hover:bg-rose-600 hover:text-white active:scale-95 transition-all">
@@ -285,10 +305,10 @@ export default async function PresidentEventDetailPage({ params }: PageProps) {
                  </div>
                  <div>
                     <h5 className="font-black text-sm uppercase tracking-tight italic">Onay Notu</h5>
-                    <p className="text-[10px] text-white/40 font-bold uppercase tracking-widest leading-none mt-1">Admin Geri Bildirimi</p>
-                 </div>
+                    <p className="mt-1 text-[10px] font-bold uppercase tracking-widest leading-none text-white/70">Admin Geri Bildirimi</p>
+                  </div>
               </div>
-              <p className="text-xs text-white/60 italic leading-relaxed border-t border-white/10 pt-6">
+              <p className="border-t border-white/10 pt-6 text-xs italic leading-relaxed text-white/85">
                  {event.reviewNote || "Admin tarafından henüz bir inceleme notu bırakılmamıştır."}
               </p>
               <Building2 className="absolute -right-6 -bottom-6 h-32 w-32 opacity-[0.05] -rotate-12 transition-transform duration-1000 group-hover:rotate-0" />

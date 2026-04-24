@@ -5,8 +5,6 @@ import { toast } from "sonner";
 import { createCommunityAction } from "@/actions/community-actions";
 import { SubmitButton } from "@/components/ui/SubmitButton";
 import { Building2, School, User, Type, AlignLeft, Zap, Sparkles, Mail, Globe } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
 
 interface CommunityFormProps {
   universities: { id: string; name: string }[];
@@ -34,13 +32,13 @@ export function CommunityForm({ universities }: CommunityFormProps) {
         </div>
         <div>
           <h2 className="text-2xl font-black text-indigo-950 dark:text-white font-montserrat uppercase leading-none tracking-tight">Topluluk Ekle</h2>
-          <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-2">Yeni bir kurumsal birim tanımlayın.</p>
+          <p className="mt-2 text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-300">Yeni bir kurumsal birim tanımlayın.</p>
         </div>
       </div>
       
       <form ref={formRef} action={clientAction} className="grid gap-6 md:grid-cols-2 relative z-10">
         <div className="md:col-span-2 space-y-2.5">
-          <label className="text-[10px] font-black text-indigo-950 dark:text-slate-400 uppercase tracking-[0.2em] px-1 ml-1 flex items-center gap-2">
+          <label className="text-[10px] font-black text-indigo-950 dark:text-slate-200 uppercase tracking-[0.2em] px-1 ml-1 flex items-center gap-2">
             <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
             Bağlı Üniversite
           </label>
@@ -65,7 +63,7 @@ export function CommunityForm({ universities }: CommunityFormProps) {
         </div>
 
         <div className="space-y-2.5">
-          <label className="text-[10px] font-black text-indigo-950 dark:text-slate-400 uppercase tracking-[0.2em] px-1 ml-1 flex items-center gap-2">
+          <label className="text-[10px] font-black text-indigo-950 dark:text-slate-200 uppercase tracking-[0.2em] px-1 ml-1 flex items-center gap-2">
             <span className="h-1.5 w-1.5 rounded-full bg-indigo-500" />
             Topluluk Adı
           </label>
@@ -81,7 +79,7 @@ export function CommunityForm({ universities }: CommunityFormProps) {
         </div>
 
         <div className="space-y-2.5">
-          <label className="text-[10px] font-black text-indigo-950 dark:text-slate-400 uppercase tracking-[0.2em] px-1 ml-1 flex items-center gap-2">
+          <label className="text-[10px] font-black text-indigo-950 dark:text-slate-200 uppercase tracking-[0.2em] px-1 ml-1 flex items-center gap-2">
             <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
             Kısa Kod
           </label>
@@ -97,7 +95,7 @@ export function CommunityForm({ universities }: CommunityFormProps) {
         </div>
 
         <div className="md:col-span-1 space-y-2.5">
-          <label className="text-[10px] font-black text-indigo-950 dark:text-slate-400 uppercase tracking-[0.2em] px-1 ml-1 flex items-center gap-2">
+          <label className="text-[10px] font-black text-indigo-950 dark:text-slate-200 uppercase tracking-[0.2em] px-1 ml-1 flex items-center gap-2">
             <span className="h-1.5 w-1.5 rounded-full bg-indigo-500" />
             Danışman (Akademik)
           </label>
@@ -112,7 +110,7 @@ export function CommunityForm({ universities }: CommunityFormProps) {
         </div>
 
         <div className="md:col-span-1 space-y-2.5">
-          <label className="text-[10px] font-black text-indigo-950 dark:text-slate-400 uppercase tracking-[0.2em] px-1 ml-1 flex items-center gap-2">
+          <label className="text-[10px] font-black text-indigo-950 dark:text-slate-200 uppercase tracking-[0.2em] px-1 ml-1 flex items-center gap-2">
             <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
             İletişim E-Posta
           </label>
@@ -127,9 +125,9 @@ export function CommunityForm({ universities }: CommunityFormProps) {
           </div>
         </div>
 
-        <div className="md:col-span-2 grid grid-cols-3 gap-6">
+        <div className="md:col-span-2 grid grid-cols-1 gap-6 md:grid-cols-3">
            <div className="space-y-2.5">
-              <label className="text-[10px] font-black text-indigo-950 dark:text-slate-400 uppercase tracking-[0.2em] px-1 ml-1 flex items-center gap-2">
+              <label className="text-[10px] font-black text-indigo-950 dark:text-slate-200 uppercase tracking-[0.2em] px-1 ml-1 flex items-center gap-2">
                 Instagram
               </label>
               <div className="relative group/input">
@@ -144,7 +142,7 @@ export function CommunityForm({ universities }: CommunityFormProps) {
               </div>
            </div>
            <div className="space-y-2.5">
-              <label className="text-[10px] font-black text-indigo-950 dark:text-slate-400 uppercase tracking-[0.2em] px-1 ml-1 flex items-center gap-2">
+              <label className="text-[10px] font-black text-indigo-950 dark:text-slate-200 uppercase tracking-[0.2em] px-1 ml-1 flex items-center gap-2">
                 X (Twitter)
               </label>
               <div className="relative group/input">
@@ -159,7 +157,7 @@ export function CommunityForm({ universities }: CommunityFormProps) {
               </div>
            </div>
            <div className="space-y-2.5">
-              <label className="text-[10px] font-black text-indigo-950 dark:text-slate-400 uppercase tracking-[0.2em] px-1 ml-1 flex items-center gap-2">
+              <label className="text-[10px] font-black text-indigo-950 dark:text-slate-200 uppercase tracking-[0.2em] px-1 ml-1 flex items-center gap-2">
                 Web Sitesi
               </label>
               <div className="relative group/input">
@@ -176,7 +174,7 @@ export function CommunityForm({ universities }: CommunityFormProps) {
         </div>
 
         <div className="md:col-span-2 space-y-2.5">
-          <label className="text-[10px] font-black text-indigo-950 dark:text-slate-400 uppercase tracking-[0.2em] px-1 ml-1 flex items-center gap-2">
+          <label className="text-[10px] font-black text-indigo-950 dark:text-slate-200 uppercase tracking-[0.2em] px-1 ml-1 flex items-center gap-2">
             <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
             Kurumsal Açıklama
           </label>
@@ -203,4 +201,3 @@ export function CommunityForm({ universities }: CommunityFormProps) {
     </div>
   );
 }
-

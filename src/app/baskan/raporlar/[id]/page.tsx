@@ -75,18 +75,33 @@ export default async function ReportDetailPage({ params }: PageProps) {
   const session = await requireCommunityManager();
   const { id } = await params;
 
-  const report = await prisma.report.findFirst({
-    where: { 
-      id, 
-      communityId: { in: session.user.communityIds } 
-    },
-    include: {
-      community: true,
-      event: true,
-      mediaFiles: true,
-      documents: true,
-    }
-  });
+  const communityId = session.user.communityIds[0];
+
+  const [report, availableEvents] = await Promise.all([
+    prisma.report.findFirst({
+      where: { 
+        id, 
+        communityId: { in: session.user.communityIds } 
+      },
+      include: {
+        community: true,
+        event: true,
+        mediaFiles: { include: { event: true } },
+        documents: { include: { event: true } },
+      }
+    }),
+    prisma.event.findMany({
+      where: {
+        OR: [
+          { communityId },
+          { scope: "GLOBAL", status: { in: ["APPROVED", "COMPLETED"] } },
+        ],
+      },
+      orderBy: { eventDate: "desc" },
+      select: { id: true, title: true, scope: true },
+      take: 100,
+    }),
+  ]);
 
   if (!report) notFound();
 
@@ -119,11 +134,11 @@ export default async function ReportDetailPage({ params }: PageProps) {
             <div className="flex flex-wrap gap-6 text-white/70">
                <div className="flex items-center gap-3 bg-white/5 px-4 py-2 rounded-xl border border-white/5">
                   <Clock className="h-4 w-4 text-corporate-orange" />
-                  <span className="text-[10px] font-black uppercase tracking-widest text-white/50">{report.status}</span>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-white/80">{report.status}</span>
                </div>
                <div className="flex items-center gap-3 bg-white/5 px-4 py-2 rounded-xl border border-white/5">
                   <Building2 className="h-4 w-4 text-corporate-blue" />
-                  <span className="text-[10px] font-black uppercase tracking-widest text-white/50">{report.community.shortName}</span>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-white/80">{report.community.shortName}</span>
                </div>
             </div>
           </div>
@@ -190,6 +205,11 @@ export default async function ReportDetailPage({ params }: PageProps) {
                           <div className="flex-1 truncate">
                              <h5 className="text-[11px] font-black uppercase text-slate-950 truncate">{file.fileName}</h5>
                              <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">{file.fileType}</p>
+                             {file.event && (
+                               <p className="text-[9px] text-corporate-blue font-black uppercase tracking-wider mt-1">
+                                 {file.event.scope === "GLOBAL" ? `[GLOBAL] ${file.event.title}` : file.event.title}
+                               </p>
+                             )}
                           </div>
                        </div>
                     </div>
@@ -203,6 +223,11 @@ export default async function ReportDetailPage({ params }: PageProps) {
                           <div className="flex-1 truncate">
                              <h5 className="text-[11px] font-black uppercase text-slate-950 truncate">{doc.title}</h5>
                              <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">{doc.category}</p>
+                             {doc.event && (
+                               <p className="text-[9px] text-corporate-blue font-black uppercase tracking-wider mt-1">
+                                 {doc.event.scope === "GLOBAL" ? `[GLOBAL] ${doc.event.title}` : doc.event.title}
+                               </p>
+                             )}
                           </div>
                        </div>
                     </div>
@@ -228,9 +253,9 @@ export default async function ReportDetailPage({ params }: PageProps) {
                     </span>
                  </div>
                  <h4 className="text-lg font-black uppercase tracking-tight mb-2 italic">Yönetim Geri Bildirimi</h4>
-                 <p className="text-[11px] font-bold text-white/40 uppercase tracking-widest mb-6 border-b border-white/5 pb-4">Merkez Denetim Notu</p>
-                 <div className="flex items-start gap-3 text-sm italic text-white/60 leading-relaxed bg-white/5 p-5 rounded-2xl border border-white/5">
-                    <AlertCircle className="h-5 w-5 shrink-0 opacity-40 mt-0.5 text-corporate-orange" />
+                 <p className="mb-6 border-b border-white/5 pb-4 text-[11px] font-bold uppercase tracking-widest text-white/70">Merkez Denetim Notu</p>
+                 <div className="flex items-start gap-3 rounded-2xl border border-white/5 bg-white/5 p-5 text-sm italic leading-relaxed text-white/85">
+                    <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 opacity-70 text-corporate-orange" />
                     {report.adminNote || "İdari inceleme süreci devam ediyor."}
                  </div>
               </div>
@@ -268,7 +293,12 @@ export default async function ReportDetailPage({ params }: PageProps) {
                  <SubmitReportButton reportId={report.id} />
                </div>
                <div className="pt-2">
-                 <MediaUploadForm reportId={report.id} communityId={report.communityId} />
+                 <MediaUploadForm
+                   reportId={report.id}
+                   communityId={report.communityId}
+                   eventId={report.eventId ?? undefined}
+                   events={availableEvents}
+                 />
                </div>
              </div>
            )}

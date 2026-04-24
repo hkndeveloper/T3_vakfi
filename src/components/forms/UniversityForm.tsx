@@ -5,8 +5,6 @@ import { toast } from "sonner";
 import { createUniversityAction } from "@/actions/university-actions";
 import { SubmitButton } from "@/components/ui/SubmitButton";
 import { School, MapPin, Globe, Sparkles } from "lucide-react";
-import { cn } from "@/lib/utils";
-
 export function UniversityForm() {
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -29,13 +27,13 @@ export function UniversityForm() {
         </div>
         <div>
           <h2 className="text-3xl font-black text-indigo-950 dark:text-white font-montserrat uppercase leading-none tracking-tight">Kurum Ekle</h2>
-          <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-3">Yeni bir üniversite kaydı oluşturun.</p>
+          <p className="mt-3 text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-300">Yeni bir üniversite kaydı oluşturun.</p>
         </div>
       </div>
       
       <form ref={formRef} action={clientAction} className="grid gap-8 md:grid-cols-2 relative z-10">
         <div className="md:col-span-2 space-y-3">
-          <label className="text-[10px] font-black text-indigo-950 dark:text-slate-400 uppercase tracking-[0.2em] ml-2 flex items-center gap-2">
+          <label className="text-[10px] font-black text-indigo-950 dark:text-slate-200 uppercase tracking-[0.2em] ml-2 flex items-center gap-2">
             <span className="h-1.5 w-1.5 rounded-full bg-indigo-500" />
             Üniversite Resmi Adı
           </label>
@@ -54,7 +52,7 @@ export function UniversityForm() {
         </div>
 
         <div className="md:col-span-2 space-y-3">
-          <label className="text-[10px] font-black text-indigo-950 dark:text-slate-400 uppercase tracking-[0.2em] ml-2 flex items-center gap-2">
+          <label className="text-[10px] font-black text-indigo-950 dark:text-slate-200 uppercase tracking-[0.2em] ml-2 flex items-center gap-2">
             <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
             Yerleşik Şehir
           </label>
@@ -84,4 +82,3 @@ export function UniversityForm() {
     </div>
   );
 }
-

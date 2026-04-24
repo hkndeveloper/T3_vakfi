@@ -123,8 +123,12 @@ export default async function AdminAttendanceMonitorPage() {
                       </td>
                       <td className="px-10 py-8">
                         <div className="flex flex-col gap-1.5">
-                          <span className="text-[11px] font-black text-slate-950 uppercase tracking-tight italic">{event.community.university.name}</span>
-                          <span className="text-[10px] font-bold text-corporate-blue uppercase tracking-widest border-s-2 border-corporate-blue pl-2">{event.community.name}</span>
+                          <span className="text-[11px] font-black text-slate-950 uppercase tracking-tight italic">
+                            {event.community?.university.name || "MERKEZİ ETKİNLİK"}
+                          </span>
+                          <span className="text-[10px] font-bold text-corporate-blue uppercase tracking-widest border-s-2 border-corporate-blue pl-2">
+                            {event.community?.name || "GLOBAL HAVUZ"}
+                          </span>
                         </div>
                       </td>
                       <td className="px-10 py-8 text-center">

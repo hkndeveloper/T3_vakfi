@@ -137,10 +137,10 @@ export default async function MemberAttendancePage() {
                       </div>
 
                       {/* Info Area */}
-                      <div className="flex-1 min-w-[240px]">
+                      <div className="flex-1 min-w-0">
                         <div className="flex flex-wrap items-center gap-4 mb-4">
                           <span className="px-4 py-1.5 rounded-lg bg-blue-50 text-corporate-blue text-[9px] font-black uppercase tracking-widest border border-blue-100 shadow-sm">
-                            {event.community.shortName}
+                            {event.community?.shortName || "GLOBAL"}
                           </span>
                           <span className="t3-label flex items-center gap-2">
                              <Calendar className="h-3.5 w-3.5" />

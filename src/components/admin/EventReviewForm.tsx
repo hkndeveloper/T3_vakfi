@@ -15,9 +15,14 @@ interface EventReviewFormProps {
   eventId: string;
 }
 
+type ReviewActionState = {
+  success?: boolean;
+  error?: string;
+} | null;
+
 export function EventReviewForm({ eventId }: EventReviewFormProps) {
   const [state, formAction, isPending] = useActionState(
-    async (prevState: any, formData: FormData) => {
+    async (_prevState: ReviewActionState, formData: FormData) => {
       return await reviewEventAction(formData);
     },
     null
@@ -32,7 +37,7 @@ export function EventReviewForm({ eventId }: EventReviewFormProps) {
   }, [state]);
 
   return (
-    <form action={formAction} className="lg:col-span-5 space-y-8 p-8 bg-white border border-slate-200 rounded-2xl shadow-sm relative overflow-hidden">
+    <form action={formAction} className="lg:col-span-5 space-y-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm relative overflow-hidden sm:p-8">
       <div className="absolute top-0 right-0 h-1 w-full bg-corporate-blue" />
       <input type="hidden" name="eventId" value={eventId} />
       <div className="space-y-4">
@@ -55,7 +60,7 @@ export function EventReviewForm({ eventId }: EventReviewFormProps) {
         >
           <CheckCircle2 className="h-5 w-5" /> PROJEYİ ONAYLA
         </button>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <button
             name="decision"
             value="DRAFT"

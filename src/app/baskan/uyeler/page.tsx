@@ -255,12 +255,20 @@ export default async function PresidentMembersPage({ searchParams }: { searchPar
     }),
     prisma.event.findMany({
       where: { 
-        communityId,
-        status: { in: ["DRAFT", "APPROVED", "PENDING_APPROVAL"] },
+        OR: [
+          {
+            communityId,
+            status: { in: ["DRAFT", "APPROVED", "PENDING_APPROVAL"] },
+          },
+          {
+            scope: "GLOBAL",
+            status: { in: ["APPROVED", "COMPLETED"] },
+          },
+        ],
         eventDate: { gte: new Date() }
       },
       orderBy: { eventDate: "asc" },
-      select: { id: true, title: true, eventDate: true, type: true }
+      select: { id: true, title: true, eventDate: true, type: true, scope: true }
     }),
   ]);
   const canManage = session.user.permissions.includes("member.manage");
@@ -460,15 +468,15 @@ export default async function PresidentMembersPage({ searchParams }: { searchPar
                         <td colSpan={4} className="px-12 py-6">
                           <form action={updateMemberAction as any} className="flex flex-wrap items-end gap-6">
                             <input type="hidden" name="userId" value={member.userId} />
-                            <div className="flex flex-col gap-2 min-w-[180px]">
+                            <div className="flex min-w-0 flex-1 flex-col gap-2 sm:min-w-[180px]">
                               <label className="t3-label text-slate-400">Ad Soyad</label>
                               <input name="name" defaultValue={member.user.name} className="t3-input px-5 py-3 text-[11px] bg-white" required />
                             </div>
-                            <div className="flex flex-col gap-2 min-w-[160px]">
+                            <div className="flex min-w-0 flex-1 flex-col gap-2 sm:min-w-[160px]">
                               <label className="t3-label text-slate-400">Telefon</label>
                               <input name="phone" defaultValue={member.user.phone ?? ""} placeholder="+90..." className="t3-input px-5 py-3 text-[11px] bg-white" />
                             </div>
-                            <div className="flex flex-col gap-2 min-w-[160px]">
+                            <div className="flex min-w-0 flex-1 flex-col gap-2 sm:min-w-[160px]">
                               <label className="t3-label text-slate-400">Bölüm</label>
                               <input name="department" defaultValue={member.user.department ?? ""} placeholder="Bilg. Müh." className="t3-input px-5 py-3 text-[11px] bg-white" />
                             </div>
@@ -476,11 +484,11 @@ export default async function PresidentMembersPage({ searchParams }: { searchPar
                               <label className="t3-label text-slate-400">Sınıf</label>
                               <input name="grade" type="number" defaultValue={member.user.grade ?? ""} min={1} max={8} className="t3-input px-5 py-3 text-[11px] bg-white" />
                             </div>
-                            <div className="flex flex-col gap-2 min-w-[130px]">
+                            <div className="flex min-w-0 flex-1 flex-col gap-2 sm:min-w-[130px]">
                               <label className="t3-label text-slate-400">Öğrenci No</label>
                               <input name="studentNumber" defaultValue={member.user.studentNumber ?? ""} placeholder="2024..." className="t3-input px-5 py-3 text-[11px] bg-white" />
                             </div>
-                            <button className="t3-button t3-button-primary px-8 py-4 text-[10px] shadow-lg shadow-corporate-blue/20">
+                            <button className="t3-button t3-button-primary w-full px-8 py-4 text-[10px] shadow-lg shadow-corporate-blue/20 sm:w-auto">
                               <UserCog className="h-4 w-4" /> GÜNCELLE
                             </button>
                           </form>

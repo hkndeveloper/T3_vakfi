@@ -47,7 +47,8 @@ export default async function AdminMediaDocumentsPage({ searchParams }: { search
       take: 50,
       include: {
         community: true,
-        report: true
+        report: true,
+        event: true,
       }
     }),
     prisma.document.findMany({
@@ -56,7 +57,8 @@ export default async function AdminMediaDocumentsPage({ searchParams }: { search
       take: 50,
       include: {
         community: true,
-        report: true
+        report: true,
+        event: true,
       }
     }),
     prisma.community.findMany({
@@ -193,6 +195,11 @@ export default async function AdminMediaDocumentsPage({ searchParams }: { search
                        <span className="text-[9px] text-corporate-blue font-black uppercase tracking-tight">@{media.community.shortName}</span>
                        <span className="text-[9px] text-slate-400 font-bold uppercase">{media.fileType.split('/')[1]}</span>
                     </div>
+                    {media.event && (
+                      <p className="text-[9px] text-corporate-orange font-black uppercase tracking-wider truncate">
+                        {media.event.scope === "GLOBAL" ? `[GLOBAL] ${media.event.title}` : media.event.title}
+                      </p>
+                    )}
                 </div>
                 <div className="flex items-center gap-2 text-[10px] text-slate-500 font-black uppercase tracking-tight italic">
                    <Calendar className="h-3.5 w-3.5 text-corporate-orange" /> {new Date(media.createdAt).toLocaleDateString("tr-TR")}
@@ -252,6 +259,11 @@ export default async function AdminMediaDocumentsPage({ searchParams }: { search
                           <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1.5 flex items-center gap-2">
                             <Calendar className="h-3.5 w-3.5 text-corporate-blue" /> {new Date(doc.createdAt).toLocaleDateString("tr-TR")}
                           </p>
+                          {doc.event && (
+                            <p className="text-[9px] text-corporate-orange font-black uppercase tracking-wider mt-2">
+                              {doc.event.scope === "GLOBAL" ? `[GLOBAL] ${doc.event.title}` : doc.event.title}
+                            </p>
+                          )}
                         </div>
                       </div>
                     </td>

@@ -90,7 +90,7 @@ export default async function MemberEventsPage() {
                 <div key={ep.id} className="t3-panel group overflow-hidden relative transition-all hover:bg-slate-50/50 border-l-[16px] border-l-slate-950">
                   <div className="p-10 md:p-12 flex flex-wrap items-center justify-between gap-10">
                     <div className="space-y-6 flex-1">
-                      <div className="flex items-center gap-4">
+                      <div className="flex flex-wrap items-center gap-4">
                         <span className={cn(
                           "px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest border shadow-sm",
                           event.status === "APPROVED" || event.status === "COMPLETED" 
@@ -101,6 +101,11 @@ export default async function MemberEventsPage() {
                            event.status === "COMPLETED" ? "TAMAMLANDI" : 
                            event.status === "PENDING_APPROVAL" ? "DENETİMDE" : event.status}
                         </span>
+                        {!event.community && (
+                          <span className="px-4 py-1.5 rounded-lg bg-blue-50 text-corporate-blue text-[10px] font-black uppercase tracking-widest border border-blue-100 shadow-sm">
+                            GLOBAL
+                          </span>
+                        )}
                       </div>
                       <h3 className="text-3xl font-black text-slate-950 tracking-tighter italic uppercase group-hover:text-corporate-blue transition-colors">
                         {event.title}
@@ -121,7 +126,7 @@ export default async function MemberEventsPage() {
                       </div>
                     </div>
                     
-                    <div className="flex flex-col items-center justify-center p-8 rounded-3xl bg-white border border-slate-200 shadow-sm min-w-[180px]">
+                    <div className="flex w-full flex-col items-center justify-center rounded-3xl border border-slate-200 bg-white p-8 shadow-sm sm:w-auto sm:min-w-[180px]">
                       <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">KATILIM DURUMU</p>
                       <div className={cn(
                         "flex flex-col items-center gap-3 transition-all",

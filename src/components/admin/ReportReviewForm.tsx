@@ -10,15 +10,19 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { useEffect } from "react";
-import { cn } from "@/lib/utils";
 
 interface ReportReviewFormProps {
   reportId: string;
 }
 
+type ReviewActionState = {
+  success?: boolean;
+  error?: string;
+} | null;
+
 export function ReportReviewForm({ reportId }: ReportReviewFormProps) {
   const [state, formAction, isPending] = useActionState(
-    async (prevState: any, formData: FormData) => {
+    async (_prevState: ReviewActionState, formData: FormData) => {
       return await reviewReportAction(formData);
     },
     null
@@ -33,7 +37,7 @@ export function ReportReviewForm({ reportId }: ReportReviewFormProps) {
   }, [state]);
 
   return (
-    <form action={formAction} className="space-y-10 bg-white border border-slate-200 p-12 rounded-2xl shadow-sm relative overflow-hidden">
+    <form action={formAction} className="relative space-y-10 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm overflow-hidden sm:p-12">
       <div className="absolute top-0 right-0 h-1.5 w-full bg-corporate-orange" />
       <input type="hidden" name="reportId" value={reportId} />
       <div className="space-y-5">
@@ -56,7 +60,7 @@ export function ReportReviewForm({ reportId }: ReportReviewFormProps) {
         >
           <CheckCircle2 className="h-5 w-5" /> RAPORU ONAYLA
         </button>
-        <div className="grid grid-cols-2 gap-5">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
           <button
             name="decision"
             value="REVISION_REQUESTED"

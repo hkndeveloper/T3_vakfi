@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
-import { getCurrentSession, hasPermission } from "@/lib/permissions";
+import { getCurrentSession } from "@/lib/permissions";
 import { r2Client, R2_BUCKET_NAME } from "@/lib/r2";
 import { DeleteObjectCommand } from "@aws-sdk/client-s3";
 
@@ -26,6 +26,37 @@ export async function uploadMediaAction(params: {
 
     if (!isSuperAdmin && !isManagerOfCommunity) {
       return { success: false, error: "Bu topluluk için dosya yükleme yetkiniz yok." };
+    }
+
+    if (reportId) {
+      const report = await prisma.report.findFirst({
+        where: {
+          id: reportId,
+          communityId,
+        },
+        select: { id: true },
+      });
+
+      if (!report) {
+        return { success: false, error: "Seçilen rapor bu topluluğa ait değil." };
+      }
+    }
+
+    if (eventId) {
+      const event = await prisma.event.findFirst({
+        where: {
+          id: eventId,
+          OR: [
+            { communityId },
+            { scope: "GLOBAL", status: { in: ["APPROVED", "COMPLETED"] } },
+          ],
+        },
+        select: { id: true },
+      });
+
+      if (!event) {
+        return { success: false, error: "Seçilen etkinlik bu yükleme için kullanılamaz." };
+      }
     }
 
     const media = await prisma.mediaFile.create({
@@ -78,6 +109,37 @@ export async function uploadDocumentAction(params: {
 
     if (!isSuperAdmin && !isManagerOfCommunity) {
       return { success: false, error: "Bu topluluk için belge yükleme yetkiniz yok." };
+    }
+
+    if (reportId) {
+      const report = await prisma.report.findFirst({
+        where: {
+          id: reportId,
+          communityId,
+        },
+        select: { id: true },
+      });
+
+      if (!report) {
+        return { success: false, error: "Seçilen rapor bu topluluğa ait değil." };
+      }
+    }
+
+    if (eventId) {
+      const event = await prisma.event.findFirst({
+        where: {
+          id: eventId,
+          OR: [
+            { communityId },
+            { scope: "GLOBAL", status: { in: ["APPROVED", "COMPLETED"] } },
+          ],
+        },
+        select: { id: true },
+      });
+
+      if (!event) {
+        return { success: false, error: "Seçilen etkinlik bu yükleme için kullanılamaz." };
+      }
     }
 
     const doc = await prisma.document.create({
@@ -153,7 +215,7 @@ export async function deleteMediaAction(id: string) {
     revalidatePath("/admin/medya-belgeler");
     revalidatePath("/baskan/gorseller-belgeler");
     return { success: true, message: "Dosya silindi." };
-  } catch (error) {
+  } catch {
     return { success: false, error: "Silme işlemi başarısız oldu." };
   }
 }
@@ -200,7 +262,7 @@ export async function deleteDocumentAction(id: string) {
     revalidatePath("/admin/medya-belgeler");
     revalidatePath("/baskan/gorseller-belgeler");
     return { success: true, message: "Belge silindi." };
-  } catch (error) {
+  } catch {
     return { success: false, error: "Silme işlemi başarısız oldu." };
   }
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import {
   BarChart,
   Bar,
@@ -19,11 +19,11 @@ interface AttendanceChartProps {
 }
 
 export function AttendanceChart({ data }: AttendanceChartProps) {
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
+  const isMounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
 
   if (!isMounted) {
     return (
@@ -32,7 +32,7 @@ export function AttendanceChart({ data }: AttendanceChartProps) {
   }
 
   return (
-    <div className="h-full w-full font-source-sans min-h-[300px]">
+    <div className="h-full w-full min-h-[240px] font-source-sans sm:min-h-[300px]">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
           data={data}
@@ -86,7 +86,7 @@ export function AttendanceChart({ data }: AttendanceChartProps) {
             dataKey="value" 
             fill="url(#barGradient)" 
             radius={[6, 6, 0, 0]} 
-            barSize={40}
+            barSize={28}
           />
         </BarChart>
       </ResponsiveContainer>

@@ -7,15 +7,9 @@ import {
   Building2, 
   GraduationCap, 
   Filter,
-  Zap,
   LayoutDashboard,
-  ShieldCheck,
-  ChevronRight,
-  Target,
   Sparkles,
-  PieChart,
   Activity,
-  ArrowUpRight,
   Database,
   Search
 } from "lucide-react";
@@ -33,7 +27,7 @@ export default async function AdminStatsPage({
   const department = typeof params.department === "string" ? params.department : "";
   const grade = typeof params.grade === "string" ? params.grade : "";
 
-  const [usersByUniversity, usersByDepartment, usersByGrade, eventCountsByCommunity, topActiveCommunity, upcomingEvents, recentReports] =
+  const [usersByUniversity, usersByDepartment, , eventCountsByCommunity, topActiveCommunity, upcomingEvents, recentReports] =
     await Promise.all([
       prisma.university.findMany({
         include: { _count: { select: { users: true } } },
@@ -311,7 +305,9 @@ export default async function AdminStatsPage({
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-black text-slate-950 uppercase tracking-tight truncate group-hover:text-corporate-blue transition-colors">{event.title}</p>
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">{event.community.shortName}</p>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">
+                      {event.scope === "GLOBAL" ? "GLOBAL HAVUZ" : event.community?.shortName ?? "TOPLULUK"}
+                    </p>
                   </div>
                   <span className="text-[9px] font-black text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-100 shrink-0">ONAYLANDI</span>
                 </div>
@@ -369,4 +365,3 @@ export default async function AdminStatsPage({
     </div>
   );
 }
-

@@ -12,6 +12,7 @@ interface Event {
   title: string;
   eventDate: Date;
   type: string;
+  scope?: string;
 }
 
 interface MemberEventAssignModalProps {
@@ -119,6 +120,16 @@ export function MemberEventAssignModal({ memberId, memberName, events, onClose }
                      )}>
                         {event.type}
                      </span>
+                     {event.scope === "GLOBAL" && (
+                      <span className={cn(
+                        "px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border",
+                        selectedEventId === event.id
+                          ? "bg-white/20 border-white/30 text-white"
+                          : "bg-blue-50 text-corporate-blue border-blue-100"
+                      )}>
+                        GLOBAL
+                      </span>
+                     )}
                   </div>
                   <h4 className={cn(
                     "text-lg font-black uppercase tracking-tight font-montserrat truncate",

@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { uploadMediaAction, uploadDocumentAction } from "@/actions/media-actions";
 import { FileUpload } from "@/components/ui/FileUpload";
 import { useRouter } from "next/navigation";
-import { Image, FileText, Plus, Sparkles, FolderPlus, Building2 } from "lucide-react";
+import { ImageIcon, FileText, Sparkles, FolderPlus, Building2, CalendarDays, Globe2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface MediaUploadFormProps {
@@ -13,13 +13,15 @@ interface MediaUploadFormProps {
   reportId?: string;
   eventId?: string;
   communities?: { id: string; name: string; shortName: string }[]; // For admins
+  events?: { id: string; title: string; scope?: string }[];
   onSuccess?: () => void;
 }
 
-export function MediaUploadForm({ communityId, reportId, eventId, communities, onSuccess }: MediaUploadFormProps) {
+export function MediaUploadForm({ communityId, reportId, eventId, communities, events, onSuccess }: MediaUploadFormProps) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<"media" | "document">("media");
   const [selectedCommunityId, setSelectedCommunityId] = useState(communityId || "");
+  const [selectedEventId, setSelectedEventId] = useState(eventId || "");
   const [docCategory, setDocCategory] = useState("Genel");
 
   const handleMediaSuccess = async (data: { url: string; name: string; type: string }) => {
@@ -31,7 +33,7 @@ export function MediaUploadForm({ communityId, reportId, eventId, communities, o
     const result = await uploadMediaAction({
       communityId: selectedCommunityId,
       reportId,
-      eventId,
+      eventId: selectedEventId || undefined,
       fileName: data.name,
       filePath: data.url,
       fileType: data.type
@@ -55,7 +57,7 @@ export function MediaUploadForm({ communityId, reportId, eventId, communities, o
     const result = await uploadDocumentAction({
       communityId: selectedCommunityId,
       reportId,
-      eventId,
+      eventId: selectedEventId || undefined,
       category: docCategory,
       title: data.name,
       filePath: data.url
@@ -92,6 +94,34 @@ export function MediaUploadForm({ communityId, reportId, eventId, communities, o
           </div>
         )}
 
+        {events && (
+          <div className="space-y-3">
+            <label className="flex items-center gap-2 t3-label ml-4">
+              <CalendarDays className="h-3 w-3" /> İLGİLİ ETKİNLİK
+            </label>
+            <select
+              value={selectedEventId}
+              onChange={(e) => setSelectedEventId(e.target.value)}
+              disabled={events.length === 0}
+              className="t3-input w-full h-14 pl-6 pr-10 appearance-none cursor-pointer disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              <option value="">
+                {events.length === 0 ? "Henüz seçilebilir etkinlik bulunmuyor" : "Etkinlik seçmeden devam et..."}
+              </option>
+              {events.map((event) => (
+                <option key={event.id} value={event.id}>
+                  {event.scope === "GLOBAL" ? `[GLOBAL] ${event.title}` : event.title}
+                </option>
+              ))}
+            </select>
+            <p className="px-4 text-[9px] font-bold uppercase tracking-[0.18em] text-slate-400">
+              {events.length === 0
+                ? "Etkinlik oluşturulduğunda veya merkezden global etkinlik açıldığında burada listelenecek."
+                : "Kendi etkinliğinizi veya merkezden yayınlanan global etkinliği ilişkilendirebilirsiniz."}
+            </p>
+          </div>
+        )}
+
         {/* Document Category (if document tab active) */}
         {activeTab === "document" && (
           <div className="space-y-3">
@@ -117,6 +147,12 @@ export function MediaUploadForm({ communityId, reportId, eventId, communities, o
               <FolderPlus className="h-5 w-5 text-corporate-blue" />
               <h4 className="t3-label text-corporate-blue">Dosya Yükleme</h4>
            </div>
+           {selectedEventId && (
+             <div className="inline-flex items-center gap-2 rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-[9px] font-black uppercase tracking-[0.18em] text-corporate-blue">
+               <Globe2 className="h-3.5 w-3.5" />
+               Etkinlik Bağlı
+             </div>
+           )}
            <div className="flex bg-white/80 backdrop-blur-sm p-1.5 rounded-2xl border border-slate-100 shadow-sm">
               <button 
                 type="button"
@@ -128,7 +164,7 @@ export function MediaUploadForm({ communityId, reportId, eventId, communities, o
                      : "text-slate-400 hover:text-corporate-blue hover:bg-slate-50"
                 )}
               >
-                <Image className={cn("h-4 w-4", activeTab === "media" ? "text-corporate-blue" : "text-slate-300")} /> 
+                <ImageIcon className={cn("h-4 w-4", activeTab === "media" ? "text-corporate-blue" : "text-slate-300")} /> 
                 MEDYA
               </button>
               <button 
@@ -176,4 +212,3 @@ export function MediaUploadForm({ communityId, reportId, eventId, communities, o
     </div>
   );
 }
-

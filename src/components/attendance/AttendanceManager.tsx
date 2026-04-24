@@ -1,15 +1,14 @@
 "use client";
 
 import { toggleAttendanceAction } from "@/actions/attendance-actions";
+import type { AttendanceStatus } from "@prisma/client";
 import { toast } from "sonner";
 import { 
   CheckCircle2, 
   XCircle, 
-  HelpCircle, 
   Search,
-  UserCheck,
-  UserMinus,
-  MessageSquare
+  MessageSquare,
+  type LucideIcon
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -35,7 +34,7 @@ export function AttendanceManager({ eventId, members }: AttendanceManagerProps) 
     m.studentNumber?.includes(searchTerm)
   );
 
-  async function handleToggle(userId: string, status: string) {
+  async function handleToggle(userId: string, status: AttendanceStatus) {
     const result = await toggleAttendanceAction(eventId, userId, status);
     if (result.success) {
       toast.success(result.message);
@@ -118,11 +117,19 @@ export function AttendanceManager({ eventId, members }: AttendanceManagerProps) 
   );
 }
 
-function AttendanceButton({ active, onClick, icon: Icon, label, color }: any) {
-  const colors: any = {
+interface AttendanceButtonProps {
+  active: boolean;
+  onClick: () => void;
+  icon: LucideIcon;
+  label: string;
+  color: "emerald" | "rose" | "amber";
+}
+
+function AttendanceButton({ active, onClick, icon: Icon, label, color }: AttendanceButtonProps) {
+  const colors: Record<AttendanceButtonProps["color"], string> = {
     emerald: active ? "bg-emerald-500 text-white shadow-emerald-200" : "bg-emerald-50 text-emerald-500 border-emerald-100",
     rose: active ? "bg-rose-500 text-white shadow-rose-200" : "bg-rose-50 text-rose-500 border-rose-100",
-    amber: active ? "bg-amber-500 text-white shadow-amber-200" : "bg-amber-50 text-amber-500 border-amber-100"
+    amber: active ? "bg-amber-500 text-white shadow-amber-200" : "bg-amber-50 text-amber-500 border-amber-100",
   };
 
   return (

@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { X, Upload } from "lucide-react";
 import { MediaUploadForm } from "./MediaUploadForm";
 
@@ -9,11 +10,25 @@ interface MediaUploadModalProps {
   reportId?: string;
   eventId?: string;
   communities?: { id: string; name: string; shortName: string }[];
+  events?: { id: string; title: string; scope?: string }[];
   trigger?: React.ReactNode;
 }
 
-export function MediaUploadModal({ communityId, reportId, eventId, communities, trigger }: MediaUploadModalProps) {
+export function MediaUploadModal({ communityId, reportId, eventId, communities, events, trigger }: MediaUploadModalProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const canUsePortal = typeof document !== "undefined";
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
 
   return (
     <>
@@ -28,14 +43,14 @@ export function MediaUploadModal({ communityId, reportId, eventId, communities, 
         </button>
       )}
 
-      {isOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+      {canUsePortal && isOpen && createPortal(
+        <div className="fixed inset-0 z-[220] flex items-center justify-center p-4">
           <div 
-            className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm animate-in fade-in duration-300"
+            className="absolute inset-0 z-0 bg-slate-950/70 backdrop-blur-sm animate-in fade-in duration-300"
             onClick={() => setIsOpen(false)}
           />
-          <div className="relative w-full max-w-2xl bg-white rounded-[3.5rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 border border-slate-100">
-            <div className="p-8 md:p-12">
+          <div className="relative z-10 w-full max-w-2xl max-h-[90vh] overflow-hidden rounded-[3.5rem] border border-slate-100 bg-white shadow-2xl animate-in zoom-in-95 duration-300 isolate">
+            <div className="max-h-[90vh] overflow-y-auto p-8 md:p-12">
               <div className="flex items-center justify-between mb-8">
                 <div>
                   <h3 className="text-2xl font-black text-slate-950 uppercase tracking-tight italic">Sisteme Dosya Yükle</h3>
@@ -54,11 +69,13 @@ export function MediaUploadModal({ communityId, reportId, eventId, communities, 
                 reportId={reportId}
                 eventId={eventId}
                 communities={communities}
+                events={events}
                 onSuccess={() => setIsOpen(false)}
               />
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );

@@ -4,13 +4,7 @@ import { UniversityForm } from "@/components/forms/UniversityForm";
 import { 
   School, 
   MapPin, 
-  Users, 
-  Building2, 
   Search,
-  Filter,
-  ArrowUpRight,
-  Zap,
-  TrendingUp,
   LayoutDashboard,
   ChevronRight,
   Globe,
@@ -76,15 +70,8 @@ export default async function AdminUniversitiesPage({ searchParams }: { searchPa
         </div>
       </div>
 
-      <div className="grid gap-8 lg:grid-cols-3 px-4 md:px-0">
-        <div className="lg:col-span-1">
-          <div className="t3-panel-elevated p-6 md:p-8 bg-slate-50/50">
-             <h3 className="t3-heading text-lg md:text-xl mb-6 md:mb-8 text-slate-950">Yeni Üniversite Ekle</h3>
-             <UniversityForm />
-          </div>
-        </div>
-
-        <div className="lg:col-span-2 space-y-8 md:space-y-10">
+      <div className="space-y-10 px-4 md:px-0">
+        <div className="space-y-8 md:space-y-10">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 px-2 md:px-4">
             <div>
               <h2 className="t3-heading text-2xl md:text-3xl text-slate-950 tracking-tighter">Anlaşmalı Kurumlar</h2>
@@ -105,9 +92,9 @@ export default async function AdminUniversitiesPage({ searchParams }: { searchPa
                 />
               </form>
               {(search) && (
-                <a href="/admin/universiteler" className="text-[10px] font-black text-rose-600 uppercase tracking-widest hover:underline px-2 shadow-none shrink-0">
+                <Link href="/admin/universiteler" className="text-[10px] font-black text-rose-600 uppercase tracking-widest hover:underline px-2 shadow-none shrink-0">
                   Temizle
-                </a>
+                </Link>
               )}
             </div>
           </div>
@@ -225,6 +212,36 @@ export default async function AdminUniversitiesPage({ searchParams }: { searchPa
             )}
           </div>
         </div>
+
+        <section className="grid gap-8 xl:grid-cols-[minmax(260px,340px)_minmax(0,1fr)]">
+          <div className="rounded-[2rem] border border-slate-200 bg-slate-50/70 p-6 md:p-8 shadow-sm">
+            <div className="inline-flex items-center gap-2 rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-[9px] font-black uppercase tracking-[0.22em] text-corporate-blue">
+              <Activity className="h-3.5 w-3.5" />
+              Yeni Kurum Akışı
+            </div>
+            <h3 className="mt-5 text-3xl font-black uppercase tracking-tighter italic text-slate-950">
+              Üniversite Ekle
+            </h3>
+            <p className="mt-4 text-sm font-medium leading-relaxed text-slate-600">
+              Yeni kampüs kaydını sıkışık bir yan blok yerine daha rahat, yatay bir operasyon alanında yönetin.
+            </p>
+
+            <div className="mt-8 grid grid-cols-2 gap-4">
+              <div className="rounded-2xl border border-slate-200 bg-white p-4">
+                <p className="t3-label text-[8px]">TOPLAM KAMPÜS</p>
+                <p className="mt-2 text-2xl font-black tracking-tight text-slate-950">{totalUni}</p>
+              </div>
+              <div className="rounded-2xl border border-slate-200 bg-white p-4">
+                <p className="t3-label text-[8px]">AKTİF KAYIT</p>
+                <p className="mt-2 text-2xl font-black tracking-tight text-corporate-orange">{activeUni}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="t3-panel-elevated p-6 md:p-8 bg-slate-50/40">
+            <UniversityForm />
+          </div>
+        </section>
       </div>
     </div>
   );
@@ -247,5 +264,3 @@ function StatusBadge({ status }: { status: string }) {
     </span>
   );
 }
-
-

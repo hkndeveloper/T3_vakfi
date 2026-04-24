@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { ReportType } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { requireCommunityManager } from "@/lib/permissions";
 
@@ -20,12 +21,28 @@ export async function createReportAction(formData: FormData) {
       return { success: false, error: "Lütfen zorunlu alanları doldurun." };
     }
 
+    if (eventIdRaw) {
+      const linkedEvent = await prisma.event.findFirst({
+        where: {
+          id: eventIdRaw,
+          OR: [
+            { communityId },
+            { scope: "GLOBAL", status: { in: ["APPROVED", "COMPLETED"] } },
+          ],
+        },
+      });
+
+      if (!linkedEvent) {
+        return { success: false, error: "Seçilen etkinliğe bu topluluk adına rapor bağlayamazsınız." };
+      }
+    }
+
     await prisma.report.create({
       data: {
         communityId,
         eventId: eventIdRaw || null,
         title,
-        reportType: reportType as any,
+        reportType: reportType as ReportType,
         summary,
         content,
         participantCount: participantCountRaw ? Number(participantCountRaw) : null,

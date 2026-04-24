@@ -73,7 +73,7 @@ export default async function UserDetailPage({ params }: PageProps) {
             <div className="h-24 w-24 md:h-32 md:w-32 rounded-2xl bg-white border border-slate-200 flex items-center justify-center text-slate-950 text-4xl md:text-5xl font-black shadow-xl transform -rotate-3 group-hover:rotate-0 transition-transform duration-500">
                {user.name.charAt(0)}
             </div>
-            <div className="flex-1 min-w-[280px]">
+            <div className="flex-1 min-w-0">
               <div className="inline-flex items-center gap-2 rounded-lg bg-white border border-slate-200 px-4 py-2 text-[10px] font-black text-slate-950 uppercase tracking-[0.2em] mb-4 shadow-sm">
                 <ShieldCheck className="h-3.5 w-3.5 text-corporate-orange" /> DOĞRULANMIŞ PROFİL
               </div>
@@ -123,8 +123,8 @@ export default async function UserDetailPage({ params }: PageProps) {
               <UserEditForm user={user} />
            </div>
            
-           <div className="t3-panel p-10 bg-slate-950 text-white relative overflow-hidden group">
-              <h4 className="text-[11px] font-black uppercase tracking-widest mb-8 border-l-4 border-corporate-orange pl-5 italic">Güvenlik ve Erişim</h4>
+           <div className="t3-panel p-10 bg-slate-950 text-white relative overflow-hidden group border-white/10">
+              <h4 className="mb-8 border-l-4 border-corporate-orange pl-5 text-[11px] font-black uppercase tracking-widest italic text-white">Güvenlik ve Erişim</h4>
               
               <div className="relative z-10">
                   <UserActionButtons userId={user.id} isActive={user.isActive} />
